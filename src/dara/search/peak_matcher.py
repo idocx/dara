@@ -140,10 +140,16 @@ def find_best_match(peak_calc: np.ndarray, peak_obs: np.ndarray) -> dict[str, An
 
 
 class PeakMatcher:
-    def __init__(self, peak_calc: np.ndarray, peak_obs: np.ndarray):
-        self.peak_calc = peak_calc
-        self.peak_obs = peak_obs
-        self._result = find_best_match(peak_calc, peak_obs)
+    def __init__(
+        self, peak_calc: np.ndarray, peak_obs: np.ndarray, noise_level: float = 0.05
+    ):
+        self.noise_level = noise_level
+
+        self.peak_calc = peak_calc[
+            peak_calc[:, 1] > noise_level * peak_calc[:, 1].max()
+        ]
+        self.peak_obs = peak_obs[peak_obs[:, 1] > noise_level * peak_obs[:, 1].max()]
+        self._result = find_best_match(self.peak_calc, self.peak_obs)
 
     @property
     def missing(self) -> np.ndarray:
@@ -205,6 +211,7 @@ class PeakMatcher:
         wrong_intensity_coeff: float = 1,
         missing_coeff: float = -0.1,
         extra_coeff: float = -0.5,
+        normalize: bool = True,
     ) -> float:
         """
         Calculate the score of the matching result.
@@ -214,9 +221,9 @@ class PeakMatcher:
             wrong_intensity_coeff: the coefficient of the peaks with wrong intensities
             missing_coeff: the coefficient of the missing peaks
             extra_coeff: the coefficient of the extra peaks
+            normalize: whether to normalize the score by the total intensity of the observed peaks
 
-        Returns
-        -------
+        Returns:
             the score of the matching result
         """
         matched_obs = self.matched[1]
@@ -224,12 +231,18 @@ class PeakMatcher:
         missing_obs = self.missing
         extra_calc = self.extra
 
-        return (
+        score = (
             np.sum(np.abs(matched_obs[:, 1])) * matched_coeff
             + np.sum(np.abs(wrong_intens_obs[:, 1])) * wrong_intensity_coeff
             + np.sum(np.abs(extra_calc[:, 1])) * extra_coeff
             + np.sum(np.abs(missing_obs[:, 1])) * missing_coeff
         )
+
+        if normalize:
+            total_peak_obs = np.sum(np.abs(self.peak_obs[:, 1]))
+            score /= total_peak_obs
+
+        return score
 
     def jaccard_index(self) -> float:
         """

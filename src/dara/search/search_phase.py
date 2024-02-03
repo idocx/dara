@@ -105,13 +105,14 @@ def search_phases(
     if not return_search_tree:
         results = search_tree.get_search_results()
         all_rhos = [result.lst_data.rho for result in results.values()]
-        # get the first natural break
-        if len(all_rhos) <= 5:
-            return remove_duplicate_results(results)
 
-        interval = jenkspy.jenks_breaks(all_rhos, n_classes=2)
-        rho_cutoff = interval[1]
-        results = {k: v for k, v in results.items() if v.lst_data.rho <= rho_cutoff}
+        # TODO: use a better method to remove bad results
+        if len(all_rhos) > 5:
+            # get the first natural break
+            interval = jenkspy.jenks_breaks(all_rhos, n_classes=2)
+            rho_cutoff = interval[1]
+            results = {k: v for k, v in results.items() if v.lst_data.rho <= rho_cutoff}
+
         results = remove_duplicate_results(results)
         return results
     else:

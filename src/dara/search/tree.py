@@ -181,12 +181,12 @@ def group_phases(
             all_peaks[all_peaks["phase"] == phase.stem][["2theta", "intensity"]].values
         )
 
-    pairwise_simiarity = batch_peak_matching(
+    pairwise_similarity = batch_peak_matching(
         [p for p in peaks for _ in peaks],
         [p for _ in peaks for p in peaks],
         return_type="jaccard",
     )
-    distance_matrix = 1 - np.array(pairwise_simiarity).reshape(len(peaks), len(peaks))
+    distance_matrix = 1 - np.array(pairwise_similarity).reshape(len(peaks), len(peaks))
 
     # current peak matching algorithm is not a symmetric metric.
     distance_matrix = (distance_matrix + distance_matrix.T) / 2
