@@ -251,6 +251,7 @@ class BaseSearchTree(Tree):
         all_phases_result: dict[Path, RefinementResult] | None,
         peak_obs: np.ndarray | None,
         top_n: int = 8,
+        peak_matcher_score_threshold: float = 0.3,
         rpb_threshold: float = 1,
         refine_params: dict[str, ...] | None = None,
         phase_params: dict[str, ...] | None = None,
@@ -263,6 +264,7 @@ class BaseSearchTree(Tree):
         self.max_phases = max_phases
         self.pattern_path = pattern_path
         self.top_n = top_n
+        self.peak_matcher_score_threshold = peak_matcher_score_threshold
         self.rpb_threshold = rpb_threshold
         self.refinement_params = refine_params if refine_params is not None else {}
         self.phase_params = phase_params if phase_params is not None else {}
@@ -428,10 +430,22 @@ class BaseSearchTree(Tree):
             )
         )
 
-        return (
-            sorted(scores, key=lambda x: scores[x], reverse=True)[: self.top_n],
-            scores,
-        )
+        filtered_scores = {
+            phase: score
+            for phase, score in scores.items()
+            if score >= self.peak_matcher_score_threshold
+        }
+
+        if len(filtered_scores) <= self.top_n:
+            return (
+                sorted(scores, key=lambda x: scores[x], reverse=True)[: self.top_n],
+                scores,
+            )
+        else:
+            return (
+                sorted(filtered_scores, key=lambda x: filtered_scores[x], reverse=True),
+                scores,
+            )
 
     def get_all_phases_result(
         self, phases: list[Path], pinned_phases: list[Path] | None = None
