@@ -163,11 +163,11 @@ class PeakMatcher:
         self.noise_level = noise_level
 
         self.peak_calc = peak_calc[
-            (peak_calc[:, 1] > noise_level * peak_calc[:, 1].max())
-            & (peak_calc[:, 1] > 0)
+            (peak_calc[:, 1] > 0)
+            & (peak_calc[:, 1] > noise_level * peak_calc[:, 1].max())
         ]
         self.peak_obs = peak_obs[
-            (peak_obs[:, 1] > noise_level * peak_obs[:, 1].max()) & (peak_obs[:, 1] > 0)
+            (peak_obs[:, 1] > 0) & (peak_obs[:, 1] > noise_level * peak_obs[:, 1].max())
         ]
         self._result = find_best_match(self.peak_calc, self.peak_obs)
 
