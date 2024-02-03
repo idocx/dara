@@ -267,7 +267,6 @@ class BaseSearchTree(Tree):
             warnings.warn(
                 "The top_n parameter is deprecated and will be removed in the future. "
                 "You can set the peak_matcher_score_threshold to control the number of phases searched.",
-                DeprecationWarning,
             )
 
         self.pattern_path = pattern_path
