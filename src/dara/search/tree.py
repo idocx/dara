@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import logging
 import warnings
 from itertools import zip_longest
 from pathlib import Path
@@ -23,9 +22,10 @@ from dara.utils import (
     rpb,
     load_symmetrized_structure,
     DEPRECATED,
+    get_logger,
 )
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 @ray.remote(num_cpus=1)
@@ -263,6 +263,7 @@ class BaseSearchTree(Tree):
     ):
         super().__init__(*args, **kwargs)
 
+        # TODO: Remove top_n in the future
         if top_n != DEPRECATED:
             warnings.warn(
                 "The top_n parameter is deprecated and will be removed in the future. "

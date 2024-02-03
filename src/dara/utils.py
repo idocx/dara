@@ -242,7 +242,7 @@ def rwp(y_calc: np.ndarray, y_obs: np.ndarray) -> float:
 
 def rpb(y_calc: np.ndarray, y_obs: np.ndarray, y_bkg) -> float:
     """
-    Calculate the Rietveld profile bias (RPB) for a refinement.
+    Calculate the Rietveld profile without background (RPB) for a refinement.
 
     The result is in percentage.
 

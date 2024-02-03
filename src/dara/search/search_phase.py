@@ -1,7 +1,6 @@
 """Phase search module."""
 from __future__ import annotations
 
-import logging
 from collections import deque
 from typing import TYPE_CHECKING
 
@@ -9,7 +8,7 @@ import jenkspy
 import ray
 
 from dara.search.tree import SearchTree, BaseSearchTree
-from dara.utils import DEPRECATED
+from dara.utils import DEPRECATED, get_logger
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -17,7 +16,7 @@ if TYPE_CHECKING:
     from dara.result import RefinementResult
 
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def remove_duplicate_results(
@@ -72,6 +71,7 @@ def search_phases(
     }
     refinement_params = {"n_threads": 8}
 
+    # TODO: remove top_n in the future
     # build the search tree
     search_tree = SearchTree(
         pattern_path=pattern_path,
