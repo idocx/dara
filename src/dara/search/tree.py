@@ -22,6 +22,7 @@ from dara.utils import (
     get_optimal_max_two_theta,
     rpb,
     load_symmetrized_structure,
+    DEPRECATED,
 )
 
 logger = logging.getLogger(__name__)
@@ -246,36 +247,43 @@ def remove_unnecessary_phases(
 class BaseSearchTree(Tree):
     def __init__(
         self,
-        max_phases: float,
         pattern_path: Path,
         all_phases_result: dict[Path, RefinementResult] | None,
         peak_obs: np.ndarray | None,
-        top_n: int = 8,
-        peak_matcher_score_threshold: float = 0.3,
+        peak_matcher_score_threshold: float = 0.0,
         rpb_threshold: float = 1,
         refine_params: dict[str, ...] | None = None,
         phase_params: dict[str, ...] | None = None,
         instrument_name: str = "Aeris-fds-Pixcel1d-Medipix3",
         maximum_grouping_distance: float = 0.1,
+        max_phases: float | None = None,
+        top_n: int = DEPRECATED,
         *args,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
-        self.max_phases = max_phases
+
+        if top_n != DEPRECATED:
+            warnings.warn(
+                "The top_n parameter is deprecated and will be removed in the future. "
+                "You can set the peak_matcher_score_threshold to control the number of phases searched.",
+                DeprecationWarning,
+            )
+
         self.pattern_path = pattern_path
-        self.top_n = top_n
         self.peak_matcher_score_threshold = peak_matcher_score_threshold
         self.rpb_threshold = rpb_threshold
         self.refinement_params = refine_params if refine_params is not None else {}
         self.phase_params = phase_params if phase_params is not None else {}
         self.instrument_name = instrument_name
         self.maximum_grouping_distance = maximum_grouping_distance
+        self.max_phases = max_phases if max_phases is not None else float("+inf")
 
         self.all_phases_result = all_phases_result
         self.peak_obs = peak_obs
 
     def expand_node(self, nid: str) -> list[str]:
-        node = self.get_node(nid)
+        node: Node = self.get_node(nid)
         if node is None:
             raise ValueError(f"Node with id {nid} does not exist.")
         if node.data.status != "pending":
@@ -436,16 +444,10 @@ class BaseSearchTree(Tree):
             if score >= self.peak_matcher_score_threshold
         }
 
-        if len(filtered_scores) <= self.top_n:
-            return (
-                sorted(scores, key=lambda x: scores[x], reverse=True)[: self.top_n],
-                scores,
-            )
-        else:
-            return (
-                sorted(filtered_scores, key=lambda x: filtered_scores[x], reverse=True),
-                scores,
-            )
+        return (
+            sorted(filtered_scores, key=lambda x: filtered_scores[x], reverse=True),
+            scores,
+        )
 
     def get_all_phases_result(
         self, phases: list[Path], pinned_phases: list[Path] | None = None
@@ -483,7 +485,7 @@ class BaseSearchTree(Tree):
             pattern_path=self.pattern_path,
             all_phases_result=self.all_phases_result,
             peak_obs=self.peak_obs,
-            top_n=self.top_n,
+            peak_matcher_score_threshold=self.peak_matcher_score_threshold,
             rpb_threshold=self.rpb_threshold,
             refine_params=self.refinement_params,
             phase_params=self.phase_params,
@@ -504,7 +506,7 @@ class BaseSearchTree(Tree):
             pattern_path=search_tree.pattern_path,
             all_phases_result=search_tree.all_phases_result,
             peak_obs=search_tree.peak_obs,
-            top_n=search_tree.top_n,
+            peak_matcher_score_threshold=search_tree.peak_matcher_score_threshold,
             rpb_threshold=search_tree.rpb_threshold,
             refine_params=search_tree.refinement_params,
             phase_params=search_tree.phase_params,
@@ -524,16 +526,16 @@ class BaseSearchTree(Tree):
 class SearchTree(BaseSearchTree):
     def __init__(
         self,
-        max_phases: float,
         pattern_path: Path,
         cif_paths: list[Path],
         pinned_phases: list[Path] | None = None,
-        top_n: int = 8,
+        peak_matcher_score_threshold: float = 0.0,
         rpb_threshold: float = 1,
         refine_params: dict[str, ...] | None = None,
         phase_params: dict[str, ...] | None = None,
         instrument_name: str = "Aeris-fds-Pixcel1d-Medipix3",
         maximum_grouping_distance: float = 0.1,
+        max_phases: float | None = None,
         *args,
         **kwargs,
     ):
@@ -541,16 +543,16 @@ class SearchTree(BaseSearchTree):
         self.cif_paths = cif_paths
 
         super().__init__(
-            max_phases,
-            pattern_path,
+            pattern_path=pattern_path,
             all_phases_result=None,  # placeholder, will be updated later
             peak_obs=None,  # placeholder, will be updated later
-            top_n=top_n,
+            peak_matcher_score_threshold=peak_matcher_score_threshold,
             rpb_threshold=rpb_threshold,
             refine_params=refine_params,
             phase_params=phase_params,
             instrument_name=instrument_name,
             maximum_grouping_distance=maximum_grouping_distance,
+            max_phases=max_phases,
             *args,
             **kwargs,
         )

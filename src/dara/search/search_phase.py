@@ -9,6 +9,7 @@ import jenkspy
 import ray
 
 from dara.search.tree import SearchTree, BaseSearchTree
+from dara.utils import DEPRECATED
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -56,7 +57,7 @@ def search_phases(
     cif_paths: list[Path],
     included_phases: list[Path] | None = None,
     max_phases: int = 3,
-    top_n: int = 4,
+    top_n: int = DEPRECATED,
     rpb_threshold: float = 2,
     return_search_tree: bool = False,
 ) -> dict[tuple[Path, ...], RefinementResult] | SearchTree:
@@ -73,14 +74,14 @@ def search_phases(
 
     # build the search tree
     search_tree = SearchTree(
-        max_phases=max_phases,
         pattern_path=pattern_path,
         cif_paths=cif_paths,
         pinned_phases=included_phases,
-        top_n=top_n,
         rpb_threshold=rpb_threshold,
         refine_params=refinement_params,
         phase_params=phase_params,
+        max_phases=max_phases,
+        top_n=top_n,
     )
 
     max_worker = ray.cluster_resources()["CPU"]

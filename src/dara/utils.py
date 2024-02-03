@@ -19,6 +19,9 @@ from pymatgen.symmetry.structure import SymmetrizedStructure
 if TYPE_CHECKING:
     import pandas as pd
 
+
+DEPRECATED = "DEPRECATED"
+
 with open(Path(__file__).parent / "data" / "possible_species.txt") as f:
     POSSIBLE_SPECIES = {sp.strip() for sp in f}
 
