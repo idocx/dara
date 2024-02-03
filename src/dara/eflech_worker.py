@@ -196,6 +196,8 @@ class EflechWorker:
                     b1 = 0
                     b2 = 0
 
-                peak_list.append([d_inv, intensity, b1, b2])
+                # Only add peaks with intensity > 0
+                if intensity > 0:
+                    peak_list.append([d_inv, intensity, b1, b2])
 
         return peak_list

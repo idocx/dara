@@ -573,7 +573,8 @@ def parse_par(par_file: Path, phase_names: list[str]) -> pd.DataFrame:
             phase = re.search(r"PHASE=(\w+)", content[i]).group(1)
             phase, idx = phase_names_mapping[phase]
 
-            peak_list.append([d_inv, intensity, b1, b2, h, k, l, phase, idx])
+            if intensity > 0:
+                peak_list.append([d_inv, intensity, b1, b2, h, k, l, phase, idx])
 
     # from d_inv to two theta
     two_theta = (

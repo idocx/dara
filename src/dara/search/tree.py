@@ -47,7 +47,7 @@ def remote_do_refinement_no_saving(
         )
     except (RuntimeError, TimeoutExpired):
         return None
-    if result.lst_data.rpb == 100:
+    if result.lst_data.rpb == 100 or result.peak_data.shape[0] == 0:
         return None
     return result
 
