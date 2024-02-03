@@ -82,6 +82,23 @@ def find_best_match(peak_calc: np.ndarray, peak_obs: np.ndarray) -> dict[str, An
     extra = []
     wrong_intens = []
 
+    if len(peak_obs) == 0:
+        return {
+            "missing": np.array([]).reshape(-1),
+            "matched": np.array([]).reshape(-1, 2),
+            "extra": np.arange(len(peak_calc)),
+            "wrong_intensity": np.array([]).reshape(-1, 2),
+            "residual_peaks": np.array([]).reshape(-1, 2),
+        }
+    elif len(peak_calc) == 0:
+        return {
+            "missing": np.arange(len(peak_obs)),
+            "matched": np.array([]).reshape(-1, 2),
+            "extra": np.array([]).reshape(-1, 2),
+            "wrong_intensity": np.array([]).reshape(-1, 2),
+            "residual_peaks": peak_obs.copy(),
+        }
+
     distance = distance_matrix(peak_calc, peak_obs)
     peak_obs_acc = np.zeros(len(peak_obs))
 
