@@ -141,14 +141,17 @@ def find_best_match(peak_calc: np.ndarray, peak_obs: np.ndarray) -> dict[str, An
 
 class PeakMatcher:
     def __init__(
-        self, peak_calc: np.ndarray, peak_obs: np.ndarray, noise_level: float = 0.05
+        self, peak_calc: np.ndarray, peak_obs: np.ndarray, noise_level: float = 0.01
     ):
         self.noise_level = noise_level
 
         self.peak_calc = peak_calc[
-            peak_calc[:, 1] > noise_level * peak_calc[:, 1].max()
+            (peak_calc[:, 1] > noise_level * peak_calc[:, 1].max())
+            & (peak_calc[:, 1] > 0)
         ]
-        self.peak_obs = peak_obs[peak_obs[:, 1] > noise_level * peak_obs[:, 1].max()]
+        self.peak_obs = peak_obs[
+            (peak_obs[:, 1] > noise_level * peak_obs[:, 1].max()) & (peak_obs[:, 1] > 0)
+        ]
         self._result = find_best_match(self.peak_calc, self.peak_obs)
 
     @property
