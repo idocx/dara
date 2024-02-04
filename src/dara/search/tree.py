@@ -23,7 +23,7 @@ from dara.utils import (
     load_symmetrized_structure,
     DEPRECATED,
     get_logger,
-    find_inflection_score_from_scores,
+    find_optimal_score_threshold,
 )
 
 logger = get_logger(__name__)
@@ -455,7 +455,7 @@ class BaseSearchTree(Tree):
             )
         )
 
-        peak_matcher_score_threshold, _ = find_inflection_score_from_scores(
+        peak_matcher_score_threshold, _ = find_optimal_score_threshold(
             list(scores.values())
         )
         peak_matcher_score_threshold = max(peak_matcher_score_threshold, 0)
