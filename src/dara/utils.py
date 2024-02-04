@@ -304,5 +304,7 @@ def find_optimal_score_threshold(
 
     scores = np.array(scores)
     score_percentile = np.percentile(scores, np.arange(0, 101))
-    second_derivative = np.diff(np.diff(score_percentile))
+    score_percentile = signal.savgol_filter(score_percentile, 5, 1)
+
+    second_derivative = np.diff(score_percentile, n=2)
     return score_percentile[np.argmax(second_derivative)].item(), score_percentile
