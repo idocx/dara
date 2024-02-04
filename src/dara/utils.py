@@ -295,11 +295,13 @@ def datetime_str() -> str:
     return str(datetime.utcnow())
 
 
-def find_inflection_score_from_scores(scores: list[float]) -> float:
+def find_inflection_score_from_scores(
+    scores: list[float] | np.ndarray,
+) -> tuple[float, np.ndarray]:
     """Find the inflection point from a list of scores. We will calculate the quantile first"""
     # Calculate the second derivative
     scores = np.array(scores)
     score_quantile = np.quantile(scores, np.arange(0, 101))
-    score_quantile = signal.savgol_filter(score_quantile, 13, 1)
-    second_derivative = np.diff(np.diff(scores))
-    return score_quantile[np.argmax(second_derivative)].item()
+    score_quantile_smoothed = signal.savgol_filter(score_quantile, 13, 1)
+    second_derivative = np.diff(np.diff(score_quantile_smoothed))
+    return score_quantile[np.argmax(second_derivative)].item(), score_quantile

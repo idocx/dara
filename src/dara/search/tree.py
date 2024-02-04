@@ -455,7 +455,7 @@ class BaseSearchTree(Tree):
             )
         )
 
-        peak_matcher_score_threshold = find_inflection_score_from_scores(
+        peak_matcher_score_threshold, _ = find_inflection_score_from_scores(
             list(scores.values())
         )
         peak_matcher_score_threshold = max(peak_matcher_score_threshold, 0)
