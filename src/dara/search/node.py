@@ -23,6 +23,7 @@ class SearchNodeData(BaseModel):
         "expanded",
         "similar_structure",
         "low_weight_fraction",
+        "duplicate",
     ] = "pending"
 
     peak_matcher_scores: Optional[dict[Path, float]] = None

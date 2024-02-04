@@ -29,6 +29,27 @@ from dara.utils import (
 logger = get_logger(__name__)
 
 
+@ray.remote
+class ExploredPhasesSet:
+    def __init__(self):
+        self._set: set[frozenset[Path]] = set()
+
+    def update(self, phases: list[tuple[Path, ...]]):
+        for phase in phases:
+            self._set.add(frozenset(phase))
+
+    def multiple_contains(self, phases: list[tuple[Path, ...]]) -> list[bool]:
+        return [frozenset(phases) in self._set for phases in phases]
+
+    def contains_and_update(self, phases: list[tuple[Path, ...]]) -> list[bool]:
+        contains = self.multiple_contains(phases)
+        self.update(phases)
+        return contains
+
+    def get(self) -> frozenset[frozenset[Path]]:
+        return frozenset(self._set)
+
+
 @ray.remote(num_cpus=1)
 def remote_do_refinement_no_saving(
     pattern_path: Path,
@@ -294,7 +315,9 @@ class BaseSearchTree(Tree):
         self.all_phases_result = all_phases_result
         self.peak_obs = peak_obs
 
-    def expand_node(self, nid: str) -> list[str]:
+    def expand_node(
+        self, nid: str, explored_phases_set: ExploredPhasesSet | None = None
+    ) -> list[str]:
         node: Node = self.get_node(nid)
         if node is None:
             raise ValueError(f"Node with id {nid} does not exist.")
@@ -313,6 +336,30 @@ class BaseSearchTree(Tree):
             best_phases, scores, threshold = self.get_best_matched_phases(
                 all_phases_result, node.data.current_result
             )
+
+            if explored_phases_set is not None:
+                explored = ray.get(
+                    explored_phases_set.contains_and_update.remote(
+                        [node.data.current_phases + [phase] for phase in best_phases]
+                    )
+                )
+            else:
+                explored = [False] * len(best_phases)
+
+            for i in range(len(best_phases)):
+                if explored[i]:
+                    self.create_node(
+                        data=SearchNodeData(
+                            current_result=None,
+                            current_phases=node.data.current_phases + [best_phases[i]],
+                            status="duplicate",
+                        ),
+                        parent=nid,
+                    )
+
+            best_phases = [
+                best_phases[i] for i in range(len(best_phases)) if not explored[i]
+            ]
 
             node.data.peak_matcher_scores = scores
             node.data.peak_matcher_score_threshold = threshold
@@ -404,8 +451,10 @@ class BaseSearchTree(Tree):
             if self.get_node(child.identifier).data.status == "pending"
         ]
 
-    def expand_root(self):
-        self.expand_node(self.root)
+    def expand_root(
+        self, explored_phases_set: ExploredPhasesSet | None = None
+    ) -> list[str]:
+        return self.expand_node(self.root, explored_phases_set=explored_phases_set)
 
     def get_search_results(self) -> dict[tuple[Path, ...], RefinementResult]:
         results = {}

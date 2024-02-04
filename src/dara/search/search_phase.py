@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 import jenkspy
 import ray
 
-from dara.search.tree import SearchTree, BaseSearchTree
+from dara.search.tree import SearchTree, BaseSearchTree, ExploredPhasesSet
 from dara.utils import DEPRECATED, get_logger
 
 if TYPE_CHECKING:
@@ -39,16 +39,20 @@ def remove_duplicate_results(
 
 
 @ray.remote
-def _remote_expand_node(search_tree: BaseSearchTree) -> BaseSearchTree:
+def _remote_expand_node(
+    search_tree: BaseSearchTree, explored_phases_set: ExploredPhasesSet
+) -> BaseSearchTree:
     """Expand a node in the search tree."""
-    search_tree.expand_root()
+    search_tree.expand_root(explored_phases_set=explored_phases_set)
     return search_tree
 
 
-def remote_expand_node(search_tree: SearchTree, nid: str) -> ray.ObjectRef:
+def remote_expand_node(
+    search_tree: SearchTree, nid: str, explored_phases_set: ExploredPhasesSet
+) -> ray.ObjectRef:
     """Expand a node in the search tree."""
     subtree = BaseSearchTree.from_search_tree(root_nid=nid, search_tree=search_tree)
-    return _remote_expand_node.remote(subtree)
+    return _remote_expand_node.remote(subtree, explored_phases_set)
 
 
 def search_phases(
@@ -85,7 +89,8 @@ def search_phases(
     )
 
     max_worker = ray.cluster_resources()["CPU"]
-    pending = [remote_expand_node(search_tree, search_tree.root)]
+    explored_phases_set = ExploredPhasesSet.remote()
+    pending = [remote_expand_node(search_tree, search_tree.root, explored_phases_set)]
     to_be_submitted = deque()
 
     while pending:
@@ -101,7 +106,7 @@ def search_phases(
 
         while len(pending) < max_worker and to_be_submitted:
             nid = to_be_submitted.popleft()
-            pending.append(remote_expand_node(search_tree, nid))
+            pending.append(remote_expand_node(search_tree, nid, explored_phases_set))
 
     if not return_search_tree:
         results = search_tree.get_search_results()
