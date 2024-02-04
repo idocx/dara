@@ -15,6 +15,7 @@ import numpy as np
 from pymatgen.core import Composition, Structure
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 from pymatgen.symmetry.structure import SymmetrizedStructure
+from scipy import signal
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -292,3 +293,13 @@ def clean_icsd_code(icsd_code):
 def datetime_str() -> str:
     """Get a string representation of the current time."""
     return str(datetime.utcnow())
+
+
+def find_inflection_score_from_scores(scores: list[float]) -> float:
+    """Find the inflection point from a list of scores. We will calculate the quantile first"""
+    # Calculate the second derivative
+    scores = np.array(scores)
+    score_quantile = np.quantile(scores, np.arange(0, 101))
+    score_quantile = signal.savgol_filter(score_quantile, 13, 1)
+    second_derivative = np.diff(np.diff(scores))
+    return score_quantile[np.argmax(second_derivative)].item()

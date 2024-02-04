@@ -26,3 +26,4 @@ class SearchNodeData(BaseModel):
     ] = "pending"
 
     peak_matcher_scores: Optional[dict[Path, float]] = None
+    peak_matcher_score_threshold: Optional[float] = None

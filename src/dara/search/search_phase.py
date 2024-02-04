@@ -54,11 +54,11 @@ def remote_expand_node(search_tree: SearchTree, nid: str) -> ray.ObjectRef:
 def search_phases(
     pattern_path: Path,
     cif_paths: list[Path],
-    included_phases: list[Path] | None = None,
-    max_phases: int = 3,
-    top_n: int = DEPRECATED,
+    pinned_phases: list[Path] | None = None,
+    max_phases: int = 5,
     rpb_threshold: float = 2,
     return_search_tree: bool = False,
+    top_n: int = DEPRECATED,
 ) -> dict[tuple[Path, ...], RefinementResult] | SearchTree:
     """Search for the best phases to use for refinement."""
     phase_params = {
@@ -76,7 +76,7 @@ def search_phases(
     search_tree = SearchTree(
         pattern_path=pattern_path,
         cif_paths=cif_paths,
-        pinned_phases=included_phases,
+        pinned_phases=pinned_phases,
         rpb_threshold=rpb_threshold,
         refine_params=refinement_params,
         phase_params=phase_params,
