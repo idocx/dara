@@ -340,7 +340,11 @@ class BaseSearchTree(Tree):
                     ]
                 )
 
-                weight_fractions = new_result.get_phase_weights(normalize=True)
+                weight_fractions = (
+                    new_result.get_phase_weights(normalize=True)
+                    if new_result is not None
+                    else None
+                )
 
                 if new_result is None:
                     status = "error"
