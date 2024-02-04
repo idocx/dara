@@ -166,8 +166,22 @@ def calculate_fom(phase_path: Path, result: RefinementResult) -> float:
 
 
 def group_phases(
-    all_phases_result: dict[Path, RefinementResult], distance_threshold: float = 0.1
+    all_phases_result: dict[Path, RefinementResult | None],
+    distance_threshold: float = 0.1,
 ) -> dict[Path, dict[str, float | int]]:
+    grouped_result = {}
+
+    # handle the case where there is no result for a phase
+    for phase, result in all_phases_result.items():
+        if result is None:
+            grouped_result[phase] = {"group_id": -1, "fom": 0}
+
+    all_phases_result = {
+        phase: result
+        for phase, result in all_phases_result.items()
+        if result is not None
+    }
+
     if len(all_phases_result) <= 1:
         return {
             phase: {"group_id": 0, "fom": calculate_fom(phase, result)}
@@ -201,7 +215,6 @@ def group_phases(
     )
     clusterer.fit(distance_matrix)
 
-    grouped_result = {}
     for i, cluster in enumerate(clusterer.labels_):
         phase = list(all_phases_result.keys())[i]
         result = list(all_phases_result.values())[i]
