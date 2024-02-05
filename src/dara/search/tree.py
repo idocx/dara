@@ -24,6 +24,7 @@ from dara.utils import (
     DEPRECATED,
     get_logger,
     find_optimal_score_threshold,
+    get_composition_distance,
 )
 
 logger = get_logger(__name__)
@@ -210,23 +211,41 @@ def group_phases(
             for phase, result in all_phases_result.items()
         }
 
-    peaks = []
+    peaks: list[np.ndarray] = []
+    compositions: list[str] = []
 
     for phase, result in all_phases_result.items():
         all_peaks = result.peak_data
         peaks.append(
             all_peaks[all_peaks["phase"] == phase.stem][["2theta", "intensity"]].values
         )
+        compositions.append(phase.stem.split("_")[0])
 
     pairwise_similarity = batch_peak_matching(
         [p for p in peaks for _ in peaks],
         [p for _ in peaks for p in peaks],
         return_type="jaccard",
     )
-    distance_matrix = 1 - np.array(pairwise_similarity).reshape(len(peaks), len(peaks))
+    peal_distance_matrix = 1 - np.array(pairwise_similarity).reshape(
+        len(peaks), len(peaks)
+    )
 
     # current peak matching algorithm is not a symmetric metric.
-    distance_matrix = (distance_matrix + distance_matrix.T) / 2
+    peal_distance_matrix = (peal_distance_matrix + peal_distance_matrix.T) / 2
+
+    # calculate compositional distance matrix
+    composition_distance_matrix = np.array(
+        [
+            [
+                get_composition_distance(compositions[i], compositions[j])
+                for j in range(len(compositions))
+            ]
+            for i in range(len(compositions))
+        ]
+    )
+
+    # use the maximum distance
+    distance_matrix = np.maximum(peal_distance_matrix, composition_distance_matrix)
 
     # clustering
     clusterer = AgglomerativeClustering(

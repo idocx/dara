@@ -308,3 +308,19 @@ def find_optimal_score_threshold(
 
     second_derivative = np.diff(score_percentile, n=2)
     return score_percentile[np.argmax(second_derivative)].item(), score_percentile
+
+
+def get_composition_distance(
+    comp1: Composition | str, comp2: Composition | str, order: int = 1
+) -> float:
+    """
+    Calculate the distance between two compositions.
+
+    The default is the Manhattan.
+    """
+    comp1 = Composition(comp1, allow_negative=True).fractional_composition
+    comp2 = Composition(comp2, allow_negative=True).fractional_composition
+
+    delta_composition = comp1 - comp2
+
+    return np.linalg.norm(np.array(list(delta_composition.values())), ord=order)
