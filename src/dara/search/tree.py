@@ -30,7 +30,7 @@ from dara.utils import (
 logger = get_logger(__name__)
 
 
-@ray.remote
+@ray.remote(num_cpus=0)
 class ExploredPhasesSet:
     def __init__(self):
         self._set: set[frozenset[Path]] = set()
