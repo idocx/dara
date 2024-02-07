@@ -1,6 +1,7 @@
 """Phase search module."""
 from __future__ import annotations
 
+import copy
 from collections import deque
 from typing import TYPE_CHECKING
 
@@ -141,6 +142,7 @@ def search_phases(
 
         for task in done:
             remote_search_tree = ray.get(task)
+            remote_search_tree = copy.deepcopy(remote_search_tree)
             search_tree.add_subtree(
                 anchor_nid=remote_search_tree.root, search_tree=remote_search_tree
             )

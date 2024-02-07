@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import warnings
 from itertools import zip_longest
 from pathlib import Path
@@ -150,7 +151,9 @@ def batch_peak_matching(
     handles = [
         remote_peak_matching.remote(batch, return_type=return_type) for batch in batches
     ]
-    return sum(ray.get(handles), [])
+    results = sum(ray.get(handles), [])
+
+    return copy.deepcopy(results)
 
 
 def batch_refinement(
@@ -170,7 +173,8 @@ def batch_refinement(
         )
         for cif_paths in cif_paths
     ]
-    return ray.get(handles)
+    results = ray.get(handles)
+    return copy.deepcopy(results)
 
 
 def calculate_fom(phase_path: Path, result: RefinementResult) -> float:
