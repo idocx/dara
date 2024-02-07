@@ -153,7 +153,7 @@ def batch_peak_matching(
     ]
     results = sum(ray.get(handles), [])
 
-    return copy.deepcopy(results)
+    return results
 
 
 def batch_refinement(
@@ -174,7 +174,7 @@ def batch_refinement(
         for cif_paths in cif_paths
     ]
     results = ray.get(handles)
-    return copy.deepcopy(results)
+    return results
 
 
 def calculate_fom(phase_path: Path, result: RefinementResult) -> float:

@@ -133,7 +133,7 @@ def search_phases(
     )
 
     max_worker = ray.cluster_resources()["CPU"]
-    explored_phases_set = ExploredPhasesSet.options(max_concurrency=1).remote()
+    explored_phases_set = ExploredPhasesSet.remote()
     pending = [remote_expand_node(search_tree, search_tree.root, explored_phases_set)]
     to_be_submitted = deque()
 
