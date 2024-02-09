@@ -463,7 +463,9 @@ class BaseSearchTree(Tree):
                 for phase, result in self.all_phases_result.items()
                 if phase not in current_phases_set
             }
-            best_phases, scores, threshold = self.score_phases(all_phases_result, node.data.current_result)
+            best_phases, scores, threshold = self.score_phases(
+                all_phases_result, node.data.current_result
+            )
 
             if explored_phases_set is not None:
                 explored = ray.get(
@@ -492,7 +494,9 @@ class BaseSearchTree(Tree):
             node.data.peak_matcher_scores = scores
             node.data.peak_matcher_score_threshold = threshold
 
-            new_results = self.refine_phases(best_phases, pinned_phases=node.data.current_phases)
+            new_results = self.refine_phases(
+                best_phases, pinned_phases=node.data.current_phases
+            )
 
             # group the results
             grouped_results = group_phases(
@@ -897,7 +901,9 @@ class SearchTree(BaseSearchTree):
         cif_paths = [
             cif_path for cif_path in self.cif_paths if cif_path not in pinned_phases_set
         ]
-        all_phases_result = self.refine_phases(cif_paths, pinned_phases=self.pinned_phases)
+        all_phases_result = self.refine_phases(
+            cif_paths, pinned_phases=self.pinned_phases
+        )
 
         # clean up cif paths (if no result, remove from list)
         all_phases_result = {
