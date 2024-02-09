@@ -27,45 +27,6 @@ DEFAULT_PHASE_PARAMS = {
 DEFAULT_REFINEMENT_PARAMS = {"n_threads": 8}
 
 
-def remove_duplicate_results(
-    results: dict[tuple[Path, ...], RefinementResult],
-) -> dict[tuple[Path, ...], RefinementResult]:
-    """
-    Remove duplicate results.
-
-    If two results have the same phases, only the one with the lower RWP will be kept.
-    """
-    results_ = {}
-    appeared_phases = set()
-
-    for phases, result in results.items():
-        if set(phases) not in appeared_phases:
-            results_[phases] = result
-            appeared_phases.add(frozenset(phases))
-
-    return results_
-
-
-def get_natural_break_results(
-    results: dict[tuple[Path, ...], RefinementResult]
-) -> dict[tuple[Path, ...], RefinementResult]:
-    all_rhos = None
-
-    # remove results that are too bad (dead end in the tree search)
-    while all_rhos is None or max(all_rhos) > min(all_rhos) + 10:
-        all_rhos = [result.lst_data.rho for result in results.values()]
-
-        if len(set(all_rhos)) >= 2:
-            # get the first natural break
-            interval = jenkspy.jenks_breaks(all_rhos, n_classes=2)
-            rho_cutoff = interval[1]
-            results = {k: v for k, v in results.items() if v.lst_data.rho <= rho_cutoff}
-        else:
-            break
-
-    return results
-
-
 @ray.remote
 def _remote_expand_node(
     search_tree: BaseSearchTree, explored_phases_set: ExploredPhasesSet
@@ -154,8 +115,6 @@ def search_phases(
             pending.append(remote_expand_node(search_tree, nid, explored_phases_set))
 
     if not return_search_tree:
-        return remove_duplicate_results(
-            get_natural_break_results(search_tree.get_search_results())
-        )
+        return search_tree.get_search_results()
     else:
         return search_tree
