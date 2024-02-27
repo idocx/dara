@@ -218,15 +218,15 @@ def merge_peaks(peaks: pd.DataFrame, resolution: float = 0.1):
     ptr_1 = ptr_2 = merge_to[0]
     new_peaks_list = []
     while ptr_1 < len(peaks):
-        while merge_to[ptr_2] == ptr_1:
+        while ptr_2 < len(peaks) and merge_to[ptr_2] == ptr_1:
             ptr_2 += 1
         peaks2merge = peaks.iloc[ptr_1:ptr_2]
         angles = peaks2merge["2theta"].values
         intensities = peaks2merge["intensity"].values
-        b1 = peaks2merge["b1"]
-        b2 = peaks2merge["b2"]
+        b1 = peaks2merge["b1"].values
+        b2 = peaks2merge["b2"].values
 
-        updated_angle = angles * intensities / np.sum(intensities)
+        updated_angle = angles @ intensities / np.sum(intensities)
         updated_intensity = np.sum(intensities)
         updated_b1 = b1[np.argmax(intensities)]
         updated_b2 = b2[np.argmax(intensities)]
