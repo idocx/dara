@@ -5,7 +5,6 @@ import copy
 from collections import deque
 from typing import TYPE_CHECKING
 
-import jenkspy
 import ray
 
 from dara.search.tree import SearchTree, BaseSearchTree, ExploredPhasesSet

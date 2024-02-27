@@ -12,7 +12,7 @@ def detect_peaks(
     instrument_name: str = "Aeris-fds-Pixcel1d-Medipix3",
     wmin: float = None,
     wmax: float = None,
-    resolution: float = 0.1,
+    resolution: float = 0.2,
 ) -> pd.DataFrame:
     eflech_worker = EflechWorker()
     peaks = eflech_worker.run_peak_detection(

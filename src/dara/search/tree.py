@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import copy
 import warnings
 from itertools import zip_longest
 from pathlib import Path
@@ -16,6 +15,7 @@ from treelib import Node, Tree
 from dara import do_refinement_no_saving
 from dara.cif2str import CIF2StrError
 from dara.eflech_worker import EflechWorker
+from dara.peak_detection import detect_peaks
 from dara.search.node import SearchNodeData
 from dara.search.peak_matcher import PeakMatcher
 from dara.utils import (
@@ -867,8 +867,7 @@ class SearchTree(BaseSearchTree):
                 f"The wmax ({self.refinement_params['wmax']}) in refinement_params "
                 f"will be ignored. The wmax will be automatically adjusted."
             )
-        eflech_worker = EflechWorker()
-        peak_list = eflech_worker.run_peak_detection(
+        peak_list = detect_peaks(
             self.pattern_path, wmin=self.refinement_params.get("wmin", None), wmax=None
         )
         optimal_wmax = get_optimal_max_two_theta(peak_list)
