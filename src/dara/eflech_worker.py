@@ -201,3 +201,45 @@ class EflechWorker:
                     peak_list.append([d_inv, intensity, b1, b2])
 
         return peak_list
+
+
+def merge_peaks(peaks: pd.DataFrame, resolution: float = 0.1):
+    if len(peaks) <= 1:
+        return
+    merge_to = np.arange(len(peaks))
+    two_thetas = peaks["2theta"].values
+
+    for i in range(1, len(peaks)):
+        two_theta_i = two_thetas[i]
+        two_theta_im1 = two_thetas[i - 1]
+        if np.abs(two_theta_im1 - two_theta_i) <= resolution:
+            merge_to[i] = merge_to[i - 1]
+
+    ptr_1 = ptr_2 = merge_to[0]
+    new_peaks_list = []
+    while ptr_1 < len(peaks):
+        while merge_to[ptr_2] == ptr_1:
+            ptr_2 += 1
+        peaks2merge = peaks.iloc[ptr_1:ptr_2]
+        angles = peaks2merge["2theta"].values
+        intensities = peaks2merge["intensity"].values
+        b1 = peaks2merge["b1"]
+        b2 = peaks2merge["b2"]
+
+        updated_angle = angles * intensities / np.sum(intensities)
+        updated_intensity = np.sum(intensities)
+        updated_b1 = b1[np.argmax(intensities)]
+        updated_b2 = b2[np.argmax(intensities)]
+
+        new_peaks_list.append(
+            [updated_angle, updated_intensity, updated_b1, updated_b2]
+        )
+
+        ptr_1 = ptr_2
+
+    new_peaks_list = np.array(new_peaks_list)
+    new_peaks = pd.DataFrame(
+        new_peaks_list, columns=["2theta", "intensity", "b1", "b2"]
+    ).astype(float)
+
+    return new_peaks
