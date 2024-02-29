@@ -108,21 +108,15 @@ class RefinementResult(BaseModel):
         """
         colormap = [
             "#1f77b4",
-            "#aec7e8",
             "#ff7f0e",
             "#2ca02c",
-            "#98df8a",
             "#d62728",
             "#9467bd",
-            "#c5b0d5",
             "#8c564b",
             "#e377c2",
-            "#f7b6d2",
             "#7f7f7f",
             "#bcbd22",
-            "#dbdb8d",
             "#17becf",
-            "#9edae5",
         ]
 
         plot_data = self.plot_data
