@@ -12,7 +12,7 @@ from dara.result import RefinementResult
 class SearchNodeData(BaseModel):
     current_result: Optional[RefinementResult]
     current_phases: list[Path]
-    current_score: float
+    current_score: Optional[float]
     group_id: int = Field(default=0, ge=0)
     fom: float = Field(default=0, ge=0)
     status: Literal[
