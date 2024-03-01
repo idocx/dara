@@ -522,22 +522,24 @@ class BaseSearchTree(Tree):
                     if new_result is not None
                     else None
                 )
-                current_score = None
+
+                if node.data.current_result is None:
+                    current_score = None
+                else:
+                    current_score = PeakMatcher(
+                        peak_calc=new_result.peak_data[["2theta", "intensity"]].values,
+                        peak_obs=self.peak_obs,
+                    ).score()
 
                 if new_result is None:
                     status = "error"
                 elif any(wt < 0.01 for wt in weight_fractions.values()):
                     status = "low_weight_fraction"
                 elif node.data.current_score is not None and (
-                    (
-                        current_score := PeakMatcher(
-                            peak_calc=new_result.peak_data[
-                                ["2theta", "intensity"]
-                            ].values,
-                            peak_obs=self.peak_obs,
-                        ).score()
+                    current_score
+                    > min(
+                        np.sqrt(node.data.current_score), 1.2 * node.data.current_score
                     )
-                    > np.sqrt(node.data.current_score)
                 ):
                     status = "no_improvement"
                 # elif node.data.current_result is not None and (
