@@ -524,9 +524,9 @@ class BaseSearchTree(Tree):
                 )
 
                 if node.data.current_result is None:
-                    current_score = None
+                    score = None
                 else:
-                    current_score = PeakMatcher(
+                    score = PeakMatcher(
                         peak_calc=new_result.peak_data[["2theta", "intensity"]].values,
                         peak_obs=self.peak_obs,
                     ).score()
@@ -536,9 +536,9 @@ class BaseSearchTree(Tree):
                 elif any(wt < 0.01 for wt in weight_fractions.values()):
                     status = "low_weight_fraction"
                 elif node.data.current_score is not None and (
-                    current_score
-                    > min(
-                        np.sqrt(node.data.current_score), 1.2 * node.data.current_score
+                    score
+                    < min(
+                        np.sqrt(node.data.current_score), 1.5 * node.data.current_score
                     )
                 ):
                     status = "no_improvement"
@@ -568,7 +568,7 @@ class BaseSearchTree(Tree):
                     data=SearchNodeData(
                         current_result=new_result,
                         current_phases=new_phases,
-                        current_score=current_score,
+                        current_score=score,
                         status=status,
                         group_id=group_id,
                         fom=fom,
