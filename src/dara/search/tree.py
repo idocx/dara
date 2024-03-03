@@ -481,7 +481,6 @@ class BaseSearchTree(Tree):
                         data=SearchNodeData(
                             current_result=None,
                             current_phases=node.data.current_phases + [best_phases[i]],
-                            current_score=None,
                             status="duplicate",
                         ),
                         parent=nid,
@@ -523,40 +522,25 @@ class BaseSearchTree(Tree):
                     else None
                 )
 
-                if node.data.current_result is None:
-                    score = None
-                else:
-                    score = PeakMatcher(
-                        peak_calc=new_result.peak_data[["2theta", "intensity"]].values,
-                        peak_obs=self.peak_obs,
-                    ).score()
-
                 if new_result is None:
                     status = "error"
                 elif any(wt < 0.01 for wt in weight_fractions.values()):
                     status = "low_weight_fraction"
-                elif node.data.current_score is not None and (
-                    score
-                    < min(
-                        np.sqrt(node.data.current_score), 1.5 * node.data.current_score
+                elif node.data.current_result is not None and (
+                    (
+                        len(
+                            remove_unnecessary_phases(
+                                new_result, new_phases, rpb_threshold=self.rpb_threshold
+                            )
+                        )
+                        != len(new_phases)
+                    )
+                    or (
+                        new_result.lst_data.rpb
+                        >= node.data.current_result.lst_data.rpb - self.rpb_threshold
                     )
                 ):
                     status = "no_improvement"
-                # elif node.data.current_result is not None and (
-                #     (
-                #         len(
-                #             remove_unnecessary_phases(
-                #                 new_result, new_phases, rpb_threshold=self.rpb_threshold
-                #             )
-                #         )
-                #         != len(new_phases)
-                #     )
-                #     or (
-                #         new_result.lst_data.rpb
-                #         >= node.data.current_result.lst_data.rpb + self.rpb_threshold
-                #     )
-                # ):
-                #     status = "no_improvement"
                 elif not is_best_result_in_group:
                     status = "similar_structure"
                 elif len(new_phases) >= self.max_phases:
@@ -568,7 +552,6 @@ class BaseSearchTree(Tree):
                     data=SearchNodeData(
                         current_result=new_result,
                         current_phases=new_phases,
-                        current_score=score,
                         status=status,
                         group_id=group_id,
                         fom=fom,
@@ -907,7 +890,6 @@ class SearchTree(BaseSearchTree):
                     else None
                 ),
                 current_phases=self.pinned_phases,
-                current_score=None,
             ),
         )
         return root_node
