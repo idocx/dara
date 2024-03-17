@@ -24,8 +24,6 @@ from dara.utils import (
     load_symmetrized_structure,
     get_logger,
     find_optimal_score_threshold,
-    get_composition_distance,
-    get_composition_from_filename,
 )
 
 if TYPE_CHECKING:
@@ -242,8 +240,6 @@ def group_phases(
     """
     Group the phases based on their similarity.
 
-    The similarity includes both the peak matching and the compositional similarity.
-
     Args:
         all_phases_result: the result of all the phases
         distance_threshold: the distance threshold for clustering, default to 0.1
@@ -271,40 +267,16 @@ def group_phases(
         }
 
     peaks = []
-    compositions = []
-
-    for phase, result in all_phases_result.items():
-        all_peaks = result.peak_data
-        peaks.append(
-            all_peaks[all_peaks["phase"] == phase.stem][["2theta", "intensity"]].values
-        )
-        compositions.append(get_composition_from_filename(phase))
 
     pairwise_similarity = batch_peak_matching(
         [p for p in peaks for _ in peaks],
         [p for _ in peaks for p in peaks],
         return_type="jaccard",
     )
-    peal_distance_matrix = 1 - np.array(pairwise_similarity).reshape(
-        len(peaks), len(peaks)
-    )
+    distance_matrix = 1 - np.array(pairwise_similarity).reshape(len(peaks), len(peaks))
 
     # current peak matching algorithm is not a symmetric metric.
-    peal_distance_matrix = (peal_distance_matrix + peal_distance_matrix.T) / 2
-
-    # calculate compositional distance matrix
-    composition_distance_matrix = np.array(
-        [
-            [
-                get_composition_distance(compositions[i], compositions[j])
-                for j in range(len(compositions))
-            ]
-            for i in range(len(compositions))
-        ]
-    )
-
-    # use the maximum distance
-    distance_matrix = np.maximum(peal_distance_matrix, composition_distance_matrix)
+    distance_matrix = (distance_matrix + distance_matrix.T) / 2
 
     # clustering
     clusterer = AgglomerativeClustering(
@@ -589,6 +561,73 @@ class BaseSearchTree(Tree):
                     same phase combinations multiple times.
         """
         return self.expand_node(self.root, explored_phases_set=explored_phases_set)
+
+    def get_all_possible_phases_at_same_level(self, nid: str) -> tuple[Path, ...]:
+        """
+        Get all possible phases that can be added to the current phase combination at this level.
+
+        Args:
+            nid: the node id
+
+        Returns:
+            a list of the paths to the phases
+        """
+        current_node: Node = self.get_node(nid)
+        if current_node is None:
+            raise ValueError(f"Node with id {nid} does not exist.")
+        elif current_node.data.status != "expanded":
+            raise ValueError(f"Node with id {nid} is not expanded.")
+        elif current_node.data.group_id == -1:
+            raise ValueError("The group id is not available at this node.")
+
+        nodes_at_same_level = self.children(self.ancestor(nid).identifier)
+        phases_at_same_level = [
+            node.data.current_phases[-1]
+            for node in nodes_at_same_level
+            if node.data.group_id == current_node.data.group_id
+            and node.data.status == "similar_structure"
+        ]
+
+        return tuple(
+            [
+                phase
+                for phase in self.all_phases_result.keys()
+                if phase not in phases_at_same_level
+            ]
+        )
+
+    def get_phase_combinations(self, nid: str) -> tuple[tuple[Path, ...] | Path, ...]:
+        """
+        Get all the phase combinations at this node.
+
+        Args:
+            nid: the node id
+
+        Returns:
+            a list of the phase combinations
+        """
+        current_node: Node = self.get_node(nid)
+
+        if current_node is None:
+            raise ValueError(f"Node with id {nid} does not exist.")
+        elif current_node.data.status != "expanded":
+            raise ValueError(f"Node with id {nid} is not expanded.")
+
+        current_phases = current_node.data.current_phases
+        parent_node = current_node
+
+        i = 0
+
+        while parent_node is not self.root:
+            i -= 1
+            current_phases[i] = self.get_all_possible_phases_at_same_level(
+                parent_node.identifier
+            )
+            parent_node = self.get_node(
+                self.ancestor(parent_node.identifier).identifier
+            )
+
+        return tuple(current_phases)
 
     def get_search_results(self) -> dict[tuple[Path, ...], RefinementResult]:
         """
