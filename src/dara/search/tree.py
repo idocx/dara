@@ -268,6 +268,12 @@ def group_phases(
 
     peaks = []
 
+    for phase, result in all_phases_result.items():
+        all_peaks = result.peak_data
+        peaks.append(
+            all_peaks[all_peaks["phase"] == phase.stem][["2theta", "intensity"]].values
+        )
+
     pairwise_similarity = batch_peak_matching(
         [p for p in peaks for _ in peaks],
         [p for _ in peaks for p in peaks],
