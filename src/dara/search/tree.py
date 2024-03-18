@@ -15,7 +15,7 @@ from treelib import Node, Tree
 from dara import do_refinement_no_saving
 from dara.cif2str import CIF2StrError
 from dara.peak_detection import detect_peaks
-from dara.search.node import SearchNodeData
+from dara.search.data_model import SearchNodeData, SearchResult
 from dara.search.peak_matcher import PeakMatcher
 from dara.utils import (
     get_number,
@@ -336,19 +336,23 @@ def remove_unnecessary_phases(
 
 
 def get_natural_break_results(
-    results: dict[tuple[Path, ...], RefinementResult]
-) -> dict[tuple[Path, ...], RefinementResult]:
+    results: list[SearchResult],
+) -> list[SearchResult]:
     all_rhos = None
 
     # remove results that are too bad (dead end in the tree search)
     while all_rhos is None or max(all_rhos) > min(all_rhos) + 10:
-        all_rhos = [result.lst_data.rho for result in results.values()]
+        all_rhos = [result.refinement_result.lst_data.rho for result in results]
 
         if len(set(all_rhos)) >= 2:
             # get the first natural break
             interval = jenkspy.jenks_breaks(all_rhos, n_classes=2)
             rho_cutoff = interval[1]
-            results = {k: v for k, v in results.items() if v.lst_data.rho <= rho_cutoff}
+            results = [
+                result
+                for result in results
+                if result.refinement_result.lst_data.rho < rho_cutoff
+            ]
         else:
             break
 
@@ -568,74 +572,68 @@ class BaseSearchTree(Tree):
         """
         return self.expand_node(self.root, explored_phases_set=explored_phases_set)
 
-    def get_all_possible_phases_at_same_level(self, nid: str) -> tuple[Path, ...]:
+    def get_all_possible_phases_at_same_level(
+        self, node: Node
+    ) -> tuple[tuple[Path, float], ...]:
         """
         Get all possible phases that can be added to the current phase combination at this level.
 
         Args:
-            nid: the node id
+            node: the node in the search tree
 
         Returns:
             a list of the paths to the phases
         """
-        current_node: Node = self.get_node(nid)
-        if current_node is None:
-            raise ValueError(f"Node with id {nid} does not exist.")
-        elif current_node.data.status != "expanded":
-            raise ValueError(f"Node with id {nid} is not expanded.")
-        elif current_node.data.group_id == -1:
+        if node.data.status not in {
+            "expanded",
+            "max_depth",
+            "similar_structure",
+        }:
+            raise ValueError(f"Node with id {node.identifier} is not expanded.")
+        elif node.data.group_id == -1:
             raise ValueError("The group id is not available at this node.")
 
-        nodes_at_same_level = self.children(self.ancestor(nid).identifier)
+        nodes_at_same_level = self.children(self.ancestor(node.identifier))
+
         phases_at_same_level = [
-            node.data.current_phases[-1]
-            for node in nodes_at_same_level
-            if node.data.group_id == current_node.data.group_id
-            and node.data.status == "similar_structure"
+            (node_at_same_level.data.current_phases[-1], node_at_same_level.data.fom)
+            for node_at_same_level in nodes_at_same_level
+            if node_at_same_level.data.group_id == node.data.group_id
+            and node_at_same_level.data.status
+            in {"similar_structure", "expanded", "max_depth"}
         ]
 
-        return tuple(
-            [
-                phase
-                for phase in self.all_phases_result.keys()
-                if phase not in phases_at_same_level
-            ]
-        )
+        return tuple(phases_at_same_level)
 
-    def get_phase_combinations(self, nid: str) -> tuple[tuple[Path, ...] | Path, ...]:
+    def get_phase_combinations(
+        self, node: Node
+    ) -> tuple[tuple[tuple[Path, float], ...], ...]:
         """
         Get all the phase combinations at this node.
 
         Args:
-            nid: the node id
+            node: the node that will be used to get the phase combinations
 
         Returns:
-            a list of the phase combinations
+            a tuple of the phase combinations
         """
-        current_node: Node = self.get_node(nid)
+        if node.data.status not in {"expanded", "max_depth"}:
+            raise ValueError(f"Node with id {node.identifier} is not expanded.")
 
-        if current_node is None:
-            raise ValueError(f"Node with id {nid} does not exist.")
-        elif current_node.data.status != "expanded":
-            raise ValueError(f"Node with id {nid} is not expanded.")
-
-        current_phases = current_node.data.current_phases
-        parent_node = current_node
+        # set up the default value for the current_phases
+        current_phases = [tuple([phase, 0]) for phase in node.data.current_phases]
+        parent_node = node
 
         i = 0
 
-        while parent_node is not self.root:
+        while self.level(parent_node.identifier) != 0:
             i -= 1
-            current_phases[i] = self.get_all_possible_phases_at_same_level(
-                parent_node.identifier
-            )
-            parent_node = self.get_node(
-                self.ancestor(parent_node.identifier).identifier
-            )
+            current_phases[i] = self.get_all_possible_phases_at_same_level(parent_node)
+            parent_node = self.get_node(self.ancestor(parent_node.identifier))
 
         return tuple(current_phases)
 
-    def get_search_results(self) -> dict[tuple[Path, ...], RefinementResult]:
+    def get_search_results(self) -> list[SearchResult]:
         """
         Get the search results.
 
@@ -644,12 +642,14 @@ class BaseSearchTree(Tree):
         Returns:
             a dictionary containing the phase combinations and their results
         """
-        results = {}
+        results = []
         all_phases = {}
         for nid, node in self.nodes.items():
             all_phases.setdefault(frozenset(node.data.current_phases), []).append(nid)
 
         for node in self.nodes.values():
+            if node.data.current_result is None:
+                continue
             if node.data.status in {"expanded", "max_depth"} and all(
                 child.data.status not in {"expanded", "max_depth"}
                 for child in self.children(node.identifier)
@@ -675,7 +675,7 @@ class BaseSearchTree(Tree):
                     for nid in other_phases
                 ):
                     continue
-                results[tuple(node.data.current_phases)] = node.data.current_result
+                results.append(SearchResult.from_search_node(node, search_tree=self))
         return get_natural_break_results(results)
 
     def score_phases(

@@ -8,12 +8,11 @@ from typing import TYPE_CHECKING
 
 import ray
 
+from dara.search.data_model import SearchResult
 from dara.search.tree import BaseSearchTree, ExploredPhasesSet, SearchTree
 
 if TYPE_CHECKING:
     from pathlib import Path
-
-    from dara.result import RefinementResult
 
 DEFAULT_PHASE_PARAMS = {
     "gewicht": "0_0",
@@ -27,7 +26,9 @@ DEFAULT_REFINEMENT_PARAMS = {"n_threads": 8}
 
 
 @ray.remote
-def _remote_expand_node(search_tree: BaseSearchTree, explored_phases_set: ExploredPhasesSet) -> BaseSearchTree:
+def _remote_expand_node(
+    search_tree: BaseSearchTree, explored_phases_set: ExploredPhasesSet
+) -> BaseSearchTree:
     """Expand a node in the search tree."""
     try:
         search_tree.expand_root(explored_phases_set=explored_phases_set)
@@ -37,7 +38,9 @@ def _remote_expand_node(search_tree: BaseSearchTree, explored_phases_set: Explor
         raise e
 
 
-def remote_expand_node(search_tree: SearchTree, nid: str, explored_phases_set: ExploredPhasesSet) -> ray.ObjectRef:
+def remote_expand_node(
+    search_tree: SearchTree, nid: str, explored_phases_set: ExploredPhasesSet
+) -> ray.ObjectRef:
     """Expand a node in the search tree."""
     subtree = BaseSearchTree.from_search_tree(root_nid=nid, search_tree=search_tree)
     return _remote_expand_node.remote(subtree, explored_phases_set)
@@ -53,7 +56,7 @@ def search_phases(
     phase_params: dict[str, ...] | None = None,
     refinement_params: dict[str, ...] | None = None,
     return_search_tree: bool = False,
-) -> dict[tuple[Path, ...], RefinementResult] | SearchTree:
+) -> list[SearchResult] | SearchTree:
     """
     Search for the best phases to use for refinement.
 
@@ -101,7 +104,9 @@ def search_phases(
         for task in done:
             remote_search_tree = ray.get(task)
             remote_search_tree = copy.deepcopy(remote_search_tree)
-            search_tree.add_subtree(anchor_nid=remote_search_tree.root, search_tree=remote_search_tree)
+            search_tree.add_subtree(
+                anchor_nid=remote_search_tree.root, search_tree=remote_search_tree
+            )
             for nid in search_tree.get_expandable_children(remote_search_tree.root):
                 to_be_submitted.append(nid)
 
