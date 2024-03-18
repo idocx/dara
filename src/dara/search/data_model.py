@@ -2,14 +2,11 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Literal, Optional, TYPE_CHECKING
+from typing import Literal, Optional
 
 from pydantic import BaseModel, Field
 
-if TYPE_CHECKING:
-    from dara.result import RefinementResult
-    from dara.search.tree import BaseSearchTree
-    from treelib import Node
+from dara.result import RefinementResult
 
 
 class SearchNodeData(BaseModel):
