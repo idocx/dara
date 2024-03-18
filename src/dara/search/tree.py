@@ -603,6 +603,10 @@ class BaseSearchTree(Tree):
             in {"similar_structure", "expanded", "max_depth"}
         ]
 
+        phases_at_same_level = sorted(
+            phases_at_same_level, key=lambda x: x[1], reverse=True
+        )
+
         return tuple(phases_at_same_level)
 
     def get_phase_combinations(
