@@ -38,26 +38,3 @@ class SearchResult(BaseModel):
     refinement_result: RefinementResult
     phases: tuple[tuple[Path, ...], ...]
     foms: tuple[tuple[float, ...], ...]
-
-    @classmethod
-    def from_search_node(
-        cls, search_node: Node, search_tree: BaseSearchTree
-    ) -> "SearchResult":
-        phase_combinations = search_tree.get_phase_combinations(search_node)
-
-        phases = tuple(
-            tuple(phase for phase, fom in phases) for phases in phase_combinations
-        )
-        foms = tuple(
-            tuple(fom for phase, fom in phases) for phases in phase_combinations
-        )
-
-        results = search_node.data.current_result
-        if results is None:
-            raise ValueError("Search node has no result")
-
-        return cls(
-            refinement_result=results,
-            phases=phases,
-            foms=foms,
-        )

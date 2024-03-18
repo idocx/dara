@@ -607,7 +607,7 @@ class BaseSearchTree(Tree):
 
     def get_phase_combinations(
         self, node: Node
-    ) -> tuple[tuple[tuple[Path, float], ...], ...]:
+    ) -> tuple[tuple[tuple[Path, ...], ...], tuple[tuple[float, ...], ...]]:
         """
         Get all the phase combinations at this node.
 
@@ -631,7 +631,12 @@ class BaseSearchTree(Tree):
             current_phases[i] = self.get_all_possible_phases_at_same_level(parent_node)
             parent_node = self.get_node(self.ancestor(parent_node.identifier))
 
-        return tuple(current_phases)
+        foms = tuple(tuple([fom for phase, fom in phases]) for phases in current_phases)
+        phases = tuple(
+            tuple([phase for phase, fom in phases]) for phases in current_phases
+        )
+
+        return phases, foms
 
     def get_search_results(self) -> list[SearchResult]:
         """
@@ -675,7 +680,15 @@ class BaseSearchTree(Tree):
                     for nid in other_phases
                 ):
                     continue
-                results.append(SearchResult.from_search_node(node, search_tree=self))
+
+                phases, foms = self.get_phase_combinations(node)
+                results.append(
+                    SearchResult(
+                        refinement_result=node.data.current_result,
+                        phases=phases,
+                        foms=foms,
+                    )
+                )
         return get_natural_break_results(results)
 
     def score_phases(
