@@ -336,7 +336,7 @@ def remove_unnecessary_phases(
 
 
 def get_natural_break_results(
-    results: list[SearchResult],
+    results: list[SearchResult], sorting: bool = True
 ) -> list[SearchResult]:
     all_rhos = None
 
@@ -355,6 +355,9 @@ def get_natural_break_results(
             ]
         else:
             break
+
+    if sorting:
+        results = sorted(results, key=lambda x: x.refinement_result.lst_data.rwp)
 
     return results
 

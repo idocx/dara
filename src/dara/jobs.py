@@ -16,6 +16,7 @@ from dara.prediction.core import PhasePredictor
 from dara.refine import do_refinement, do_refinement_no_saving
 from dara.schema import PhaseSearchDocument, RefinementDocument
 from dara.search import search_phases
+from dara.search.data_model import SearchResult
 from dara.utils import get_logger
 
 if TYPE_CHECKING:
@@ -176,10 +177,9 @@ class PhaseSearchMaker(Maker):
         self._save_results(results)
 
         best_result = None
-        if self.run_final_refinement:
+        if self.run_final_refinement and results:
             logger.info("Re-refining best result...")
 
-            best_dir = None
             for item in os.listdir(directory):
                 if (
                     "1_result_rwp" in item
@@ -202,7 +202,7 @@ class PhaseSearchMaker(Maker):
             logger.info("Performing final refinement on best result...")
             best_result = do_refinement(
                 pattern_path=best_dir_path / "xrd_data.xy",
-                phase_paths=list(best_dir_path.glob("*.cif")),
+                phase_paths=[p[0] for p in results[0].phases],
                 phase_params=final_refinement_params,
                 show_progress=True,
             )
@@ -216,7 +216,11 @@ class PhaseSearchMaker(Maker):
             os.rename(best_dir_path, new_best_dir_path)
 
         parsed_results = [
-            ([Cif.from_file(f) for f in k], v) for k, v in results.items()
+            (
+                [[Cif.from_file(f) for f in phase] for phase in result.phases],
+                result.refinement_result,
+            )
+            for result in results
         ]
         all_rwp = [i[1].lst_data.rwp for i in parsed_results]
 
@@ -262,12 +266,13 @@ class PhaseSearchMaker(Maker):
 
         return prediction
 
-    def _save_results(self, results):
-        results_sorted = dict(sorted(results.items(), key=lambda x: x[1].lst_data.rwp))
-        for idx, (paths, result) in enumerate(results_sorted.items()):
-            main_folder = Path(str(paths[0]).split("/cifs")[0])
+    def _save_results(self, results: list[SearchResult]):
+        results_sorted = sorted(results, key=lambda x: x.refinement_result.lst_data.rwp)
+        for idx, search_result in enumerate(results_sorted):
+            phases = search_result.phases
+            main_folder = phases[0][0].parent.parent
 
-            rwp = result.lst_data.rwp
+            rwp = search_result.refinement_result.lst_data.rwp
             folder_path = main_folder / f"{idx+1}_result_rwp_{round(rwp,2)}"
 
             for fn in os.listdir(main_folder):
@@ -281,7 +286,9 @@ class PhaseSearchMaker(Maker):
 
             os.mkdir(folder_path)
 
-            for p in paths:
-                shutil.copy(p, folder_path)
+            for phase_i, phases_ in enumerate(phases):
+                phase_folder = folder_path / f"phase_{phase_i+1}"
+                for phase in phases_:
+                    shutil.copy(phase, phase_folder)
 
             logger.info(f"Successfully saved result {idx+1}")

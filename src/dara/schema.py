@@ -50,7 +50,7 @@ class PhaseSearchDocument(BaseModel):
         default_factory=datetime_str,
         description="Timestamp of when the document was last updated.",
     )
-    results: Optional[list[tuple[list[Cif], RefinementResult]]] = Field(
+    results: Optional[list[tuple[list[list[Cif]], RefinementResult]]] = Field(
         None, description="The result of the refinement."
     )
     final_result: Optional[RefinementResult] = Field(
