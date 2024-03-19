@@ -288,7 +288,7 @@ class PhaseSearchMaker(Maker):
 
             for phase_i, phases_ in enumerate(phases):
                 phase_folder = folder_path / f"phase_{phase_i+1}"
-                phase_folder.mkdir(exist_ok=True, parents=True)
+                phase_folder.mkdir(exist_ok=True)
                 for phase in phases_:
                     shutil.copy(phase, phase_folder)
 
