@@ -34,7 +34,7 @@ class EflechWorker:
 
     def run_peak_detection(
         self,
-        pattern: Union[Path, np.ndarray],
+        pattern: Union[Path, np.ndarray, str],
         instrument_name: str = "Aeris-fds-Pixcel1d-Medipix3",
         show_progress: bool = False,
         *,
@@ -50,6 +50,8 @@ class EflechWorker:
                 np.savetxt(pattern_path_temp.as_posix(), pattern, fmt="%.6f")
                 print(pattern_path_temp.read_text())
             else:
+                if isinstance(pattern, str):
+                    pattern = Path(pattern)
                 if pattern.suffix == ".xy" or pattern.suffix == ".txt":
                     pattern_path_temp = copy_xy_pattern(pattern, temp_dir)
                 elif pattern.suffix == ".xrdml":

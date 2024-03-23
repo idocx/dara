@@ -222,6 +222,10 @@ def calculate_fom(phase_path: Path, result: RefinementResult) -> tuple[float, fl
         * 100
     )
 
+    lattice_strain = np.mean(
+        (refined_lattice_abc - initial_lattice_abc) / initial_lattice_abc
+    )
+
     if delta_u <= 1:
         a = 0
 
@@ -232,7 +236,7 @@ def calculate_fom(phase_path: Path, result: RefinementResult) -> tuple[float, fl
 
     return (1 / (result.lst_data.rho + a * delta_u + 1e-4) + b * geweicht) / (
         1 + c
-    ), delta_u / 100
+    ), lattice_strain
 
 
 def group_phases(
