@@ -4,7 +4,7 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
-from dara.eflech_worker import EflechWorker, merge_peaks
+from dara.eflech_worker import EflechWorker
 
 
 def detect_peaks(
@@ -12,12 +12,10 @@ def detect_peaks(
     instrument_name: str = "Aeris-fds-Pixcel1d-Medipix3",
     wmin: float = None,
     wmax: float = None,
-    resolution: float = 0.0,
 ) -> pd.DataFrame:
     eflech_worker = EflechWorker()
     peaks = eflech_worker.run_peak_detection(
         pattern=pattern, instrument_name=instrument_name, wmin=wmin, wmax=wmax
     )
-    peaks = merge_peaks(peaks, resolution=resolution)
 
     return peaks

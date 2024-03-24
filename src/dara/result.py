@@ -437,7 +437,6 @@ def parse_dia(dia_path: Path, phase_names: list[str]) -> DiaResult:
 
     # read first line to get the keys
     dia_text = dia_path.read_text().split("\n")
-    metadata = dia_text[0]
 
     raw_data = np.loadtxt(dia_text[1:])
     data = {
@@ -496,7 +495,7 @@ def parse_par(par_file: Path, phase_names: list[str]) -> pd.DataFrame:
 
     eps1 = re.search(r"EPS1=(\d+(\.\d+)?)", content[0])
     eps2 = re.search(r"EPS2=([+-]?\d+(\.\d+)?)", content[0])
-    # pol = re.search(r"POL=(\d+(\.\d+)?)", content[0])
+    pol = re.search(r"POL=(\d+(\.\d+)?)", content[0])
 
     if eps1:
         eps1 = float(eps1.group(1))
@@ -507,10 +506,10 @@ def parse_par(par_file: Path, phase_names: list[str]) -> pd.DataFrame:
         eps2 = float(eps2.group(1))
     else:
         eps2 = 0.0
-    # if pol:
-    #     pol = float(pol.group(1))
-    # else:
-    #     pol = 1.
+    if pol:
+        pol = float(pol.group(1))
+    else:
+        pol = 1.0
 
     peak_num = int(peak_num.group(1))
 
@@ -535,17 +534,20 @@ def parse_par(par_file: Path, phase_names: list[str]) -> pd.DataFrame:
             rp = int(numbers[0])
             intensity = float(numbers[1])
             d_inv = float(numbers[2])
-            # gsum = float(re.search(r"GSUM=(\d+(\.\d+)?)", content[i]).group(1))
-            # # double sinx2 = std::pow(0.5 * dinv * pl.waveLength, 2.0);
-            # sinx2 = (0.5 * d_inv * 0.15406) ** 2
-            # # double intens = gsum * 360.0 * intens * 0.5 / (M_PI * std::sqrt(1.0 - sinx2) / pl.waveLength);
-            # # if (pl.polarization > 0.0) intens *= (0.5 * (1.0 + pl.polarization * std::pow(1.0 - 2.0 * sinx2, 2.0)));
-
-            # intensity = gsum * 360.0 * intensity * 0.5 / (
-            #     np.pi * np.sqrt(1.0 - sinx2) / 0.15406
-            # )
-            # if pol > 0.0:
-            #     intensity *= (0.5 * (1.0 + pol * (1.0 - 2.0 * sinx2) ** 2.0))
+            gsum = float(re.search(r"GSUM=(\d+(\.\d+)?)", content[i]).group(1))
+            # double sinx2 = std::pow(0.5 * dinv * pl.waveLength, 2.0);
+            sinx2 = (0.5 * d_inv * 0.15406) ** 2
+            # double intens = gsum * 360.0 * intens * 0.5 / (M_PI * std::sqrt(1.0 - sinx2) / pl.waveLength);
+            # if (pl.polarization > 0.0) intens *= (0.5 * (1.0 + pl.polarization * std::pow(1.0 - 2.0 * sinx2, 2.0)));
+            intensity = (
+                gsum
+                * 360.0
+                * intensity
+                * 0.5
+                / (np.pi * np.sqrt(1.0 - sinx2) / 0.15406)
+            )
+            if pol > 0.0:
+                intensity *= 0.5 * (1.0 + pol * (1.0 - 2.0 * sinx2) ** 2.0)
 
             if rp == 2:
                 b1 = 0

@@ -30,8 +30,8 @@ class SearchNodeData(BaseModel):
         "duplicate",
     ] = "pending"
 
-    isolated_missing_peaks: Optional[np.ndarray] = None
-    isolated_extra_peaks: Optional[np.ndarray] = None
+    # isolated_missing_peaks: Optional[np.ndarray] = None
+    # isolated_extra_peaks: Optional[np.ndarray] = None
 
     peak_matcher_scores: Optional[dict[Path, float]] = None
     peak_matcher_score_threshold: Optional[float] = None

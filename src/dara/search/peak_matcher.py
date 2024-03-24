@@ -165,26 +165,78 @@ def find_best_match(
     }
 
 
+def merge_peaks(peaks: np.ndarray, resolution: float = 0.0) -> np.ndarray:
+    """
+    Merge peaks that are too close to each other (smaller than resolution).
+
+    Args:
+        peaks: the peaks to merge
+        resolution: the resolution to use for merging
+
+    Returns:
+        the merged peaks
+    """
+    if len(peaks) <= 1 or resolution == 0.0:
+        return peaks
+
+    # sorted by 0th column
+    peaks = peaks[np.argsort(peaks[:, 0])]
+
+    merge_to = np.arange(len(peaks))
+    two_thetas = peaks[:, 0]
+
+    for i in range(1, len(peaks)):
+        two_theta_i = two_thetas[i]
+        two_theta_im1 = two_thetas[i - 1]
+        if np.abs(two_theta_im1 - two_theta_i) <= resolution:
+            merge_to[i] = merge_to[i - 1]
+
+    ptr_1 = ptr_2 = merge_to[0]
+    new_peaks_list = []
+    while ptr_1 < len(peaks):
+        while ptr_2 < len(peaks) and merge_to[ptr_2] == ptr_1:
+            ptr_2 += 1
+        angles = peaks[ptr_1:ptr_2, 0]
+        intensities = peaks[ptr_1:ptr_2, 1]
+
+        updated_angle = angles @ intensities / np.sum(intensities)
+        updated_intensity = np.sum(intensities)
+
+        new_peaks_list.append([updated_angle, updated_intensity])
+
+        ptr_1 = ptr_2
+
+    return np.array(new_peaks_list)
+
+
 class PeakMatcher:
     def __init__(
         self,
         peak_calc: np.ndarray,
         peak_obs: np.ndarray,
         noise_level: float = 0.01,
+        angle_resolution: float = 0.1,
         angle_tolerance: float = DEFAULT_ANGLE_TOLERANCE,
         intensity_tolerance: float = DEFAULT_INTENSITY_TOLERANCE,
         max_intensity_tolerance: float = DEFAULT_MAX_INTENSITY_TOLERANCE,
     ):
         self.noise_level = noise_level
+        self.angle_resolution = angle_resolution
 
-        self.peak_calc = peak_calc[
+        peak_calc = peak_calc[
             (peak_calc[:, 1] > 0)
             & (peak_calc[:, 1] > noise_level * peak_calc[:, 1].max(initial=0))
         ]
-        self.peak_obs = peak_obs[
+
+        self.peak_calc = merge_peaks(peak_calc, resolution=angle_resolution)
+
+        peak_obs = peak_obs[
             (peak_obs[:, 1] > 0)
             & (peak_obs[:, 1] > noise_level * peak_obs[:, 1].max(initial=0))
         ]
+
+        self.peak_obs = merge_peaks(peak_obs, resolution=angle_resolution)
+
         self._result = find_best_match(
             self.peak_calc,
             self.peak_obs,
@@ -354,7 +406,8 @@ class PeakMatcher:
             metric="cityblock",
         )
         distance = np.min(distance, axis=1)
-        min_intensity = self.peak_obs[:, 1].min() * min_intensity_ratio
+        min_intensity = self.peak_obs[:, 1].max() * min_intensity_ratio
+        print(min_intensity)
 
         return peaks[(distance > angle_tolerance) & (peaks[:, 1] > min_intensity)]
 
