@@ -266,6 +266,34 @@ def angular_correction(tt, eps1, eps2):
     return deps1 + deps2  # + deps3
 
 
+def intensity_correction(
+    intensity: float, d_inv: float, gsum: float, wavelength: float, pol: float = 1
+):
+    """
+    Translated from Profex source (bgmnparparser.cpp:L112)
+    Args:
+        intensity: the intensity of the peak
+        gsum: the gsum of the peak
+        d_inv: the inverse of the d-spacing
+        wavelength: the wavelength of the X-ray
+        pol: the polarization factor, defaults to 1
+
+    Returns:
+        the corrected intensity
+    """
+    # double sinx2 = std::pow(0.5 * dinv * pl.waveLength, 2.0);
+    sinx2 = (0.5 * d_inv * wavelength) ** 2
+    # double intens = gsum * 360.0 * intens * 0.5 / (M_PI * std::sqrt(1.0 - sinx2) / pl.waveLength);
+    # if (pl.polarization > 0.0) intens *= (0.5 * (1.0 + pl.polarization * std::pow(1.0 - 2.0 * sinx2, 2.0)));
+    intensity = (
+        gsum * 360.0 * intensity * 0.5 / (np.pi * np.sqrt(1.0 - sinx2) / wavelength)
+    )
+    if pol > 0.0:
+        intensity *= 0.5 * (1.0 + pol * (1.0 - 2.0 * sinx2) ** 2.0)
+
+    return intensity
+
+
 def rwp(y_calc: np.ndarray, y_obs: np.ndarray) -> float:
     """
     Calculate the Rietveld weighted profile (RWP) for a refinement.

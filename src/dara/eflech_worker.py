@@ -10,7 +10,7 @@ import pandas as pd
 
 from dara.bgmn.download_bgmn import download_bgmn
 from dara.generate_control_file import copy_instrument_files, copy_xy_pattern
-from dara.utils import get_logger
+from dara.utils import get_logger, intensity_correction
 from dara.xrd import xrdml2xy, raw2xy
 
 logger = get_logger(__name__)
@@ -169,6 +169,11 @@ class EflechWorker:
             return peak_list
 
         peak_num = re.search(r"PEAKZAHL=(\d+)", content[0])
+        pol = re.search(r"POL=(\d+(\.\d+)?)", content[0])
+        if pol:
+            pol = float(pol.group(1))
+        else:
+            pol = 1.0
 
         if not peak_num:
             return peak_list
@@ -188,6 +193,16 @@ class EflechWorker:
                 rp = int(numbers[0])
                 intensity = float(numbers[1])
                 d_inv = float(numbers[2])
+                gsum = float(re.search(r"GSUM=(\d+(\.\d+)?)", content[i]).group(1))
+                # TODO: change the wavelength to the user-specified value
+                intensity = intensity_correction(
+                    intensity=intensity,
+                    d_inv=d_inv,
+                    gsum=gsum,
+                    wavelength=0.15406,
+                    pol=pol,
+                )
+
                 if rp == 2:
                     b1 = 0
                     b2 = 0

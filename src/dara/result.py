@@ -10,7 +10,7 @@ import pandas as pd
 import plotly.graph_objects as go
 from pydantic import BaseModel, Field, field_validator, model_validator
 
-from dara.utils import angular_correction, get_number
+from dara.utils import angular_correction, get_number, intensity_correction
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -493,15 +493,14 @@ def parse_par(par_file: Path, phase_names: list[str]) -> pd.DataFrame:
     if not peak_num:
         return _make_dataframe(peak_list)
 
+    # parse some global parameters
     eps1 = re.search(r"EPS1=(\d+(\.\d+)?)", content[0])
     eps2 = re.search(r"EPS2=([+-]?\d+(\.\d+)?)", content[0])
     pol = re.search(r"POL=(\d+(\.\d+)?)", content[0])
-
     if eps1:
         eps1 = float(eps1.group(1))
     else:
         eps1 = 0.0
-
     if eps2:
         eps2 = float(eps2.group(1))
     else:
@@ -529,26 +528,15 @@ def parse_par(par_file: Path, phase_names: list[str]) -> pd.DataFrame:
 
         numbers = re.split(r"\s+", content[i])
 
-        # TODO: do the intensity correction
         if numbers:
             rp = int(numbers[0])
             intensity = float(numbers[1])
             d_inv = float(numbers[2])
             gsum = float(re.search(r"GSUM=(\d+(\.\d+)?)", content[i]).group(1))
-            # double sinx2 = std::pow(0.5 * dinv * pl.waveLength, 2.0);
-            sinx2 = (0.5 * d_inv * 0.15406) ** 2
-            # double intens = gsum * 360.0 * intens * 0.5 / (M_PI * std::sqrt(1.0 - sinx2) / pl.waveLength);
-            # if (pl.polarization > 0.0) intens *= (0.5 * (1.0 + pl.polarization * std::pow(1.0 - 2.0 * sinx2, 2.0)));
-            intensity = (
-                gsum
-                * 360.0
-                * intensity
-                * 0.5
-                / (np.pi * np.sqrt(1.0 - sinx2) / 0.15406)
+            # TODO: change the wavelength to the user-specified wavelength
+            intensity = intensity_correction(
+                intensity=intensity, d_inv=d_inv, gsum=gsum, wavelength=0.15406, pol=pol
             )
-            if pol > 0.0:
-                intensity *= 0.5 * (1.0 + pol * (1.0 - 2.0 * sinx2) ** 2.0)
-
             if rp == 2:
                 b1 = 0
                 b2 = 0
@@ -573,6 +561,7 @@ def parse_par(par_file: Path, phase_names: list[str]) -> pd.DataFrame:
                 peak_list.append([d_inv, intensity, b1, b2, h, k, l, phase, idx])
 
     # from d_inv to two theta
+    # TODO: change the wavelength to the user-specified wavelength
     two_theta = (
         np.arcsin(0.15406 * np.array([p[0] for p in peak_list]) / 2) * 180 / np.pi * 2
     )
