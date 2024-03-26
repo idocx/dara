@@ -348,6 +348,42 @@ def remove_unnecessary_phases(
     return new_phases
 
 
+def has_improvement(
+    isolated_missing_peak_old: list[list[float]],
+    isolated_extra_peak_old: list[list[float]],
+    isolated_missing_peak_new: list[list[float]],
+    isolated_extra_peak_new: list[list[float]],
+    peak_obs: np.ndarray | list[list[float]],
+    score_threshold: float = 0.1,
+) -> bool:
+    isolated_extra_peak_old = np.array(isolated_extra_peak_old)
+    isolated_extra_peak_new = np.array(isolated_extra_peak_new)
+    isolated_missing_peak_old = np.array(isolated_missing_peak_old)
+    isolated_missing_peak_new = np.array(isolated_missing_peak_new)
+    peak_obs = np.array(peak_obs)
+
+    peak_matcher_extra = PeakMatcher(isolated_extra_peak_new, isolated_extra_peak_old)
+    new_extra_peaks = peak_matcher_extra.get_isolated_peaks(
+        peak_type="extra", min_intensity_ratio=0.1
+    )
+
+    if len(new_extra_peaks) > 0 and np.max(new_extra_peaks[:, 1]) > 0.1 * np.max(
+        peak_obs[:, 1]
+    ):
+        return False
+
+    peak_matcher_missing = PeakMatcher(
+        isolated_missing_peak_new, isolated_missing_peak_old
+    )
+
+    if len(peak_matcher_missing.missing) == 0 or np.max(
+        peak_matcher_missing.missing
+    ) > 0.1 * np.max(peak_obs[:, 1]):
+        return False
+
+    return True
+
+
 def get_natural_break_results(
     results: list[SearchResult], sorting: bool = True
 ) -> list[SearchResult]:
@@ -511,22 +547,36 @@ class BaseSearchTree(Tree):
                     else None
                 )
 
+                if new_result is not None:
+                    peak_matcher = PeakMatcher(
+                        new_result.peak_data[["2theta", "intensity"]].values,
+                        self.peak_obs,
+                    )
+                    isolated_missing_peaks = peak_matcher.get_isolated_peaks(
+                        peak_type="missing"
+                    ).tolist()
+                    isolated_extra_peaks = peak_matcher.get_isolated_peaks(
+                        peak_type="extra"
+                    ).tolist()
+                else:
+                    isolated_missing_peaks = None
+                    isolated_extra_peaks = None
+
                 if new_result is None:
                     status = "error"
                 elif any(wt < 0.01 for wt in weight_fractions.values()):
                     status = "low_weight_fraction"
-                elif node.data.current_result is not None and (
-                    (
-                        len(
-                            remove_unnecessary_phases(
-                                new_result, new_phases, rpb_threshold=self.rpb_threshold
-                            )
-                        )
-                        != len(new_phases)
-                    )
-                    or (
-                        new_result.lst_data.rpb
-                        >= node.data.current_result.lst_data.rpb - self.rpb_threshold
+                # TODO
+                elif (
+                    node.data.current_result is not None
+                    and new_result is not None
+                    and not has_improvement(
+                        isolated_extra_peak_old=node.data.isolated_extra_peaks,
+                        isolated_missing_peak_old=node.data.isolated_missing_peaks,
+                        isolated_extra_peak_new=isolated_extra_peaks,
+                        isolated_missing_peak_new=isolated_missing_peaks,
+                        peak_obs=self.peak_obs,
+                        score_threshold=0.1,
                     )
                 ):
                     status = "no_improvement"
@@ -543,6 +593,8 @@ class BaseSearchTree(Tree):
                         current_phases=new_phases,
                         status=status,
                         group_id=group_id,
+                        isolated_extra_peaks=isolated_extra_peaks,
+                        isolated_missing_peaks=isolated_missing_peaks,
                         fom=fom,
                         lattice_strain=grouped_results[phase]["lattice_strain"],
                     ),

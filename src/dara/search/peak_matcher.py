@@ -214,28 +214,31 @@ class PeakMatcher:
         self,
         peak_calc: np.ndarray,
         peak_obs: np.ndarray,
-        noise_level: float = 0.01,
-        merged_angle: float = 0.1,
+        intensity_resolution: float = 0.01,
+        angle_resolution: float = 0.3,
         angle_tolerance: float = DEFAULT_ANGLE_TOLERANCE,
         intensity_tolerance: float = DEFAULT_INTENSITY_TOLERANCE,
         max_intensity_tolerance: float = DEFAULT_MAX_INTENSITY_TOLERANCE,
     ):
-        self.noise_level = noise_level
-        self.merged_angle = merged_angle
+        self.intensity_resolution = intensity_resolution
+        self.angle_resolution = angle_resolution
+
+        peak_calc = peak_calc.reshape(-1, 2)
+        peak_obs = peak_obs.reshape(-1, 2)
 
         peak_calc = peak_calc[
             (peak_calc[:, 1] > 0)
-            & (peak_calc[:, 1] > noise_level * peak_calc[:, 1].max(initial=0))
+            & (peak_calc[:, 1] > intensity_resolution * peak_calc[:, 1].max(initial=0))
         ]
 
-        self.peak_calc = merge_peaks(peak_calc, resolution=merged_angle)
+        self.peak_calc = merge_peaks(peak_calc, resolution=angle_resolution)
 
         peak_obs = peak_obs[
             (peak_obs[:, 1] > 0)
-            & (peak_obs[:, 1] > noise_level * peak_obs[:, 1].max(initial=0))
+            & (peak_obs[:, 1] > intensity_resolution * peak_obs[:, 1].max(initial=0))
         ]
 
-        self.peak_obs = merge_peaks(peak_obs, resolution=merged_angle)
+        self.peak_obs = merge_peaks(peak_obs, resolution=angle_resolution)
 
         self._result = find_best_match(
             self.peak_calc,
@@ -371,8 +374,8 @@ class PeakMatcher:
     def get_isolated_peaks(
         self,
         peak_type: Literal["missing", "extra"],
-        angle_tolerance: float = 0.3,
-        min_intensity_ratio: float = 0.02,
+        min_angle_difference: float = 0.3,
+        min_intensity_ratio: float = 0.03,
     ) -> np.ndarray:
         """
         Get the isolated missing peaks in the `observed peaks`.
@@ -382,7 +385,7 @@ class PeakMatcher:
 
         Args:
             peak_type: the type of the peaks to consider, either "missing" or "extra"
-            angle_tolerance: the tolerance to consider a peak as close to another peak, default to 0.3 degree
+            min_angle_difference: the tolerance to consider a peak as close to another peak, default to 0.3 degree
             min_intensity_ratio: the minimum ratio of the intensity to be considered as a peak, default to 0.01
 
         Returns:
@@ -400,6 +403,11 @@ class PeakMatcher:
 
         matched = np.concatenate([matched, wrong_intens])
 
+        if len(peaks) == 0:
+            return np.array([]).reshape(-1, 2)
+        elif len(matched) == 0:
+            return peaks[(peaks[:, 1] > min_intensity_ratio)]
+
         distance = cdist(
             peaks[:, 0].reshape(-1, 1),
             matched[:, 0].reshape(-1, 1),
@@ -408,7 +416,7 @@ class PeakMatcher:
         distance = np.min(distance, axis=1)
         min_intensity = self.peak_obs[:, 1].max() * min_intensity_ratio
 
-        return peaks[(distance > angle_tolerance) & (peaks[:, 1] > min_intensity)]
+        return peaks[(distance > min_angle_difference) & (peaks[:, 1] > min_intensity)]
 
     def visualize(self):
         import matplotlib.pyplot as plt
