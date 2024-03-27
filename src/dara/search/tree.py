@@ -354,7 +354,7 @@ def has_improvement(
     isolated_missing_peak_new: list[list[float]],
     isolated_extra_peak_new: list[list[float]],
     peak_obs: np.ndarray | list[list[float]],
-    score_threshold: float = 0.1,
+    intensity_threshold: float = 0.1,
 ) -> bool:
     isolated_extra_peak_old = np.array(isolated_extra_peak_old)
     isolated_extra_peak_new = np.array(isolated_extra_peak_new)
@@ -364,12 +364,12 @@ def has_improvement(
 
     peak_matcher_extra = PeakMatcher(isolated_extra_peak_new, isolated_extra_peak_old)
     new_extra_peaks = peak_matcher_extra.get_isolated_peaks(
-        peak_type="extra", min_intensity_ratio=0.1
+        peak_type="extra", min_intensity_ratio=intensity_threshold
     )
 
-    if len(new_extra_peaks) > 0 and np.max(new_extra_peaks[:, 1]) > 0.1 * np.max(
-        peak_obs[:, 1]
-    ):
+    if len(new_extra_peaks) > 0 and np.max(
+        new_extra_peaks[:, 1]
+    ) > intensity_threshold * np.max(peak_obs[:, 1]):
         return False
 
     peak_matcher_missing = PeakMatcher(
@@ -378,7 +378,7 @@ def has_improvement(
 
     if len(peak_matcher_missing.missing) == 0 or np.max(
         peak_matcher_missing.missing
-    ) > 0.1 * np.max(peak_obs[:, 1]):
+    ) > intensity_threshold * np.max(peak_obs[:, 1]):
         return False
 
     return True
@@ -568,15 +568,17 @@ class BaseSearchTree(Tree):
                     status = "low_weight_fraction"
                 # TODO
                 elif (
-                    node.data.current_result is not None
-                    and new_result is not None
+                    node.data.isolated_missing_peaks is not None
+                    and node.data.isolated_extra_peaks is not None
+                    and isolated_extra_peaks is not None
+                    and isolated_missing_peaks is not None
                     and not has_improvement(
                         isolated_extra_peak_old=node.data.isolated_extra_peaks,
                         isolated_missing_peak_old=node.data.isolated_missing_peaks,
                         isolated_extra_peak_new=isolated_extra_peaks,
                         isolated_missing_peak_new=isolated_missing_peaks,
                         peak_obs=self.peak_obs,
-                        score_threshold=0.1,
+                        intensity_threshold=0.1,
                     )
                 ):
                     status = "no_improvement"
@@ -641,9 +643,7 @@ class BaseSearchTree(Tree):
         """
         return self.expand_node(self.root, explored_phases_set=explored_phases_set)
 
-    def get_all_possible_phases_at_same_level(
-        self, node: Node
-    ) -> tuple[tuple[Path, float, float], ...]:
+    def get_all_possible_nodes_at_same_level(self, node: Node) -> tuple[Node, ...]:
         """
         Get all possible phases that can be added to the current phase combination at this level.
 
@@ -651,7 +651,7 @@ class BaseSearchTree(Tree):
             node: the node in the search tree
 
         Returns:
-            a list of the paths to the phases
+            a list of selected node
         """
         if node.data.status not in {
             "expanded",
@@ -665,11 +665,7 @@ class BaseSearchTree(Tree):
         nodes_at_same_level = self.children(self.ancestor(node.identifier))
 
         phases_at_same_level = [
-            (
-                node_at_same_level.data.current_phases[-1],
-                node_at_same_level.data.fom,
-                node_at_same_level.data.lattice_strain,
-            )
+            node
             for node_at_same_level in nodes_at_same_level
             if node_at_same_level.data.group_id == node.data.group_id
             and node_at_same_level.data.status
@@ -677,7 +673,7 @@ class BaseSearchTree(Tree):
         ]
 
         phases_at_same_level = sorted(
-            phases_at_same_level, key=lambda x: x[1], reverse=True
+            phases_at_same_level, key=lambda x: x.data.fom, reverse=True
         )
 
         return tuple(phases_at_same_level)
@@ -702,27 +698,34 @@ class BaseSearchTree(Tree):
             raise ValueError(f"Node with id {node.identifier} is not expanded.")
 
         # set up the default value for the current_phases
-        current_phases = [tuple([phase, 0]) for phase in node.data.current_phases]
         parent_node = node
 
-        i = 0
+        all_possible_nodes = []
 
         while self.level(parent_node.identifier) != 0:
-            i -= 1
-            current_phases[i] = self.get_all_possible_phases_at_same_level(parent_node)
+            all_possible_nodes.append(
+                self.get_all_possible_nodes_at_same_level(parent_node)
+            )
             parent_node = self.get_node(self.ancestor(parent_node.identifier))
 
+        all_possible_nodes.append([parent_node])
+
+        all_possible_nodes = all_possible_nodes[::-1]
+
         foms = tuple(
-            tuple([fom for phase, fom, lattice_strain in phases])
-            for phases in current_phases
+            tuple([node.data.fom or 0 for node in possible_nodes])
+            for possible_nodes in all_possible_nodes
         )
         phases = tuple(
-            tuple([phase for phase, fom, lattice_strain in phases])
-            for phases in current_phases
+            [tuple([pinned_phase]) for pinned_phase in root_node.data.current_phases]
+            for root_node in all_possible_nodes[0]
+        ) + tuple(
+            tuple([node.data.current_phases[-1] for node in possible_nodes])
+            for possible_nodes in all_possible_nodes[1:]
         )
         lattice_strains = tuple(
-            tuple([lattice_strain for phase, fom, lattice_strain in phases])
-            for phases in current_phases
+            tuple([node.data.lattice_strain or 0 for node in possible_nodes])
+            for possible_nodes in all_possible_nodes
         )
 
         return phases, foms, lattice_strains
