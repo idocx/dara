@@ -10,6 +10,7 @@ import ray
 
 from dara.search.data_model import SearchResult
 from dara.search.tree import BaseSearchTree, ExploredPhasesSet, SearchTree
+from dara.utils import DEPRECATED
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -51,11 +52,12 @@ def search_phases(
     cif_paths: list[Path | str],
     pinned_phases: list[Path | str] | None = None,
     max_phases: int = 5,
-    rpb_threshold: float = 4,
     instrument_name: str = "Aeris-fds-Pixcel1d-Medipix3",
     phase_params: dict[str, ...] | None = None,
+    intensity_threshold: float = 0.1,
     refinement_params: dict[str, ...] | None = None,
     return_search_tree: bool = False,
+    rpb_threshold: float = DEPRECATED,
 ) -> list[SearchResult] | SearchTree:
     """
     Search for the best phases to use for refinement.
@@ -65,12 +67,12 @@ def search_phases(
         cif_paths: the paths to the CIF files
         pinned_phases: the paths to the pinned phases, which will be included in all the results
         max_phases: the maximum number of phases to refine
-        rpb_threshold: the RPB threshold. At each step, we will expect the rpb to be higher than this
-            threshold (improvement)
         instrument_name: the name of the instrument
         phase_params: the parameters for the phase search
+        intensity_threshold: the intensity threshold, which determines if a peak is significant
         refinement_params: the parameters for the refinement
         return_search_tree: whether to return the search tree. This is mainly used for debugging purposes.
+        rpb_threshold: the RPB threshold, which is deprecated, and will be removed in the future
     """
     if phase_params is None:
         phase_params = {}
@@ -90,6 +92,7 @@ def search_phases(
         instrument_name=instrument_name,
         refine_params=refinement_params,
         phase_params=phase_params,
+        intensity_threshold=intensity_threshold,
         max_phases=max_phases,
     )
 

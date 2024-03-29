@@ -47,7 +47,7 @@ def distance_matrix(peaks1: np.ndarray, peaks2: np.ndarray) -> np.ndarray:
         cdist(
             peaks1[:, 0].reshape(-1, 1), peaks2[:, 0].reshape(-1, 1), metric="cityblock"
         )
-        * 2
+        * 4
     )
     intensity_distance = cdist(
         peaks1[:, 1].reshape(-1, 1),
@@ -210,6 +210,20 @@ def merge_peaks(peaks: np.ndarray, resolution: float = 0.0) -> np.ndarray:
 
 
 class PeakMatcher:
+    """
+    Peak matcher class to match the calculated peaks with the observed peaks.
+
+    Args:
+        peak_calc: the calculated peaks, (n, 2) array of peaks with [position, intensity]
+        peak_obs: the observed peaks, (m, 2) array of peaks with [position, intensity]
+        intensity_resolution: the resolution for the intensity, default to 0.01. Filter out peaks with lower intensity
+        angle_resolution: the resolution for the angle, default to 0.1
+        angle_tolerance: the maximum difference in angle, default to 0.3
+        intensity_tolerance: the maximum ratio of the intensities, default to 2
+        max_intensity_tolerance: the maximum ratio of the intensities to be considered as missing or extra,
+            default to 10
+    """
+
     def __init__(
         self,
         peak_calc: np.ndarray,
@@ -475,6 +489,8 @@ class PeakMatcher:
             label="wrong intens",
         )
 
+        # add a line y=0
+        ax.axhline(0, color="black", lw=0.5)
         ax.set_xlabel("2theta")
         ax.set_ylabel("Intensity")
         ax.legend()

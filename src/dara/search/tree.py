@@ -24,6 +24,7 @@ from dara.utils import (
     load_symmetrized_structure,
     get_logger,
     find_optimal_score_threshold,
+    DEPRECATED,
 )
 
 if TYPE_CHECKING:
@@ -356,29 +357,26 @@ def has_improvement(
     peak_obs: np.ndarray | list[list[float]],
     intensity_threshold: float = 0.1,
 ) -> bool:
-    isolated_extra_peak_old = np.array(isolated_extra_peak_old)
-    isolated_extra_peak_new = np.array(isolated_extra_peak_new)
     isolated_missing_peak_old = np.array(isolated_missing_peak_old)
+    # isolated_extra_peak_old = np.array(isolated_extra_peak_old)
     isolated_missing_peak_new = np.array(isolated_missing_peak_new)
+    # isolated_extra_peak_new = np.array(isolated_extra_peak_new)
     peak_obs = np.array(peak_obs)
 
-    peak_matcher_extra = PeakMatcher(isolated_extra_peak_new, isolated_extra_peak_old)
-    new_extra_peaks = peak_matcher_extra.get_isolated_peaks(
-        peak_type="extra", min_intensity_ratio=intensity_threshold
-    )
-
-    if len(new_extra_peaks) > 0 and np.max(
-        new_extra_peaks[:, 1]
-    ) > intensity_threshold * np.max(peak_obs[:, 1]):
-        return False
+    # peak_matcher_extra = PeakMatcher(isolated_extra_peak_new, isolated_extra_peak_old)
+    #
+    # if np.max(peak_matcher_extra.extra[:, 1], initial=0) > intensity_threshold * np.max(
+    #     peak_obs[:, 1]
+    # ):
+    #     return False
 
     peak_matcher_missing = PeakMatcher(
         isolated_missing_peak_new, isolated_missing_peak_old
     )
 
-    if len(peak_matcher_missing.missing) == 0 or np.max(
-        peak_matcher_missing.missing
-    ) > intensity_threshold * np.max(peak_obs[:, 1]):
+    if np.max(
+        peak_matcher_missing.missing[:, 1], initial=0
+    ) < intensity_threshold * np.max(peak_obs[:, 1]):
         return False
 
     return True
@@ -419,12 +417,13 @@ class BaseSearchTree(Tree):
         pattern_path: the path to the pattern
         all_phases_result: the result of all the phases
         peak_obs: the observed peaks
-        rpb_threshold: the minimum RPB improvement in each step
         refine_params: the refinement parameters, it will be passed to the refinement function.
         phase_params: the phase parameters, it will be passed to the refinement function.
+        intensity_threshold: the intensity threshold to tell if a peak is significant
         instrument_name: the name of the instrument, it will be passed to the refinement function.
         maximum_grouping_distance: the maximum grouping distance, default to 0.1
         max_phases: the maximum number of phases
+        rpb_threshold: the minimum RPB improvement in each step
     """
 
     def __init__(
@@ -432,12 +431,13 @@ class BaseSearchTree(Tree):
         pattern_path: Path,
         all_phases_result: dict[Path, RefinementResult] | None,
         peak_obs: np.ndarray | None,
-        rpb_threshold: float,
         refine_params: dict[str, ...] | None,
         phase_params: dict[str, ...] | None,
+        intensity_threshold: float,
         instrument_name: str,
         maximum_grouping_distance: float,
         max_phases: float,
+        rpb_threshold: float,
         *args,
         **kwargs,
     ):
@@ -447,9 +447,15 @@ class BaseSearchTree(Tree):
         self.rpb_threshold = rpb_threshold
         self.refinement_params = refine_params if refine_params is not None else {}
         self.phase_params = phase_params if phase_params is not None else {}
+        self.intensity_threshold = intensity_threshold
         self.instrument_name = instrument_name
         self.maximum_grouping_distance = maximum_grouping_distance
         self.max_phases = max_phases
+
+        if self.rpb_threshold != DEPRECATED:
+            warnings.warn(
+                "The rpb_threshold argument is deprecated and will be removed in the future.",
+            )
 
         self.all_phases_result = all_phases_result
         self.peak_obs = peak_obs
@@ -566,7 +572,6 @@ class BaseSearchTree(Tree):
                     status = "error"
                 elif any(wt < 0.01 for wt in weight_fractions.values()):
                     status = "low_weight_fraction"
-                # TODO
                 elif (
                     node.data.isolated_missing_peaks is not None
                     and node.data.isolated_extra_peaks is not None
@@ -578,7 +583,7 @@ class BaseSearchTree(Tree):
                         isolated_extra_peak_new=isolated_extra_peaks,
                         isolated_missing_peak_new=isolated_missing_peaks,
                         peak_obs=self.peak_obs,
-                        intensity_threshold=0.1,
+                        intensity_threshold=self.intensity_threshold,
                     )
                 ):
                     status = "no_improvement"
@@ -638,8 +643,8 @@ class BaseSearchTree(Tree):
         Expand the root node.
 
         Args:
-            explored_phases_set: the set of explored phases. If it is not None, it will be used to avoid exploring the
-                    same phase combinations multiple times.
+            explored_phases_set: the set of explored phases. If it is not None,
+                    it will be used to avoid exploring the same phase combinations multiple times.
         """
         return self.expand_node(self.root, explored_phases_set=explored_phases_set)
 
@@ -717,8 +722,12 @@ class BaseSearchTree(Tree):
             for possible_nodes in all_possible_nodes
         )
         phases = tuple(
-            [tuple([pinned_phase]) for pinned_phase in root_node.data.current_phases]
-            for root_node in all_possible_nodes[0]
+            [
+                tuple([pinned_phase])
+                for pinned_phase in all_possible_nodes[0][
+                    0
+                ].data.current_phases  # root node
+            ]
         ) + tuple(
             tuple([node.data.current_phases[-1] for node in possible_nodes])
             for possible_nodes in all_possible_nodes[1:]
@@ -845,7 +854,9 @@ class BaseSearchTree(Tree):
         )
 
     def refine_phases(
-        self, phases: list[Path], pinned_phases: list[Path] | None = None
+        self,
+        phases: list[Path],
+        pinned_phases: list[Path] | None = None,
     ) -> dict[Path, RefinementResult | None]:
         """
         Get the result of all the phases.
@@ -863,7 +874,9 @@ class BaseSearchTree(Tree):
         all_phases_result = dict(
             zip_longest(
                 phases,
-                self._batch_refine([pinned_phases + [phase] for phase in phases]),
+                self._batch_refine(
+                    all_references=[pinned_phases + [phase] for phase in phases],
+                ),
                 fillvalue=None,
             )
         )
@@ -893,6 +906,7 @@ class BaseSearchTree(Tree):
             rpb_threshold=self.rpb_threshold,
             refine_params=self.refinement_params,
             phase_params=self.phase_params,
+            intensity_threshold=self.intensity_threshold,
             instrument_name=self.instrument_name,
             maximum_grouping_distance=self.maximum_grouping_distance,
         )
@@ -923,6 +937,7 @@ class BaseSearchTree(Tree):
             rpb_threshold=search_tree.rpb_threshold,
             refine_params=search_tree.refinement_params,
             phase_params=search_tree.phase_params,
+            intensity_threshold=search_tree.intensity_threshold,
             instrument_name=search_tree.instrument_name,
             maximum_grouping_distance=search_tree.maximum_grouping_distance,
         )
@@ -962,12 +977,13 @@ class SearchTree(BaseSearchTree):
         pattern_path: the path to the pattern
         cif_paths: the paths to the CIF files
         pinned_phases: the phases that will be included in all the refinement
-        rpb_threshold: the minimum RPB improvement in each step
         refine_params: the refinement parameters, it will be passed to the refinement function.
         phase_params: the phase parameters, it will be passed to the refinement function.
+        intensity_threshold: the intensity threshold to tell if a peak is significant
         instrument_name: the name of the instrument, it will be passed to the refinement function.
         maximum_grouping_distance: the maximum grouping distance, default to 0.1
         max_phases: the maximum number of phases, note that the pinned phases are COUNTED as well
+        rpb_threshold: deprecated, will be removed in the future
     """
 
     def __init__(
@@ -975,12 +991,13 @@ class SearchTree(BaseSearchTree):
         pattern_path: Path | str,
         cif_paths: list[Path | str],
         pinned_phases: list[Path | str] | None = None,
-        rpb_threshold: float = 2,
         refine_params: dict[str, ...] | None = None,
         phase_params: dict[str, ...] | None = None,
+        intensity_threshold: float = 0.1,
         instrument_name: str = "Aeris-fds-Pixcel1d-Medipix3",
         maximum_grouping_distance: float = 0.1,
         max_phases: float = 5,
+        rpb_threshold: float = DEPRECATED,
         *args,
         **kwargs,
     ):
@@ -1005,6 +1022,7 @@ class SearchTree(BaseSearchTree):
             rpb_threshold=rpb_threshold,
             refine_params=refine_params,
             phase_params=phase_params,
+            intensity_threshold=intensity_threshold,
             instrument_name=instrument_name,
             maximum_grouping_distance=maximum_grouping_distance,
             max_phases=max_phases,
@@ -1062,7 +1080,8 @@ class SearchTree(BaseSearchTree):
             cif_path for cif_path in self.cif_paths if cif_path not in pinned_phases_set
         ]
         all_phases_result = self.refine_phases(
-            cif_paths, pinned_phases=self.pinned_phases
+            cif_paths,
+            pinned_phases=self.pinned_phases,
         )
 
         # clean up cif paths (if no result, remove from list)
@@ -1078,6 +1097,50 @@ class SearchTree(BaseSearchTree):
         )
 
         return all_phases_result
+
+    def show(
+        self,
+        nid=None,
+        level=Tree.ROOT,
+        idhidden=False,
+        filter=None,
+        key=None,
+        reverse=False,
+        line_type="ascii-ex",
+        data_property="pretty_output",
+        stdout=False,
+        sorting=True,
+    ):
+        """
+        Show the search tree.
+
+        Args:
+            nid: the node id
+            level: the level of the tree
+            idhidden: whether the node id is hidden
+            filter: the filter function
+            key: the sorting key
+            reverse: whether to reverse the sorting
+            line_type: the line type
+            data_property: the data property
+            stdout: whether to print the result
+            sorting: whether to sort the result
+
+        Returns:
+            the string representation of the search tree
+        """
+        return super().show(
+            nid=nid,
+            level=level,
+            idhidden=idhidden,
+            filter=filter,
+            key=key,
+            reverse=reverse,
+            line_type=line_type,
+            data_property=data_property,
+            stdout=stdout,
+            sorting=sorting,
+        )
 
     def _clone(self, identifier=None, with_tree=False, deep=False):
         raise NotImplementedError(f"{self.__class__.__name__} cannot be cloned.")
