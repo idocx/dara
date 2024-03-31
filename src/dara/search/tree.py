@@ -444,6 +444,7 @@ class BaseSearchTree(Tree):
         maximum_grouping_distance: the maximum grouping distance, default to 0.1
         max_phases: the maximum number of phases
         rpb_threshold: the minimum RPB improvement in each step
+        pinned_phases: the phases that are pinned and will be included in all the results
     """
 
     def __init__(
@@ -458,6 +459,7 @@ class BaseSearchTree(Tree):
         maximum_grouping_distance: float,
         max_phases: float,
         rpb_threshold: float,
+        pinned_phases: list[Path] | None = None,
         *args,
         **kwargs,
     ):
@@ -471,6 +473,7 @@ class BaseSearchTree(Tree):
         self.instrument_name = instrument_name
         self.maximum_grouping_distance = maximum_grouping_distance
         self.max_phases = max_phases
+        self.pinned_phases = pinned_phases
 
         if self.rpb_threshold != DEPRECATED:
             warnings.warn(
@@ -567,11 +570,19 @@ class BaseSearchTree(Tree):
                     ]
                 )
 
-                weight_fractions = (
-                    new_result.get_phase_weights(normalize=True)
-                    if new_result is not None
-                    else None
-                )
+                if new_result is not None:
+                    searched_phases = [
+                        p for p in new_phases if p not in self.pinned_phases
+                    ]
+                    weight_fractions = new_result.get_phase_weights(normalize=True)
+                    sorted_searched_phases = sorted(
+                        searched_phases,
+                        key=lambda x: weight_fractions[x.stem],
+                        reverse=True,
+                    )
+                    is_low_weight_fraction = sorted_searched_phases != searched_phases
+                else:
+                    is_low_weight_fraction = False
 
                 if new_result is not None:
                     peak_matcher = PeakMatcher(
@@ -590,7 +601,7 @@ class BaseSearchTree(Tree):
 
                 if new_result is None:
                     status = "error"
-                elif any(wt < 0.01 for wt in weight_fractions.values()):
+                elif is_low_weight_fraction:
                     status = "low_weight_fraction"
                 elif (
                     isolated_extra_peaks is not None
@@ -935,6 +946,7 @@ class BaseSearchTree(Tree):
             intensity_threshold=self.intensity_threshold,
             instrument_name=self.instrument_name,
             maximum_grouping_distance=self.maximum_grouping_distance,
+            pinned_phases=self.pinned_phases,
         )
 
     @classmethod
@@ -966,6 +978,7 @@ class BaseSearchTree(Tree):
             intensity_threshold=search_tree.intensity_threshold,
             instrument_name=search_tree.instrument_name,
             maximum_grouping_distance=search_tree.maximum_grouping_distance,
+            pinned_phases=search_tree.pinned_phases,
         )
         new_search_tree.add_node(root_node)
 
@@ -1052,6 +1065,7 @@ class SearchTree(BaseSearchTree):
             instrument_name=instrument_name,
             maximum_grouping_distance=maximum_grouping_distance,
             max_phases=max_phases,
+            pinned_phases=self.pinned_phases,
             *args,
             **kwargs,
         )

@@ -54,7 +54,7 @@ def search_phases(
     max_phases: int = 5,
     instrument_name: str = "Aeris-fds-Pixcel1d-Medipix3",
     phase_params: dict[str, ...] | None = None,
-    intensity_threshold: float = 0.1,
+    intensity_threshold: float = 0.05,
     refinement_params: dict[str, ...] | None = None,
     return_search_tree: bool = False,
     rpb_threshold: float = DEPRECATED,
