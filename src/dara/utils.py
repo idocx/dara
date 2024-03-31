@@ -247,6 +247,8 @@ def get_entries_in_chemsys_db(db: MongoStore, chemsys: list[str] | str):
     """
     if isinstance(chemsys, str):
         elements = chemsys.split("-")
+    else:
+        elements = chemsys
 
     elements_set = set(elements)  # remove duplicate elements
 

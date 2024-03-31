@@ -350,34 +350,54 @@ def remove_unnecessary_phases(
 
 
 def has_improvement(
-    isolated_missing_peak_old: list[list[float]],
-    isolated_extra_peak_old: list[list[float]],
+    isolated_missing_peak_old: list[list[float]] | None,
+    isolated_extra_peak_old: list[list[float]] | None,
     isolated_missing_peak_new: list[list[float]],
     isolated_extra_peak_new: list[list[float]],
     peak_obs: np.ndarray | list[list[float]],
     intensity_threshold: float = 0.1,
 ) -> bool:
-    isolated_missing_peak_old = np.array(isolated_missing_peak_old)
-    # isolated_extra_peak_old = np.array(isolated_extra_peak_old)
+    isolated_extra_peak_old = np.array(
+        isolated_extra_peak_old if isolated_extra_peak_old is not None else []
+    )
     isolated_missing_peak_new = np.array(isolated_missing_peak_new)
-    # isolated_extra_peak_new = np.array(isolated_extra_peak_new)
+    isolated_extra_peak_new = np.array(isolated_extra_peak_new)
     peak_obs = np.array(peak_obs)
 
     # peak_matcher_extra = PeakMatcher(isolated_extra_peak_new, isolated_extra_peak_old)
+    # new_extra_peaks = peak_matcher_extra.extra
+    # new_extra_peaks = new_extra_peaks[
+    #     new_extra_peaks[:, 0] < 40
+    # ]  # only consider peaks below 40 degrees
     #
-    # if np.max(peak_matcher_extra.extra[:, 1], initial=0) > intensity_threshold * np.max(
+    # if np.max(new_extra_peaks[:, 1], initial=0) > intensity_threshold * np.max(
     #     peak_obs[:, 1]
     # ):
     #     return False
 
-    peak_matcher_missing = PeakMatcher(
-        isolated_missing_peak_new, isolated_missing_peak_old
-    )
+    if isolated_missing_peak_old is not None:
+        isolated_missing_peak_old = np.array(isolated_missing_peak_old)
+        peak_matcher_missing = PeakMatcher(
+            isolated_missing_peak_new, isolated_missing_peak_old
+        )
 
-    if np.max(
-        peak_matcher_missing.missing[:, 1], initial=0
-    ) < intensity_threshold * np.max(peak_obs[:, 1]):
-        return False
+        not_missing_peaks = peak_matcher_missing.missing
+        # TODO: this is a temporary fix, we should consider all peaks
+        not_missing_peaks = not_missing_peaks[
+            not_missing_peaks[:, 0] < 40
+        ]  # only consider peaks below 40 degrees
+
+        new_missing_peaks = peak_matcher_missing.extra
+        new_missing_peaks = new_missing_peaks[
+            new_missing_peaks[:, 0] < 40
+        ]  # only consider peaks below 40 degrees
+
+        if np.max(not_missing_peaks[:, 1], initial=0) < intensity_threshold * np.max(
+            peak_obs[:, 1]
+        ) or np.max(new_missing_peaks[:, 1], initial=0) > intensity_threshold * np.max(
+            peak_obs[:, 1]
+        ):
+            return False
 
     return True
 
@@ -573,9 +593,7 @@ class BaseSearchTree(Tree):
                 elif any(wt < 0.01 for wt in weight_fractions.values()):
                     status = "low_weight_fraction"
                 elif (
-                    node.data.isolated_missing_peaks is not None
-                    and node.data.isolated_extra_peaks is not None
-                    and isolated_extra_peaks is not None
+                    isolated_extra_peaks is not None
                     and isolated_missing_peaks is not None
                     and not has_improvement(
                         isolated_extra_peak_old=node.data.isolated_extra_peaks,
@@ -585,6 +603,14 @@ class BaseSearchTree(Tree):
                         peak_obs=self.peak_obs,
                         intensity_threshold=self.intensity_threshold,
                     )
+                ):
+                    status = "no_improvement"
+                elif (
+                    node.data.current_result is not None
+                    and (
+                        node.data.current_result.lst_data.rwp - new_result.lst_data.rwp
+                    )
+                    < 0.1
                 ):
                     status = "no_improvement"
                 elif not is_best_result_in_group:

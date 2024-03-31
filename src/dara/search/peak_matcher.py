@@ -229,7 +229,7 @@ class PeakMatcher:
         peak_calc: np.ndarray,
         peak_obs: np.ndarray,
         intensity_resolution: float = 0.01,
-        angle_resolution: float = 0.3,
+        angle_resolution: float = 0.1,
         angle_tolerance: float = DEFAULT_ANGLE_TOLERANCE,
         intensity_tolerance: float = DEFAULT_INTENSITY_TOLERANCE,
         max_intensity_tolerance: float = DEFAULT_MAX_INTENSITY_TOLERANCE,

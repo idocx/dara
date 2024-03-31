@@ -48,7 +48,6 @@ class EflechWorker:
             if isinstance(pattern, np.ndarray):
                 pattern_path_temp = temp_dir / "temp.xy"
                 np.savetxt(pattern_path_temp.as_posix(), pattern, fmt="%.6f")
-                print(pattern_path_temp.read_text())
             else:
                 if isinstance(pattern, str):
                     pattern = Path(pattern)
