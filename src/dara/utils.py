@@ -383,6 +383,28 @@ def find_optimal_score_threshold(
     return score_percentile[np.argmax(second_derivative)].item(), score_percentile
 
 
+def find_optimal_intensity_threshold(
+    intensities: list[float] | np.ndarray, percentile: float = 90
+) -> float:
+    """
+    Find the intensity threshold that captures percentile% of the intensities.
+
+    Args:
+        intensities: the list of intensities
+        percentile: the percentile to capture, defaults to 90
+
+    Returns:
+        the intensity threshold
+    """
+    if len(intensities) == 0:
+        return 0.0
+    intensities_ = np.sort(intensities)[::-1]
+    intensities_cum = np.cumsum(intensities_)
+    intensities_cum /= intensities_cum[-1]
+    idx = np.argmax(intensities_cum >= percentile / 100)
+    return intensities_[idx]
+
+
 def get_composition_from_filename(file_name: str | Path) -> Composition:
     """
     Get the composition from the filename. The composition is assumed to be the first

@@ -420,7 +420,7 @@ class PeakMatcher:
         if len(peaks) == 0:
             return np.array([]).reshape(-1, 2)
         elif len(matched) == 0:
-            return peaks[(peaks[:, 1] > min_intensity_ratio)]
+            return peaks[peaks[:, 1] > min_intensity_ratio * self.peak_obs[:, 1].max()]
 
         distance = cdist(
             peaks[:, 0].reshape(-1, 1),

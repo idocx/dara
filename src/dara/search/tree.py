@@ -25,6 +25,7 @@ from dara.utils import (
     get_logger,
     find_optimal_score_threshold,
     DEPRECATED,
+    find_optimal_intensity_threshold,
 )
 
 if TYPE_CHECKING:
@@ -350,54 +351,33 @@ def remove_unnecessary_phases(
 
 
 def has_improvement(
-    isolated_missing_peak_old: list[list[float]] | None,
-    isolated_extra_peak_old: list[list[float]] | None,
+    isolated_missing_peak_old: list[list[float]],
     isolated_missing_peak_new: list[list[float]],
-    isolated_extra_peak_new: list[list[float]],
-    peak_obs: np.ndarray | list[list[float]],
-    intensity_threshold: float = 0.1,
+    intensity_threshold: float = 0.0,
 ) -> bool:
-    isolated_extra_peak_old = np.array(
-        isolated_extra_peak_old if isolated_extra_peak_old is not None else []
-    )
     isolated_missing_peak_new = np.array(isolated_missing_peak_new)
-    isolated_extra_peak_new = np.array(isolated_extra_peak_new)
-    peak_obs = np.array(peak_obs)
 
-    # peak_matcher_extra = PeakMatcher(isolated_extra_peak_new, isolated_extra_peak_old)
-    # new_extra_peaks = peak_matcher_extra.extra
-    # new_extra_peaks = new_extra_peaks[
-    #     new_extra_peaks[:, 0] < 40
-    # ]  # only consider peaks below 40 degrees
-    #
-    # if np.max(new_extra_peaks[:, 1], initial=0) > intensity_threshold * np.max(
-    #     peak_obs[:, 1]
-    # ):
-    #     return False
+    isolated_missing_peak_old = np.array(isolated_missing_peak_old)
+    peak_matcher_missing = PeakMatcher(
+        isolated_missing_peak_new, isolated_missing_peak_old
+    )
 
-    if isolated_missing_peak_old is not None:
-        isolated_missing_peak_old = np.array(isolated_missing_peak_old)
-        peak_matcher_missing = PeakMatcher(
-            isolated_missing_peak_new, isolated_missing_peak_old
-        )
+    not_missing_peaks = peak_matcher_missing.missing
+    # TODO: this is a temporary fix, we should consider all peaks
+    not_missing_peaks = not_missing_peaks[
+        not_missing_peaks[:, 0] < 40
+    ]  # only consider peaks below 40 degrees
 
-        not_missing_peaks = peak_matcher_missing.missing
-        # TODO: this is a temporary fix, we should consider all peaks
-        not_missing_peaks = not_missing_peaks[
-            not_missing_peaks[:, 0] < 40
-        ]  # only consider peaks below 40 degrees
+    new_missing_peaks = peak_matcher_missing.extra
+    new_missing_peaks = new_missing_peaks[
+        new_missing_peaks[:, 0] < 40
+    ]  # only consider peaks below 40 degrees
 
-        new_missing_peaks = peak_matcher_missing.extra
-        new_missing_peaks = new_missing_peaks[
-            new_missing_peaks[:, 0] < 40
-        ]  # only consider peaks below 40 degrees
-
-        if np.max(not_missing_peaks[:, 1], initial=0) < intensity_threshold * np.max(
-            peak_obs[:, 1]
-        ) or np.max(new_missing_peaks[:, 1], initial=0) > intensity_threshold * np.max(
-            peak_obs[:, 1]
-        ):
-            return False
+    if (
+        np.max(not_missing_peaks[:, 1], initial=0) < intensity_threshold
+        or np.max(new_missing_peaks[:, 1], initial=0) > intensity_threshold
+    ):
+        return False
 
     return True
 
@@ -544,9 +524,6 @@ class BaseSearchTree(Tree):
                 best_phases[i] for i in range(len(best_phases)) if not explored[i]
             ]
 
-            node.data.peak_matcher_scores = scores
-            node.data.peak_matcher_score_threshold = threshold
-
             new_results = self.refine_phases(
                 best_phases, pinned_phases=node.data.current_phases
             )
@@ -601,17 +578,12 @@ class BaseSearchTree(Tree):
 
                 if new_result is None:
                     status = "error"
-                elif is_low_weight_fraction:
-                    status = "low_weight_fraction"
                 elif (
-                    isolated_extra_peaks is not None
+                    node.data.isolated_missing_peaks is not None
                     and isolated_missing_peaks is not None
                     and not has_improvement(
-                        isolated_extra_peak_old=node.data.isolated_extra_peaks,
                         isolated_missing_peak_old=node.data.isolated_missing_peaks,
-                        isolated_extra_peak_new=isolated_extra_peaks,
                         isolated_missing_peak_new=isolated_missing_peaks,
-                        peak_obs=self.peak_obs,
                         intensity_threshold=self.intensity_threshold,
                     )
                 ):
@@ -624,6 +596,8 @@ class BaseSearchTree(Tree):
                     < 0.1
                 ):
                     status = "no_improvement"
+                elif is_low_weight_fraction:
+                    status = "low_weight_fraction"
                 elif not is_best_result_in_group:
                     status = "similar_structure"
                 elif len(new_phases) >= self.max_phases:
@@ -1018,7 +992,6 @@ class SearchTree(BaseSearchTree):
         pinned_phases: the phases that will be included in all the refinement
         refine_params: the refinement parameters, it will be passed to the refinement function.
         phase_params: the phase parameters, it will be passed to the refinement function.
-        intensity_threshold: the intensity threshold to tell if a peak is significant
         instrument_name: the name of the instrument, it will be passed to the refinement function.
         maximum_grouping_distance: the maximum grouping distance, default to 0.1
         max_phases: the maximum number of phases, note that the pinned phases are COUNTED as well
@@ -1032,7 +1005,6 @@ class SearchTree(BaseSearchTree):
         pinned_phases: list[Path | str] | None = None,
         refine_params: dict[str, ...] | None = None,
         phase_params: dict[str, ...] | None = None,
-        intensity_threshold: float = 0.1,
         instrument_name: str = "Aeris-fds-Pixcel1d-Medipix3",
         maximum_grouping_distance: float = 0.1,
         max_phases: float = 5,
@@ -1061,7 +1033,7 @@ class SearchTree(BaseSearchTree):
             rpb_threshold=rpb_threshold,
             refine_params=refine_params,
             phase_params=phase_params,
-            intensity_threshold=intensity_threshold,
+            intensity_threshold=0.0,  # placeholder, will be updated later
             instrument_name=instrument_name,
             maximum_grouping_distance=maximum_grouping_distance,
             max_phases=max_phases,
@@ -1072,6 +1044,10 @@ class SearchTree(BaseSearchTree):
 
         peak_obs = self._detect_peak_in_pattern()
         self.peak_obs = peak_obs
+        self.intensity_threshold = min(
+            find_optimal_intensity_threshold(peak_obs[:, 1]),
+            0.1 * np.max(peak_obs[:, 1]),
+        )
 
         root_node = self._create_root_node()
         self.add_node(root_node)
