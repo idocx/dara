@@ -18,14 +18,14 @@ from dara.peak_detection import detect_peaks
 from dara.search.data_model import SearchNodeData, SearchResult
 from dara.search.peak_matcher import PeakMatcher
 from dara.utils import (
-    get_number,
-    get_optimal_max_two_theta,
-    rpb,
-    load_symmetrized_structure,
-    get_logger,
-    find_optimal_score_threshold,
     DEPRECATED,
     find_optimal_intensity_threshold,
+    find_optimal_score_threshold,
+    get_logger,
+    get_number,
+    get_optimal_max_two_theta,
+    load_symmetrized_structure,
+    rpb,
 )
 
 if TYPE_CHECKING:
@@ -33,48 +33,6 @@ if TYPE_CHECKING:
 
 
 logger = get_logger(__name__, level="INFO")
-
-
-@ray.remote(num_cpus=0)
-class ExploredPhasesSet:
-    """
-    This is a remote actor to keep track of the explored phases in the search tree.
-
-    This is used to avoid exploring the same phase combinations multiple times.
-    """
-
-    def __init__(self):
-        self._set: set[frozenset[Path]] = set()
-
-    def update(self, phases: list[tuple[Path, ...]]):
-        for phase in phases:
-            self._set.add(frozenset(phase))
-
-    def multiple_contains(self, phases: list[tuple[Path, ...]]) -> list[bool]:
-        return [frozenset(phases) in self._set for phases in phases]
-
-    def contains_and_update(self, phases: list[tuple[Path, ...]]) -> list[bool]:
-        """
-        Check if the set contains the phases and update the set. This is an atomic operation.
-
-        Args:
-            phases: the phases to check
-
-        Returns:
-            a list of boolean values indicating whether the set contains the phases
-        """
-        contains = self.multiple_contains(phases)
-        self.update(phases)
-        return contains
-
-    def get(self) -> frozenset[frozenset[Path]]:
-        """
-        Get the set of explored phases.
-
-        Returns:
-            the set of explored phases
-        """
-        return frozenset(self._set)
 
 
 @ray.remote(num_cpus=1)
@@ -463,9 +421,7 @@ class BaseSearchTree(Tree):
         self.all_phases_result = all_phases_result
         self.peak_obs = peak_obs
 
-    def expand_node(
-        self, nid: str, explored_phases_set: ExploredPhasesSet | None = None
-    ) -> list[str]:
+    def expand_node(self, nid: str) -> list[str]:
         """
         Expand a node in the search tree.
 
@@ -474,8 +430,6 @@ class BaseSearchTree(Tree):
 
         Args:
             nid: the node id
-            explored_phases_set: the set of explored phases. If it is not None, it will be used to avoid exploring the
-                 same phase combinations multiple times.
         """
         node: Node = self.get_node(nid)
         logger.info(
@@ -499,30 +453,6 @@ class BaseSearchTree(Tree):
             best_phases, scores, threshold = self.score_phases(
                 all_phases_result, node.data.current_result
             )
-
-            if explored_phases_set is not None:
-                explored = ray.get(
-                    explored_phases_set.contains_and_update.remote(
-                        [node.data.current_phases + [phase] for phase in best_phases]
-                    )
-                )
-            else:
-                explored = [False] * len(best_phases)
-
-            for i in range(len(best_phases)):
-                if explored[i]:
-                    self.create_node(
-                        data=SearchNodeData(
-                            current_result=None,
-                            current_phases=node.data.current_phases + [best_phases[i]],
-                            status="duplicate",
-                        ),
-                        parent=nid,
-                    )
-
-            best_phases = [
-                best_phases[i] for i in range(len(best_phases)) if not explored[i]
-            ]
 
             new_results = self.refine_phases(
                 best_phases, pinned_phases=node.data.current_phases
@@ -647,17 +577,9 @@ class BaseSearchTree(Tree):
             if self.get_node(child.identifier).data.status == "pending"
         ]
 
-    def expand_root(
-        self, explored_phases_set: ExploredPhasesSet | None = None
-    ) -> list[str]:
-        """
-        Expand the root node.
-
-        Args:
-            explored_phases_set: the set of explored phases. If it is not None,
-                    it will be used to avoid exploring the same phase combinations multiple times.
-        """
-        return self.expand_node(self.root, explored_phases_set=explored_phases_set)
+    def expand_root(self) -> list[str]:
+        """Expand the root node."""
+        return self.expand_node(self.root)
 
     def get_all_possible_nodes_at_same_level(self, node: Node) -> tuple[Node, ...]:
         """
@@ -760,9 +682,6 @@ class BaseSearchTree(Tree):
             a dictionary containing the phase combinations and their results
         """
         results = []
-        all_phases = {}
-        for nid, node in self.nodes.items():
-            all_phases.setdefault(frozenset(node.data.current_phases), []).append(nid)
 
         for node in self.nodes.values():
             if node.data.current_result is None:
@@ -771,28 +690,6 @@ class BaseSearchTree(Tree):
                 child.data.status not in {"expanded", "max_depth"}
                 for child in self.children(node.identifier)
             ):
-                has_expanded_child = False
-                for child in self.children(node.identifier):
-                    if child.data.status == "duplicate":
-                        other_phases = all_phases[frozenset(child.data.current_phases)]
-                        if any(
-                            self.get_node(nid).data.status in {"expanded", "max_depth"}
-                            for nid in other_phases
-                        ):
-                            has_expanded_child = True
-                            break
-
-                if has_expanded_child:
-                    continue
-
-                other_phases = all_phases[frozenset(node.data.current_phases)]
-                if any(
-                    self.get_node(nid).data.status
-                    not in {"expanded", "max_depth", "duplicate"}
-                    for nid in other_phases
-                ):
-                    continue
-
                 phases, foms, lattice_strains = self.get_phase_combinations(node)
                 results.append(
                     SearchResult(
@@ -1047,6 +944,10 @@ class SearchTree(BaseSearchTree):
         self.intensity_threshold = min(
             find_optimal_intensity_threshold(peak_obs[:, 1]),
             0.1 * np.max(peak_obs[:, 1]),
+        )
+        logger.info(
+            f"The intensity threshold is automatically set "
+            f"to {self.intensity_threshold / peak_obs[:, 1].max() * 100:.2f} % of maximum peak intensity."
         )
 
         root_node = self._create_root_node()
