@@ -25,7 +25,7 @@ from dara.utils import (
     get_number,
     get_optimal_max_two_theta,
     load_symmetrized_structure,
-    rpb,
+    rwp,
 )
 
 if TYPE_CHECKING:
@@ -278,7 +278,7 @@ def group_phases(
 
 
 def remove_unnecessary_phases(
-    result: RefinementResult, cif_paths: list[Path], rpb_threshold: float = 1
+    result: RefinementResult, cif_paths: list[Path], rwp_threshold: float = 0.0
 ) -> list[Path]:
     """
     Remove unnecessary phases from the result.
@@ -288,11 +288,10 @@ def remove_unnecessary_phases(
     phases_results = {k: np.array(v) for k, v in result.plot_data.structs.items()}
     y_obs = np.array(result.plot_data.y_obs)
     y_calc = np.array(result.plot_data.y_calc)
-    y_bkg = np.array(result.plot_data.y_bkg)
 
     cif_paths_dict = {cif_path.stem: cif_path for cif_path in cif_paths}
 
-    original_rpb = rpb(y_calc, y_obs, y_bkg)
+    original_rwp = rwp(y_calc, y_obs)
 
     new_phases = []
 
@@ -300,9 +299,9 @@ def remove_unnecessary_phases(
         y_calc_excl = y_calc.copy()
         y_calc_excl -= phases_results[excluded_phase]
 
-        new_rpb = rpb(y_calc_excl, y_obs, y_bkg)
+        new_rwp = rwp(y_calc_excl, y_obs)
 
-        if new_rpb > original_rpb + rpb_threshold:
+        if new_rwp > original_rwp + rwp_threshold:
             new_phases.append(cif_paths_dict[excluded_phase])
 
     return new_phases
@@ -312,6 +311,7 @@ def has_improvement(
     isolated_missing_peak_old: list[list[float]],
     isolated_missing_peak_new: list[list[float]],
     intensity_threshold: float = 0.0,
+    maximum_angle: float = 40.0,
 ) -> bool:
     isolated_missing_peak_new = np.array(isolated_missing_peak_new)
 
@@ -323,13 +323,13 @@ def has_improvement(
     not_missing_peaks = peak_matcher_missing.missing
     # TODO: this is a temporary fix, we should consider all peaks
     not_missing_peaks = not_missing_peaks[
-        not_missing_peaks[:, 0] < 40
-    ]  # only consider peaks below 40 degrees
+        not_missing_peaks[:, 0] < maximum_angle
+    ]  # only consider peaks below maximum_angle degrees
 
     new_missing_peaks = peak_matcher_missing.extra
     new_missing_peaks = new_missing_peaks[
-        new_missing_peaks[:, 0] < 40
-    ]  # only consider peaks below 40 degrees
+        new_missing_peaks[:, 0] < maximum_angle
+    ]  # only consider peaks below maximum_angle degrees
 
     if (
         np.max(not_missing_peaks[:, 1], initial=0) < intensity_threshold
@@ -518,12 +518,15 @@ class BaseSearchTree(Tree):
                     )
                 ):
                     status = "no_improvement"
+                # if the new result is worse than the current result from Rwp perspective
                 elif (
                     node.data.current_result is not None
                     and (
                         node.data.current_result.lst_data.rwp - new_result.lst_data.rwp
                     )
-                    < 0.1
+                    < 0.0
+                    or len(remove_unnecessary_phases(new_result, new_phases, 0.0))
+                    != len(new_phases)
                 ):
                     status = "no_improvement"
                 elif is_low_weight_fraction:
