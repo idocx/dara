@@ -603,7 +603,7 @@ class BaseSearchTree(Tree):
         nodes_at_same_level = self.children(self.ancestor(node.identifier))
 
         phases_at_same_level = [
-            node
+            node_at_same_level
             for node_at_same_level in nodes_at_same_level
             if node_at_same_level.data.group_id == node.data.group_id
             and node_at_same_level.data.status
