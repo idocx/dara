@@ -69,3 +69,5 @@ class SearchResult(BaseModel):
     phases: tuple[tuple[Path, ...], ...]
     foms: tuple[tuple[float, ...], ...]
     lattice_strains: tuple[tuple[float, ...], ...]
+    missing_peaks: list[list[float]]
+    extra_peaks: list[list[float]]

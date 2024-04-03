@@ -64,7 +64,6 @@ def search_phases(
         max_phases: the maximum number of phases to refine
         instrument_name: the name of the instrument
         phase_params: the parameters for the phase search
-        intensity_threshold: the intensity threshold, which determines if a peak is significant
         refinement_params: the parameters for the refinement
         return_search_tree: whether to return the search tree. This is mainly used for debugging purposes.
         rpb_threshold: the RPB threshold, which is deprecated, and will be removed in the future

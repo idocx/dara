@@ -697,6 +697,8 @@ class BaseSearchTree(Tree):
                         phases=phases,
                         foms=foms,
                         lattice_strains=lattice_strains,
+                        missing_peaks=node.data.isolated_missing_peaks,
+                        extra_peaks=node.data.isolated_extra_peaks,
                     )
                 )
         return get_natural_break_results(results)
