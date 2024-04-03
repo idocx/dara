@@ -56,7 +56,9 @@ def load_symmetrized_structure(
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore")
         structure = SpacegroupAnalyzer(
-            Structure.from_file(cif_path.as_posix(), site_tolerance=1e-3)
+            Structure.from_file(
+                cif_path.as_posix(), site_tolerance=1e-3, occupancy_tolerance=100
+            )
         ).get_refined_structure()
 
     spg = SpacegroupAnalyzer(structure)
