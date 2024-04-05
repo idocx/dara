@@ -4,6 +4,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Literal, Optional
 
+import numpy as np
+from plotly import graph_objects as go
 from pydantic import BaseModel, Field
 
 from dara.result import RefinementResult
@@ -71,3 +73,35 @@ class SearchResult(BaseModel):
     lattice_strains: tuple[tuple[float, ...], ...]
     missing_peaks: list[list[float]]
     extra_peaks: list[list[float]]
+
+    def visualize(self):
+        fig = self.refinement_result.visualize()
+
+        missing_peaks = np.array(self.missing_peaks).reshape(-1, 2)
+        extra_peaks = np.array(self.extra_peaks).reshape(-1, 2)
+
+        fig.add_trace(
+            go.Scatter(
+                x=missing_peaks[:, 0],
+                y=np.zeros_like(missing_peaks[:, 0]),
+                mode="markers",
+                marker=dict(color="#f9726a", symbol=53, size=10, opacity=0.8),
+                name="Missing peaks",
+                visible="legendonly",
+                text=[f"{x:.2f}, {y:.2f}" for x, y in missing_peaks],
+            )
+        )
+
+        fig.add_trace(
+            go.Scatter(
+                x=extra_peaks[:, 0],
+                y=np.zeros_like(extra_peaks[:, 0]),
+                mode="markers",
+                marker=dict(color="#335da0", symbol=53, size=10, opacity=0.8),
+                name="Extra peaks",
+                visible="legendonly",
+                text=[f"{x:.2f}, {y:.2f}" for x, y in extra_peaks],
+                hovertemplate="%{text}",
+            )
+        )
+        return fig

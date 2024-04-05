@@ -349,7 +349,7 @@ def get_natural_break_results(
     while all_rhos is None or max(all_rhos) > min(all_rhos) + 10:
         all_rhos = [result.refinement_result.lst_data.rho for result in results]
 
-        if len(set(all_rhos)) >= 2:
+        if len(set(all_rhos)) > 2:
             # get the first natural break
             interval = jenkspy.jenks_breaks(all_rhos, n_classes=2)
             rho_cutoff = interval[1]
@@ -358,6 +358,7 @@ def get_natural_break_results(
                 for result in results
                 if result.refinement_result.lst_data.rho <= rho_cutoff
             ]
+            all_rhos = [result.refinement_result.lst_data.rho for result in results]
         else:
             break
 
@@ -481,10 +482,11 @@ class BaseSearchTree(Tree):
                     searched_phases = [
                         p for p in new_phases if p not in self.pinned_phases
                     ]
-                    weight_fractions = new_result.get_phase_weights(normalize=True)
                     sorted_searched_phases = sorted(
                         searched_phases,
-                        key=lambda x: weight_fractions[x.stem],
+                        key=lambda x: new_result.peak_data[
+                            new_result.peak_data["phase"] == x.stem
+                        ]["intensity"].max(),
                         reverse=True,
                     )
                     is_low_weight_fraction = sorted_searched_phases != searched_phases
@@ -508,16 +510,6 @@ class BaseSearchTree(Tree):
 
                 if new_result is None:
                     status = "error"
-                elif (
-                    node.data.isolated_missing_peaks is not None
-                    and isolated_missing_peaks is not None
-                    and not has_improvement(
-                        isolated_missing_peak_old=node.data.isolated_missing_peaks,
-                        isolated_missing_peak_new=isolated_missing_peaks,
-                        intensity_threshold=self.intensity_threshold,
-                    )
-                ):
-                    status = "no_improvement"
                 # if the new result is worse than the current result from Rwp perspective
                 elif (
                     node.data.current_result is not None
@@ -527,6 +519,16 @@ class BaseSearchTree(Tree):
                     < 0.0
                     or len(remove_unnecessary_phases(new_result, new_phases, 0.0))
                     != len(new_phases)
+                ):
+                    status = "no_improvement"
+                elif (
+                    node.data.isolated_missing_peaks is not None
+                    and isolated_missing_peaks is not None
+                    and not has_improvement(
+                        isolated_missing_peak_old=node.data.isolated_missing_peaks,
+                        isolated_missing_peak_new=isolated_missing_peaks,
+                        intensity_threshold=self.intensity_threshold,
+                    )
                 ):
                     status = "no_improvement"
                 elif is_low_weight_fraction:

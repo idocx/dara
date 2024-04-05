@@ -124,11 +124,6 @@ class RefinementResult(BaseModel):
         # Create a Plotly figure with size 800x600
         fig = go.Figure()
 
-        # fix the size of the box
-        fig.update_layout(
-            autosize=True, xaxis=dict(range=[min(plot_data.x), max(plot_data.x)])
-        )
-
         # Adding scatter plot for observed data
         fig.add_trace(
             go.Scatter(
@@ -160,6 +155,7 @@ class RefinementResult(BaseModel):
                 line=dict(color="#FF7F7F", width=2),
                 name="Background",
                 opacity=0.5,
+                hoverinfo="skip",
             )
         )
 
@@ -175,15 +171,28 @@ class RefinementResult(BaseModel):
                 line=dict(color="#808080", width=1),
                 name="Difference",
                 opacity=0.7,
+                hoverinfo="skip",
             )
         )
 
         weight_fractions = self.get_phase_weights()
+        peak_data = self.peak_data
+        max_y = max(np.array(self.plot_data.y_obs) + np.array(self.plot_data.y_bkg))
+        min_y_diff = min(
+            np.array(self.plot_data.y_obs) - np.array(self.plot_data.y_calc)
+        )
         # Adding dashed lines for phases
         for i, (phase_name, phase) in enumerate(plot_data.structs.items()):
             # add area under the curve between the curve and the plot_data["y_bkg"]
             if i >= len(colormap) - 1:
                 i = i % (len(colormap) - 1)
+
+            name = (
+                f"{phase_name} ({weight_fractions[phase_name] * 100:.2f} %)"
+                if len(weight_fractions) > 1
+                else phase_name
+            )
+
             fig.add_trace(
                 go.Scatter(
                     x=plot_data.x,
@@ -193,6 +202,7 @@ class RefinementResult(BaseModel):
                     fill=None,
                     showlegend=False,
                     hoverinfo="none",
+                    legendgroup=phase_name,
                 )
             )
             fig.add_trace(
@@ -202,13 +212,29 @@ class RefinementResult(BaseModel):
                     mode="lines",
                     line=dict(color=colormap[i], width=1.5),
                     fill="tonexty",
-                    name=f"{phase_name}"
-                    + (
-                        f" ({weight_fractions[phase_name] * 100:.2f} %)"
-                        if len(weight_fractions) > 1
-                        else ""
-                    ),
+                    name=name,
                     visible="legendonly",
+                    legendgroup=phase_name,
+                )
+            )
+            refl = peak_data[peak_data["phase"] == phase_name]["2theta"]
+            intensity = peak_data[peak_data["phase"] == phase_name]["intensity"]
+            fig.add_trace(
+                go.Scatter(
+                    x=refl,
+                    y=np.ones(len(refl)) * (i + 1) * -max_y * 0.1 + min_y_diff,
+                    mode="markers",
+                    marker={
+                        "symbol": 142,
+                        "size": 5,
+                        "color": colormap[i],
+                    },
+                    name=name,
+                    legendgroup=phase_name,
+                    showlegend=False,
+                    visible="legendonly",
+                    text=[f"{x:.2f}, {y:.2f}" for x, y in zip(refl, intensity)],
+                    hovertemplate="%{text}",
                 )
             )
 
@@ -216,26 +242,29 @@ class RefinementResult(BaseModel):
 
         # Updating layout with titles and labels
         fig.update_layout(
+            autosize=True,
+            xaxis=dict(
+                range=[min(plot_data.x), max(plot_data.x)],
+                showline=True,
+                linewidth=1,
+                linecolor="black",
+                mirror=True,
+            ),
             title=title,
             xaxis_title="2θ [°]",
             yaxis_title="Intensity",
             legend_title="",
             font=dict(family="Arial, sans-serif", color="RebeccaPurple"),
+            plot_bgcolor="white",
+            yaxis=dict(showline=True, linewidth=1, linecolor="black", mirror=True),
+            legend_tracegroupgap=1,
         )
 
-        # white background
-        fig.update_layout(plot_bgcolor="white")
         fig.add_hline(y=0, line_width=1)
 
         # add tick
         fig.update_xaxes(ticks="outside", tickwidth=1, tickcolor="black", ticklen=10)
         fig.update_yaxes(ticks="outside", tickwidth=1, tickcolor="black", ticklen=10)
-
-        # add border to the plot
-        fig.update_layout(
-            xaxis=dict(showline=True, linewidth=1, linecolor="black", mirror=True),
-            yaxis=dict(showline=True, linewidth=1, linecolor="black", mirror=True),
-        )
 
         return fig
 
