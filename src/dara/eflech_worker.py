@@ -7,11 +7,10 @@ from typing import Literal, Union
 
 import numpy as np
 import pandas as pd
-
 from dara.bgmn.download_bgmn import download_bgmn
 from dara.generate_control_file import copy_instrument_files, copy_xy_pattern
 from dara.utils import get_logger, intensity_correction
-from dara.xrd import xrdml2xy, raw2xy
+from dara.xrd import raw2xy, xrdml2xy
 
 logger = get_logger(__name__)
 

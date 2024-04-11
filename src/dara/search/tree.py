@@ -9,24 +9,22 @@ from typing import Literal, TYPE_CHECKING
 import jenkspy
 import numpy as np
 import ray
-from sklearn.cluster import AgglomerativeClustering
-from treelib import Node, Tree
-
 from dara import do_refinement_no_saving
 from dara.cif2str import CIF2StrError
 from dara.peak_detection import detect_peaks
 from dara.search.data_model import SearchNodeData, SearchResult
 from dara.search.peak_matcher import PeakMatcher
 from dara.utils import (
-    DEPRECATED,
     find_optimal_intensity_threshold,
     find_optimal_score_threshold,
     get_logger,
     get_number,
     get_optimal_max_two_theta,
     load_symmetrized_structure,
-    rwp,
+    rpb,
 )
+from sklearn.cluster import AgglomerativeClustering
+from treelib import Node, Tree
 
 if TYPE_CHECKING:
     from dara.result import RefinementResult
@@ -278,7 +276,7 @@ def group_phases(
 
 
 def remove_unnecessary_phases(
-    result: RefinementResult, cif_paths: list[Path], rwp_threshold: float = 0.0
+    result: RefinementResult, cif_paths: list[Path], rpb_threshold: float = 0.0
 ) -> list[Path]:
     """
     Remove unnecessary phases from the result.
@@ -291,7 +289,7 @@ def remove_unnecessary_phases(
 
     cif_paths_dict = {cif_path.stem: cif_path for cif_path in cif_paths}
 
-    original_rwp = rwp(y_calc, y_obs)
+    original_rpb = rpb(y_calc, y_obs)
 
     new_phases = []
 
@@ -299,9 +297,9 @@ def remove_unnecessary_phases(
         y_calc_excl = y_calc.copy()
         y_calc_excl -= phases_results[excluded_phase]
 
-        new_rwp = rwp(y_calc_excl, y_obs)
+        new_rpb = rpb(y_calc_excl, y_obs)
 
-        if new_rwp > original_rwp + rwp_threshold:
+        if new_rpb > original_rpb + rpb_threshold:
             new_phases.append(cif_paths_dict[excluded_phase])
 
     return new_phases
@@ -414,11 +412,6 @@ class BaseSearchTree(Tree):
         self.max_phases = max_phases
         self.pinned_phases = pinned_phases
 
-        if self.rpb_threshold != DEPRECATED:
-            warnings.warn(
-                "The rpb_threshold argument is deprecated and will be removed in the future.",
-            )
-
         self.all_phases_result = all_phases_result
         self.peak_obs = peak_obs
 
@@ -514,23 +507,27 @@ class BaseSearchTree(Tree):
                 elif (
                     node.data.current_result is not None
                     and (
-                        node.data.current_result.lst_data.rwp - new_result.lst_data.rwp
+                        node.data.current_result.lst_data.rpb - new_result.lst_data.rpb
                     )
-                    < 0.0
-                    or len(remove_unnecessary_phases(new_result, new_phases, 0.0))
+                    < self.rpb_threshold
+                    or len(
+                        remove_unnecessary_phases(
+                            new_result, new_phases, self.rpb_threshold
+                        )
+                    )
                     != len(new_phases)
                 ):
                     status = "no_improvement"
-                elif (
-                    node.data.isolated_missing_peaks is not None
-                    and isolated_missing_peaks is not None
-                    and not has_improvement(
-                        isolated_missing_peak_old=node.data.isolated_missing_peaks,
-                        isolated_missing_peak_new=isolated_missing_peaks,
-                        intensity_threshold=self.intensity_threshold,
-                    )
-                ):
-                    status = "no_improvement"
+                # elif (
+                #     node.data.isolated_missing_peaks is not None
+                #     and isolated_missing_peaks is not None
+                #     and not has_improvement(
+                #         isolated_missing_peak_old=node.data.isolated_missing_peaks,
+                #         isolated_missing_peak_new=isolated_missing_peaks,
+                #         intensity_threshold=self.intensity_threshold,
+                #     )
+                # ):
+                #     status = "no_improvement"
                 elif is_low_weight_fraction:
                     status = "low_weight_fraction"
                 elif not is_best_result_in_group:
@@ -912,7 +909,7 @@ class SearchTree(BaseSearchTree):
         instrument_name: str = "Aeris-fds-Pixcel1d-Medipix3",
         maximum_grouping_distance: float = 0.1,
         max_phases: float = 5,
-        rpb_threshold: float = DEPRECATED,
+        rpb_threshold: float = 4,
         *args,
         **kwargs,
     ):
