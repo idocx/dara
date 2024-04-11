@@ -52,7 +52,7 @@ def search_phases(
     phase_params: dict[str, ...] | None = None,
     refinement_params: dict[str, ...] | None = None,
     return_search_tree: bool = False,
-    rpb_threshold: float = DEPRECATED,
+    rpb_threshold: float = 2,
 ) -> list[SearchResult] | SearchTree:
     """
     Search for the best phases to use for refinement.
