@@ -286,10 +286,11 @@ def remove_unnecessary_phases(
     phases_results = {k: np.array(v) for k, v in result.plot_data.structs.items()}
     y_obs = np.array(result.plot_data.y_obs)
     y_calc = np.array(result.plot_data.y_calc)
+    y_bkg = np.array(result.plot_data.y_bkg)
 
     cif_paths_dict = {cif_path.stem: cif_path for cif_path in cif_paths}
 
-    original_rpb = rpb(y_calc, y_obs)
+    original_rpb = rpb(y_calc, y_obs, y_bkg)
 
     new_phases = []
 
@@ -297,7 +298,7 @@ def remove_unnecessary_phases(
         y_calc_excl = y_calc.copy()
         y_calc_excl -= phases_results[excluded_phase]
 
-        new_rpb = rpb(y_calc_excl, y_obs)
+        new_rpb = rpb(y_calc_excl, y_obs, y_bkg)
 
         if new_rpb > original_rpb + rpb_threshold:
             new_phases.append(cif_paths_dict[excluded_phase])
