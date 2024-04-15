@@ -5,6 +5,7 @@ from __future__ import annotations
 import itertools
 import logging
 import os
+import random
 import re
 import shutil
 import sys
@@ -31,9 +32,22 @@ with open(Path(__file__).parent / "data" / "possible_species.txt") as f:
     POSSIBLE_SPECIES = {sp.strip() for sp in f}
 
 
-def process_phase_name(phase_name: str) -> str:
+def process_phase_name(phase_name: str, max_length: int | None = 10) -> str:
     """Process the phase name to remove special characters."""
-    return re.sub(r"[\s()_/\\+–\-*.]", "", phase_name)
+    processed_name = re.sub(r"[\s()_/\\+–\-*.]", "", phase_name)
+    if processed_name.isdigit():
+        processed_name = f"Phase{processed_name}"
+    # if empty, return UnknownPhase + some random alphabet
+    if not processed_name:
+        processed_name = "UnknownPhase" + "".join(
+            random.choices(
+                list("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"),
+                k=5,
+            )
+        )
+    if max_length is not None:
+        processed_name = processed_name[:max_length]
+    return processed_name
 
 
 def bool2yn(value: bool) -> str:
@@ -271,7 +285,12 @@ def angular_correction(tt, eps1, eps2):
 
 
 def intensity_correction(
-    intensity: float, d_inv: float, gsum: float, wavelength: float, pol: float = 1
+    intensity: float,
+    d_inv: float,
+    gsum: float,
+    wavelength: float,
+    pol: float = 1,
+    texture: float = 1,
 ):
     """
     Translated from Profex source (bgmnparparser.cpp:L112)
@@ -281,12 +300,14 @@ def intensity_correction(
         d_inv: the inverse of the d-spacing
         wavelength: the wavelength of the X-ray
         pol: the polarization factor, defaults to 1
+        texture: the texture factor, defaults to 1
 
     Returns:
         the corrected intensity
     """
     # double sinx2 = std::pow(0.5 * dinv * pl.waveLength, 2.0);
     sinx2 = (0.5 * d_inv * wavelength) ** 2
+    # theta = np.arcsin(np.sqrt(sinx2)) * 180.0 / np.pi
     # double intens = gsum * 360.0 * intens * 0.5 / (M_PI * std::sqrt(1.0 - sinx2) / pl.waveLength);
     # if (pl.polarization > 0.0) intens *= (0.5 * (1.0 + pl.polarization * std::pow(1.0 - 2.0 * sinx2, 2.0)));
     intensity = (
@@ -294,7 +315,8 @@ def intensity_correction(
     )
     if pol > 0.0:
         intensity *= 0.5 * (1.0 + pol * (1.0 - 2.0 * sinx2) ** 2.0)
-
+    # intensity *= texture
+    # intensity /= theta
     return intensity
 
 

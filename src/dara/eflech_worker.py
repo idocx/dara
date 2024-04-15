@@ -1,5 +1,4 @@
 import os
-import re
 import subprocess
 import tempfile
 from pathlib import Path
@@ -7,9 +6,11 @@ from typing import Literal, Union
 
 import numpy as np
 import pandas as pd
+
 from dara.bgmn.download_bgmn import download_bgmn
 from dara.generate_control_file import copy_instrument_files, copy_xy_pattern
-from dara.utils import get_logger, intensity_correction
+from dara.par_parser import ParParser
+from dara.utils import get_logger
 from dara.xrd import raw2xy, xrdml2xy
 
 logger = get_logger(__name__)
@@ -24,7 +25,10 @@ class EflechWorker:
         self.eflech_path = self.bgmn_folder / "eflech"
         self.teil_path = self.bgmn_folder / "teil"
 
-        if not self.eflech_path.exists():
+        if (
+            not self.eflech_path.exists()
+            and not self.eflech_path.with_suffix(".exe").exists()
+        ):
             logger.warning("BGMN executable not found. Downloading BGMN.")
             download_bgmn()
 
@@ -76,7 +80,7 @@ class EflechWorker:
                 show_progress=show_progress,
             )
 
-            peak_list = self.parse_peak_list(temp_dir)
+            peak_list = ParParser(control_file_path).to_df()
 
             return peak_list
 
@@ -119,7 +123,7 @@ class EflechWorker:
         show_progress: bool = False,
     ):
         if mode == "eflech":
-            subprocess.run(
+            cp = subprocess.run(
                 [self.eflech_path.as_posix(), control_file_path.as_posix()],
                 cwd=working_dir.as_posix(),
                 capture_output=not show_progress,
@@ -127,99 +131,19 @@ class EflechWorker:
                 check=False,
             )
         elif mode == "teil":
-            subprocess.run(
+            cp = subprocess.run(
                 [self.teil_path.as_posix(), control_file_path.as_posix()],
                 cwd=working_dir.as_posix(),
                 capture_output=not show_progress,
                 timeout=1200,
                 check=False,
             )
-
-    def parse_peak_list(self, par_folder: Path) -> pd.DataFrame:
-        all_par_files = list(par_folder.glob("output-*.par"))
-        peak_list = []
-        for par_file in all_par_files:
-            peak_list.extend(self.parse_par_file(par_file))
-
-        peak_list = np.array(peak_list).reshape(-1, 4)
-
-        d_inv = peak_list[:, 0]
-        intensity = peak_list[:, 1]
-        b1 = peak_list[:, 2]
-        b2 = peak_list[:, 3]
-
-        two_theta = np.arcsin(0.15406 * d_inv / 2) * 180 / np.pi * 2
-
-        peak_list_two_theta = np.column_stack((two_theta, intensity, b1, b2))
-        peak_list_two_theta = peak_list_two_theta[peak_list_two_theta[:, 0].argsort()]
-
-        df = pd.DataFrame(
-            peak_list_two_theta, columns=["2theta", "intensity", "b1", "b2"]
-        ).astype(float)
-
-        return df
-
-    @staticmethod
-    def parse_par_file(par_file: Path) -> list[list[float]]:
-        content = par_file.read_text().split("\n")
-        peak_list = []
-
-        if len(content) < 2:
-            return peak_list
-
-        peak_num = re.search(r"PEAKZAHL=(\d+)", content[0])
-        pol = re.search(r"POL=(\d+(\.\d+)?)", content[0])
-        if pol:
-            pol = float(pol.group(1))
         else:
-            pol = 1.0
+            raise ValueError(f"Unknown mode: {mode}")
 
-        if not peak_num:
-            return peak_list
-
-        peak_num = int(peak_num.group(1))
-
-        if peak_num == 0:
-            return peak_list
-
-        for i in range(1, peak_num + 1):
-            if i >= len(content):
-                break
-
-            numbers = re.split(r"\s+", content[i])
-
-            if numbers:
-                rp = int(numbers[0])
-                intensity = float(numbers[1])
-                d_inv = float(numbers[2])
-                if (gsum := re.search(r"GSUM=(\d+(\.\d+)?)", content[i])) is None:
-                    gsum = 1.0
-                else:
-                    gsum = float(gsum.group(1))
-                # TODO: change the wavelength to the user-specified value
-                intensity = intensity_correction(
-                    intensity=intensity,
-                    d_inv=d_inv,
-                    gsum=gsum,
-                    wavelength=0.15406,
-                    pol=pol,
-                )
-
-                if rp == 2:
-                    b1 = 0
-                    b2 = 0
-                elif rp == 3:
-                    b1 = float(numbers[3])
-                    b2 = 0
-                elif rp == 4:
-                    b1 = float(numbers[3])
-                    b2 = float(numbers[4]) ** 2
-                else:
-                    b1 = 0
-                    b2 = 0
-
-                # Only add peaks with intensity > 0
-                if intensity > 0:
-                    peak_list.append([d_inv, intensity, b1, b2])
-
-        return peak_list
+        if cp.returncode:
+            raise RuntimeError(
+                f"Error in BGMN {mode} for {control_file_path}. The exit code is {cp.returncode}\n"
+                f"{cp.stdout}\n"
+                f"{cp.stderr}"
+            )

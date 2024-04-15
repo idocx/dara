@@ -17,11 +17,10 @@ class BGMNWorker:
 
         self.bgmn_path = self.bgmn_folder / "bgmn"
 
-        # Windows configuration
-        if not self.bgmn_path.exists():
-            self.bgmn_path = self.bgmn_folder / "bgmn.exe"
-
-        if not self.bgmn_path.exists():
+        if (
+            not self.bgmn_path.exists()
+            and not self.bgmn_path.with_suffix(".exe").exists()
+        ):
             logger.warning("BGMN executable not found. Downloading BGMN.")
             download_bgmn()
 
@@ -41,7 +40,7 @@ class BGMNWorker:
             cwd=control_file.parent.absolute().as_posix(),
             capture_output=not show_progress,
             check=False,
-            timeout=600,
+            timeout=60,
         )
         if cp.returncode:
             raise RuntimeError(

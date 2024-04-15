@@ -9,8 +9,9 @@ import numpy as np
 import pandas as pd
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
+from dara.par_parser import ParParser
 from dara.plot import visualize
-from dara.utils import angular_correction, get_number, intensity_correction
+from dara.utils import get_number
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -134,13 +135,20 @@ def get_result(control_file: Path) -> RefinementResult:
     phase_names = re.findall(r"STRUC\[\d+]=(.+?)\.str", sav_text)
 
     lst_path = control_file.parent / f"{control_file.stem}.lst"
+    lst_data = parse_lst(lst_path, phase_names=phase_names)
+
     dia_path = control_file.parent / f"{control_file.stem}.dia"
-    par_path = control_file.parent / f"{control_file.stem}.par"
+    plot_data = parse_dia(dia_path, phase_names=phase_names)
+
+    phase_mapping = {
+        p_name: f_name for p_name, f_name in zip(phase_names, plot_data.structs)
+    }
+    peak_data = parse_par(control_file, phase_mapping=phase_mapping)
 
     result = {
-        "lst_data": parse_lst(lst_path, phase_names=phase_names),
-        "plot_data": parse_dia(dia_path, phase_names=phase_names),
-        "peak_data": parse_par(par_path, phase_names=phase_names),
+        "lst_data": lst_data,
+        "plot_data": plot_data,
+        "peak_data": peak_data,
     }
 
     return RefinementResult(**result)
@@ -311,136 +319,8 @@ def parse_dia(dia_path: Path, phase_names: list[str]) -> DiaResult:
     return DiaResult(**data)
 
 
-def parse_par(par_file: Path, phase_names: list[str]) -> pd.DataFrame:
+def parse_par(control_file: Path, phase_mapping: dict[str, str]) -> pd.DataFrame:
     """Get the parameters from the .par file (hkl)."""
-
-    def _make_dataframe(peak_list) -> pd.DataFrame:
-        return pd.DataFrame(
-            peak_list,
-            columns=[
-                "2theta",
-                "intensity",
-                "b1",
-                "b2",
-                "h",
-                "k",
-                "l",
-                "phase",
-                "phase_idx",
-            ],
-        ).astype(
-            {
-                "2theta": float,
-                "intensity": float,
-                "b1": float,
-                "b2": float,
-                "h": int,
-                "k": int,
-                "l": int,
-                "phase": str,
-                "phase_idx": int,
-            }
-        )
-
-    content = par_file.read_text().split("\n")
-    peak_list = []
-
-    if len(content) < 2:
-        return _make_dataframe(peak_list)
-
-    peak_num = re.search(r"PEAKZAHL=(\d+)", content[0])
-
-    if not peak_num:
-        return _make_dataframe(peak_list)
-
-    # parse some global parameters
-    eps1 = re.search(r"EPS1=(\d+(\.\d+)?)", content[0])
-    eps2 = re.search(r"EPS2=([+-]?\d+(\.\d+)?)", content[0])
-    pol = re.search(r"POL=(\d+(\.\d+)?)", content[0])
-    if eps1:
-        eps1 = float(eps1.group(1))
-    else:
-        eps1 = 0.0
-    if eps2:
-        eps2 = float(eps2.group(1))
-    else:
-        eps2 = 0.0
-    if pol:
-        pol = float(pol.group(1))
-    else:
-        pol = 1.0
-
-    peak_num = int(peak_num.group(1))
-
-    # get the mapping between the peak's phase name to the actual phase name
-    all_peak_phase_names = re.findall(r"PHASE=(\w+)", "\n".join(content))
-    peak_phase_names = list(dict.fromkeys(all_peak_phase_names))
-    phase_names_mapping = {
-        peak_phase_name: (phase_name, i)
-        for i, (peak_phase_name, phase_name) in enumerate(
-            zip(peak_phase_names, phase_names)
-        )
-    }
-
-    for i in range(1, peak_num + 1):
-        if i >= len(content):
-            break
-
-        numbers = re.split(r"\s+", content[i])
-
-        if numbers:
-            rp = int(numbers[0])
-            intensity = float(numbers[1])
-            d_inv = float(numbers[2])
-            gsum = re.search(r"GSUM=(\d+(\.\d+)?)", content[i])
-            gsum = float(gsum.group(1)) if gsum is not None else 1.0
-            # TODO: change the wavelength to the user-specified wavelength
-            intensity = intensity_correction(
-                intensity=intensity, d_inv=d_inv, gsum=gsum, wavelength=0.15406, pol=pol
-            )
-            if rp == 2:
-                b1 = 0
-                b2 = 0
-            elif rp == 3:
-                b1 = float(numbers[3])
-                b2 = 0
-            elif rp == 4:
-                b1 = float(numbers[3])
-                b2 = float(numbers[4]) ** 2
-            else:
-                b1 = 0
-                b2 = 0
-
-            h = int(numbers[-3])
-            k = int(numbers[-2])
-            l = int(numbers[-1])
-
-            phase = re.search(r"PHASE=(\w+)", content[i]).group(1)
-            phase, idx = phase_names_mapping[phase]
-
-            if intensity > 0:
-                peak_list.append([d_inv, intensity, b1, b2, h, k, l, phase, idx])
-
-    # from d_inv to two theta
-    # TODO: change the wavelength to the user-specified wavelength
-    two_theta = (
-        np.arcsin(0.15406 * np.array([p[0] for p in peak_list]) / 2) * 180 / np.pi * 2
-    )
-
-    # apply eps1 and eps2
-    two_theta += angular_correction(two_theta, eps1, eps2)
-    peak_list = [[two_theta[i]] + peak_list[i][1:] for i in range(len(peak_list))]
-
-    return _make_dataframe(peak_list)
-
-
-if __name__ == "__main__":
-    from pathlib import Path
-
-    print(
-        parse_par(
-            Path(
-                "/Users/yuxing/projects/ar3l-search/example/Mn7(P2O7)4/Mn7(P2O7)4_recipe19_Pellet.par"
-            )
-        )
-    )
+    par_df = ParParser(control_file).to_df()
+    par_df["phase"] = par_df["phase"].map(phase_mapping)
+    return par_df
