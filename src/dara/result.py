@@ -140,8 +140,13 @@ def get_result(control_file: Path) -> RefinementResult:
     dia_path = control_file.parent / f"{control_file.stem}.dia"
     plot_data = parse_dia(dia_path, phase_names=phase_names)
 
+    # try to get the phase mapping from the .lst file
+    str_phase_names = re.findall(
+        r"Local parameters and GOALs for phase (.+?)\n", lst_data.raw_lst
+    )
+
     phase_mapping = {
-        p_name: f_name for p_name, f_name in zip(phase_names, plot_data.structs)
+        p_name: f_name for p_name, f_name in zip(str_phase_names, phase_names)
     }
     peak_data = parse_par(control_file, phase_mapping=phase_mapping)
 
@@ -323,4 +328,7 @@ def parse_par(control_file: Path, phase_mapping: dict[str, str]) -> pd.DataFrame
     """Get the parameters from the .par file (hkl)."""
     par_df = ParParser(control_file).to_df()
     par_df["phase"] = par_df["phase"].map(phase_mapping)
+
+    if par_df["phase"].isnull().any():
+        raise ValueError("Cannot find the proper phase names from the .par file. ")
     return par_df

@@ -36,10 +36,10 @@ def process_phase_name(phase_name: str, max_length: int | None = 10) -> str:
     """Process the phase name to remove special characters."""
     processed_name = re.sub(r"[\s()_/\\+–\-*.]", "", phase_name)
     if processed_name.isdigit():
-        processed_name = f"Phase{processed_name}"
+        processed_name = f"P{processed_name}"
     # if empty, return UnknownPhase + some random alphabet
     if not processed_name:
-        processed_name = "UnknownPhase" + "".join(
+        processed_name = "P" + "".join(
             random.choices(
                 list("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"),
                 k=5,

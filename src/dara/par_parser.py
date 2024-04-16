@@ -30,6 +30,8 @@ class ParParser:
         os.environ["PATH"] += os.pathsep + self.bgmn_folder.as_posix()
 
         self.control_file_path = Path(control_file_path)
+        if not self.control_file_path.suffix == ".sav":
+            raise ValueError("The control file has to be a .sav file.")
 
     def to_df(self) -> pd.DataFrame:
         """Parse the BGMN control file and return the parsed data as a DataFrame."""
