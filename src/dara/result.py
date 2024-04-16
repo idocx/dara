@@ -120,6 +120,10 @@ class RefinementResult(BaseModel):
         return dict(sorted(weights.items(), key=lambda item: item[1], reverse=True))
 
 
+class ParseError(Exception):
+    """Error when parsing the result."""
+
+
 def get_result(control_file: Path) -> RefinementResult:
     """
     Get the result from the refinement.
@@ -131,32 +135,35 @@ def get_result(control_file: Path) -> RefinementResult:
     # STRUC[1]=Bi2Fe4O9.str
     # STRUC[2]=Bi25FeO39.str
     # STRUC[3]=BiFeO3.str
-    sav_text = control_file.read_text()
-    phase_names = re.findall(r"STRUC\[\d+]=(.+?)\.str", sav_text)
+    try:
+        sav_text = control_file.read_text()
+        phase_names = re.findall(r"STRUC\[\d+]=(.+?)\.str", sav_text)
 
-    lst_path = control_file.parent / f"{control_file.stem}.lst"
-    lst_data = parse_lst(lst_path, phase_names=phase_names)
+        lst_path = control_file.parent / f"{control_file.stem}.lst"
+        lst_data = parse_lst(lst_path, phase_names=phase_names)
 
-    dia_path = control_file.parent / f"{control_file.stem}.dia"
-    plot_data = parse_dia(dia_path, phase_names=phase_names)
+        dia_path = control_file.parent / f"{control_file.stem}.dia"
+        plot_data = parse_dia(dia_path, phase_names=phase_names)
 
-    # try to get the phase mapping from the .lst file
-    str_phase_names = re.findall(
-        r"Local parameters and GOALs for phase (.+?)\n", lst_data.raw_lst
-    )
+        # try to get the phase mapping from the .lst file
+        str_phase_names = re.findall(
+            r"Local parameters and GOALs for phase (.+?)\n", lst_data.raw_lst
+        )
 
-    phase_mapping = {
-        p_name: f_name for p_name, f_name in zip(str_phase_names, phase_names)
-    }
-    peak_data = parse_par(control_file, phase_mapping=phase_mapping)
+        phase_mapping = {
+            p_name: f_name for p_name, f_name in zip(str_phase_names, phase_names)
+        }
+        peak_data = parse_par(control_file, phase_mapping=phase_mapping)
 
-    result = {
-        "lst_data": lst_data,
-        "plot_data": plot_data,
-        "peak_data": peak_data,
-    }
+        result = {
+            "lst_data": lst_data,
+            "plot_data": plot_data,
+            "peak_data": peak_data,
+        }
 
-    return RefinementResult(**result)
+        return RefinementResult(**result)
+    except Exception as e:
+        raise ParseError(f"Error in parsing the result from {control_file}") from e
 
 
 def parse_lst(lst_path: Path, phase_names: list[str]) -> LstResult:
