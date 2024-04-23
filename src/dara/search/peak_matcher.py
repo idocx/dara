@@ -338,8 +338,8 @@ class PeakMatcher:
         -------
             the score of the matching result
         """
-        matched_obs = self.matched[1]
-        wrong_intens_obs = self.wrong_intensity[1]
+        matched_obs = self.matched[0]
+        wrong_intens_obs = self.wrong_intensity[0]
         missing_obs = self.missing
         extra_calc = self.extra
 

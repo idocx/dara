@@ -149,7 +149,9 @@ def calculate_fom_and_strain(
         the figure of merit of the target phase. If it cannot be calculated, return 0.
     """
     a = 1.0
+    # we disable the weight for now
     b = 0.0
+    # we disable the particle size for now
     c = 0.0
     b1_threshold = 2e-5
 
