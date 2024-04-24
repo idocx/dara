@@ -465,9 +465,7 @@ class BaseSearchTree(Tree):
                         reverse=True,
                     )
                     # make sure the newly added phase has the lowest peak intensity
-                    is_low_weight_fraction = (
-                        sorted_searched_phases[-1] != searched_phases[-1]
-                    )
+                    is_low_weight_fraction = sorted_searched_phases != searched_phases
                 else:
                     is_low_weight_fraction = False
 
