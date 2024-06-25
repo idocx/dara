@@ -1,0 +1,671 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dara.prediction.rn &#8212; Dara Documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
+
+    <script src="../../../_static/documentation_options.js?v=e645c8fa"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/dara/prediction/rn';</script>
+    <link rel="icon" href="../../../_static/logo.svg"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/logo-wide.svg" class="logo__image only-light" alt="Dara Documentation - Home"/>
+    <script>document.write(`<img src="../../../_static/logo-wide-dark.svg" class="logo__image only-dark" alt="Dara Documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/idocx/dara" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../../index.html">
+                    Overview
+                </a>
+            </li>
+        </ul>
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../modules.html">API Docs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../dara.html">dara package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../dara.bgmn.html">dara.bgmn package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../dara.bgmn.download_bgmn.html">dara.bgmn.download_bgmn module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dara.data.html">dara.data package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../dara.prediction.html">dara.prediction package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../dara.prediction.base.html">dara.prediction.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../dara.prediction.core.html">dara.prediction.core module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../dara.prediction.rn.html">dara.prediction.rn module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../dara.prediction.rxn_ca.html">dara.prediction.rxn_ca module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../dara.search.html">dara.search package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../dara.search.core.html">dara.search.core module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../dara.search.data_model.html">dara.search.data_model module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../dara.search.peak_matcher.html">dara.search.peak_matcher module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../dara.search.tree.html">dara.search.tree module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dara.bgmn_worker.html">dara.bgmn_worker module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dara.cif.html">dara.cif module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dara.cif2str.html">dara.cif2str module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dara.eflech_worker.html">dara.eflech_worker module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dara.generate_control_file.html">dara.generate_control_file module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dara.jobs.html">dara.jobs module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dara.peak_detection.html">dara.peak_detection module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dara.plot.html">dara.plot module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dara.refine.html">dara.refine module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dara.result.html">dara.result module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dara.schema.html">dara.schema module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dara.settings.html">dara.settings module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dara.structure_db.html">dara.structure_db module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dara.utils.html">dara.utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dara.xrd.html">dara.xrd module</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/idocx/dara" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for dara.prediction.rn</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;An interface for rxn_network for predicting products in a chemical reaction.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+
+<span class="kn">from</span> <span class="nn">maggma.stores.mongolike</span> <span class="kn">import</span> <span class="n">MongoStore</span>
+<span class="kn">from</span> <span class="nn">pymatgen.core</span> <span class="kn">import</span> <span class="n">Composition</span><span class="p">,</span> <span class="n">Element</span>
+<span class="kn">from</span> <span class="nn">rxn_network.costs.calculators</span> <span class="kn">import</span> <span class="n">PrimaryCompetitionCalculator</span><span class="p">,</span> <span class="n">SecondaryCompetitionCalculator</span>
+<span class="kn">from</span> <span class="nn">rxn_network.costs.functions</span> <span class="kn">import</span> <span class="n">Softplus</span><span class="p">,</span> <span class="n">WeightedSum</span>
+<span class="kn">from</span> <span class="nn">rxn_network.entries.entry_set</span> <span class="kn">import</span> <span class="n">GibbsEntrySet</span>
+<span class="kn">from</span> <span class="nn">rxn_network.enumerators.basic</span> <span class="kn">import</span> <span class="n">BasicEnumerator</span><span class="p">,</span> <span class="n">BasicOpenEnumerator</span>
+<span class="kn">from</span> <span class="nn">rxn_network.enumerators.minimize</span> <span class="kn">import</span> <span class="n">MinimizeGibbsEnumerator</span><span class="p">,</span> <span class="n">MinimizeGrandPotentialEnumerator</span>
+<span class="kn">from</span> <span class="nn">rxn_network.reactions.hull</span> <span class="kn">import</span> <span class="n">InterfaceReactionHull</span>
+<span class="kn">from</span> <span class="nn">rxn_network.reactions.reaction_set</span> <span class="kn">import</span> <span class="n">ReactionSet</span>
+
+<span class="kn">from</span> <span class="nn">dara.prediction.base</span> <span class="kn">import</span> <span class="n">PredictionEngine</span>
+<span class="kn">from</span> <span class="nn">dara.utils</span> <span class="kn">import</span> <span class="n">get_chemsys_from_formulas</span><span class="p">,</span> <span class="n">get_entries_in_chemsys_db</span><span class="p">,</span> <span class="n">get_entries_in_chemsys_mp</span><span class="p">,</span> <span class="n">get_logger</span>
+
+<span class="k">if</span> <span class="n">typing</span><span class="o">.</span><span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">pymatgen.entries.computed_entries</span> <span class="kn">import</span> <span class="n">ComputedStructureEntry</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ReactionNetworkEngine">
+<a class="viewcode-back" href="../../../dara.prediction.rn.html#dara.prediction.rn.ReactionNetworkEngine">[docs]</a>
+<span class="k">class</span> <span class="nc">ReactionNetworkEngine</span><span class="p">(</span><span class="n">PredictionEngine</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Engine for predicting products in a chemical reaction.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cost_function</span><span class="o">=</span><span class="s2">&quot;weighted_sum&quot;</span><span class="p">,</span> <span class="n">max_rereact</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the engine.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cost_function: Cost function to use for ranking (default: weighted sum)</span>
+<span class="sd">            max_rereact: Maximum number of phases to consider for followup reactions</span>
+<span class="sd">                within the cost function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cost_function</span> <span class="o">=</span> <span class="n">cost_function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_rereact</span> <span class="o">=</span> <span class="n">max_rereact</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ReactionNetworkEngine.predict">
+<a class="viewcode-back" href="../../../dara.prediction.rn.html#dara.prediction.rn.ReactionNetworkEngine.predict">[docs]</a>
+    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">precursors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">temp</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">computed_entries</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ComputedStructureEntry</span><span class="p">]</span> <span class="o">|</span> <span class="n">MongoStore</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">open_elem</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">chempot</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">e_hull_cutoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Interface with reaction-network package for phase prediction based on interface</span>
+<span class="sd">        reaction hulls.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            precursors: List of precursor formulas (no stoichiometry required)</span>
+<span class="sd">            temp: Temperature in Kelvin</span>
+<span class="sd">            computed_entries: Optional list of ComputedStructureEntry objects or a store linking to an entry database.</span>
+<span class="sd">                If None, will download from Materials Project using your MP_API key (must be stored in environment</span>
+<span class="sd">                variables as $MP_API_KEY)</span>
+<span class="sd">            open_elem: Optional open element (e.g., &quot;O&quot; for oxygen). If &quot;O_air&quot; is provided,</span>
+<span class="sd">                will automatically default to oxygen with appropriate chemical potential</span>
+<span class="sd">                (0.21 atm at desired temp).</span>
+<span class="sd">            chempot: Optional chemical potential, defaults to 0 (standard state at the</span>
+<span class="sd">                desired temp)</span>
+<span class="sd">            e_hull_cutoff: Energy above hull cutoff by which to filter entries (default: takes</span>
+<span class="sd">                all entries with an E_hull &lt;= 50 meV/atom.)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">precursors_comp</span> <span class="o">=</span> <span class="p">[</span><span class="n">Composition</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">precursors</span><span class="p">]</span>
+        <span class="n">precursors_formulas</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">reduced_formula</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">precursors_comp</span><span class="p">]</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+        <span class="n">cf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cost_function</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">open_elem</span> <span class="o">==</span> <span class="s2">&quot;O_air&quot;</span><span class="p">:</span>
+            <span class="n">open_elem</span> <span class="o">=</span> <span class="s2">&quot;O&quot;</span>
+            <span class="n">chempot</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="mf">8.617e-5</span> <span class="o">*</span> <span class="n">temp</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mf">0.21</span><span class="p">)</span>  <span class="c1"># oxygen atmospheric partial pressure</span>
+
+        <span class="k">if</span> <span class="n">computed_entries</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Downloading entries from Materials Project...&quot;</span><span class="p">)</span>
+            <span class="n">computed_entries</span> <span class="o">=</span> <span class="n">get_entries_in_chemsys_mp</span><span class="p">(</span><span class="n">get_chemsys_from_formulas</span><span class="p">(</span><span class="n">precursors_formulas</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">computed_entries</span><span class="p">,</span> <span class="n">MongoStore</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Downloading entries from provided database...&quot;</span><span class="p">)</span>
+            <span class="n">computed_entries</span> <span class="o">=</span> <span class="n">get_entries_in_chemsys_db</span><span class="p">(</span>
+                <span class="n">computed_entries</span><span class="p">,</span> <span class="n">get_chemsys_from_formulas</span><span class="p">(</span><span class="n">precursors_formulas</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using provided entries...&quot;</span><span class="p">)</span>
+
+        <span class="n">gibbs</span><span class="p">,</span> <span class="n">precursors_no_open</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_entries</span><span class="p">(</span><span class="n">precursors_comp</span><span class="p">,</span> <span class="n">computed_entries</span><span class="p">,</span> <span class="n">open_elem</span><span class="p">,</span> <span class="n">e_hull_cutoff</span><span class="p">,</span> <span class="n">temp</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Enumerating all possible reactions...&quot;</span><span class="p">)</span>
+        <span class="n">rxns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enumerate_reactions</span><span class="p">(</span><span class="n">precursors_no_open</span><span class="p">,</span> <span class="n">gibbs</span><span class="p">,</span> <span class="n">open_elem</span><span class="p">,</span> <span class="n">chempot</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_rxn_data</span><span class="p">(</span><span class="n">precursors_no_open</span><span class="p">,</span> <span class="n">rxns</span><span class="p">,</span> <span class="n">open_elem</span><span class="p">)</span>
+        <span class="n">ranked_formulas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank_formulas</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">cf</span><span class="p">)</span>
+
+        <span class="n">rereact_formulas</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ranked_formulas</span><span class="o">.</span><span class="n">keys</span><span class="p">())[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_rereact</span><span class="p">]</span>
+
+        <span class="n">rereact_rxns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enumerate_reactions</span><span class="p">(</span><span class="n">rereact_formulas</span><span class="p">,</span> <span class="n">gibbs</span><span class="p">,</span> <span class="n">open_elem</span><span class="p">,</span> <span class="n">chempot</span><span class="p">)</span>
+        <span class="n">rereact_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_rxn_data</span><span class="p">(</span><span class="n">rereact_formulas</span><span class="p">,</span> <span class="n">rereact_rxns</span><span class="p">,</span> <span class="n">open_elem</span><span class="p">)</span>
+        <span class="n">rereact_ranked_formulas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank_formulas</span><span class="p">(</span><span class="n">rereact_data</span><span class="p">,</span> <span class="n">cf</span><span class="p">)</span>
+
+        <span class="n">merged_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">key</span><span class="p">:</span> <span class="nb">min</span><span class="p">(</span>
+                <span class="n">ranked_formulas</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)),</span>
+                <span class="n">rereact_ranked_formulas</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)),</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">ranked_formulas</span><span class="p">)</span> <span class="o">|</span> <span class="nb">set</span><span class="p">(</span><span class="n">rereact_ranked_formulas</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">formula</span><span class="p">,</span> <span class="n">cost</span> <span class="ow">in</span> <span class="n">merged_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">formula</span> <span class="ow">in</span> <span class="n">precursors_formulas</span><span class="p">:</span>
+                <span class="n">merged_dict</span><span class="p">[</span><span class="n">formula</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">cost</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>  <span class="c1"># make sure precursor is always there</span>
+
+        <span class="k">return</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">merged_dict</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_get_entries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">precursors</span><span class="p">,</span> <span class="n">computed_entries</span><span class="p">,</span> <span class="n">open_elem</span><span class="p">,</span> <span class="n">e_hull_cutoff</span><span class="p">,</span> <span class="n">temp</span><span class="p">):</span>
+        <span class="n">gibbs</span> <span class="o">=</span> <span class="n">GibbsEntrySet</span><span class="o">.</span><span class="n">from_computed_entries</span><span class="p">(</span>
+            <span class="n">computed_entries</span><span class="p">,</span>
+            <span class="mi">300</span><span class="p">,</span>
+            <span class="n">include_nist_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># acquire and filter entries at 300 K</span>
+        <span class="p">)</span>
+        <span class="n">gibbs</span> <span class="o">=</span> <span class="n">gibbs</span><span class="o">.</span><span class="n">filter_by_stability</span><span class="p">(</span><span class="n">e_hull_cutoff</span><span class="p">)</span>
+        <span class="n">gibbs</span> <span class="o">=</span> <span class="n">gibbs</span><span class="o">.</span><span class="n">get_entries_with_new_temperature</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+
+        <span class="n">precursors_no_open_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">precursors</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">open_elem</span><span class="p">:</span>
+            <span class="n">precursors_no_open_set</span> <span class="o">=</span> <span class="n">precursors_no_open_set</span> <span class="o">-</span> <span class="p">{</span>
+                <span class="n">Composition</span><span class="p">(</span><span class="n">Composition</span><span class="p">(</span><span class="n">open_elem</span><span class="p">)</span><span class="o">.</span><span class="n">reduced_formula</span><span class="p">)</span>  <span class="c1"># remove open element formula</span>
+            <span class="p">}</span>
+
+        <span class="n">precursors_no_open</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">precursors_no_open_set</span><span class="p">)</span>
+
+        <span class="n">reactants</span> <span class="o">=</span> <span class="p">[</span><span class="n">get_entry_by_formula</span><span class="p">(</span><span class="n">gibbs</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">reduced_formula</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">precursors</span><span class="p">]</span>
+
+        <span class="n">gibbs_entries_list</span> <span class="o">=</span> <span class="n">gibbs</span><span class="o">.</span><span class="n">entries_list</span>
+        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">reactants</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">entry</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">gibbs_entries_list</span><span class="p">:</span>
+                <span class="n">gibbs_entries_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+        <span class="n">gibbs</span> <span class="o">=</span> <span class="n">GibbsEntrySet</span><span class="p">(</span><span class="n">gibbs_entries_list</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">gibbs</span><span class="p">,</span> <span class="n">precursors_no_open</span>
+
+    <span class="k">def</span> <span class="nf">_enumerate_reactions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">precursors_no_open</span><span class="p">,</span> <span class="n">gibbs</span><span class="p">,</span> <span class="n">open_elem</span><span class="p">,</span> <span class="n">chempot</span><span class="p">):</span>
+        <span class="n">rxns</span> <span class="o">=</span> <span class="n">BasicEnumerator</span><span class="p">(</span><span class="n">precursors</span><span class="o">=</span><span class="n">precursors_no_open</span><span class="p">)</span><span class="o">.</span><span class="n">enumerate</span><span class="p">(</span><span class="n">gibbs</span><span class="p">)</span>
+        <span class="n">rxns</span> <span class="o">=</span> <span class="n">rxns</span><span class="o">.</span><span class="n">add_rxn_set</span><span class="p">(</span><span class="n">MinimizeGibbsEnumerator</span><span class="p">(</span><span class="n">precursors</span><span class="o">=</span><span class="n">precursors_no_open</span><span class="p">)</span><span class="o">.</span><span class="n">enumerate</span><span class="p">(</span><span class="n">gibbs</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">open_elem</span><span class="p">:</span>
+            <span class="n">rxns</span> <span class="o">=</span> <span class="n">rxns</span><span class="o">.</span><span class="n">add_rxn_set</span><span class="p">(</span>
+                <span class="n">BasicOpenEnumerator</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">Composition</span><span class="p">(</span><span class="n">open_elem</span><span class="p">)</span><span class="o">.</span><span class="n">reduced_formula</span><span class="p">],</span>
+                    <span class="n">precursors</span><span class="o">=</span><span class="n">precursors_no_open</span><span class="p">,</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">enumerate</span><span class="p">(</span><span class="n">gibbs</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">rxns</span> <span class="o">=</span> <span class="n">rxns</span><span class="o">.</span><span class="n">add_rxn_set</span><span class="p">(</span>
+                <span class="n">MinimizeGrandPotentialEnumerator</span><span class="p">(</span>
+                    <span class="n">open_elem</span><span class="o">=</span><span class="n">Element</span><span class="p">(</span><span class="n">open_elem</span><span class="p">),</span>
+                    <span class="n">mu</span><span class="o">=</span><span class="n">chempot</span><span class="p">,</span>
+                    <span class="n">precursors</span><span class="o">=</span><span class="n">precursors_no_open</span><span class="p">,</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">enumerate</span><span class="p">(</span><span class="n">gibbs</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">rxns</span> <span class="o">=</span> <span class="n">ReactionSet</span><span class="o">.</span><span class="n">from_rxns</span><span class="p">(</span><span class="n">rxns</span><span class="p">,</span> <span class="n">rxns</span><span class="o">.</span><span class="n">entries</span><span class="p">,</span> <span class="n">open_elem</span><span class="o">=</span><span class="n">open_elem</span><span class="p">,</span> <span class="n">chempot</span><span class="o">=</span><span class="n">chempot</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">rxns</span><span class="o">.</span><span class="n">filter_duplicates</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_get_rxn_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">precursors_no_open</span><span class="p">,</span> <span class="n">rxns</span><span class="p">,</span> <span class="n">open_elem</span><span class="p">):</span>
+        <span class="n">all_data</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">combo</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">precursors_no_open</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">combo</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">combo</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">open_elem</span><span class="p">:</span>
+                <span class="n">combo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Composition</span><span class="p">(</span><span class="n">Composition</span><span class="p">(</span><span class="n">open_elem</span><span class="p">)</span><span class="o">.</span><span class="n">reduced_formula</span><span class="p">))</span>
+
+            <span class="n">combo_rxns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">rxns</span><span class="o">.</span><span class="n">get_rxns_by_reactants</span><span class="p">(</span><span class="n">combo</span><span class="p">))</span>
+            <span class="n">found_e1</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">found_e2</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">rxn</span> <span class="ow">in</span> <span class="n">combo_rxns</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">rxn</span><span class="o">.</span><span class="n">reactant_entries</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">composition</span><span class="o">.</span><span class="n">reduced_composition</span> <span class="o">==</span> <span class="n">combo</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                        <span class="n">found_e1</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">elif</span> <span class="n">e</span><span class="o">.</span><span class="n">composition</span><span class="o">.</span><span class="n">reduced_composition</span> <span class="o">==</span> <span class="n">combo</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                        <span class="n">found_e2</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">if</span> <span class="n">found_e1</span> <span class="ow">and</span> <span class="n">found_e2</span><span class="p">:</span>
+                        <span class="k">break</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">found_e1</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">found_e2</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">irh</span> <span class="o">=</span> <span class="n">InterfaceReactionHull</span><span class="p">(</span><span class="n">combo</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">combo</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">combo_rxns</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">rxn</span> <span class="ow">in</span> <span class="n">irh</span><span class="o">.</span><span class="n">reactions</span><span class="p">:</span>
+                <span class="n">calc1</span> <span class="o">=</span> <span class="n">PrimaryCompetitionCalculator</span><span class="p">(</span><span class="n">irh</span><span class="p">)</span>
+                <span class="n">calc2</span> <span class="o">=</span> <span class="n">SecondaryCompetitionCalculator</span><span class="p">(</span><span class="n">irh</span><span class="p">)</span>
+
+                <span class="n">rxn_decorated</span> <span class="o">=</span> <span class="n">calc1</span><span class="o">.</span><span class="n">decorate</span><span class="p">(</span><span class="n">rxn</span><span class="p">)</span>
+                <span class="n">rxn_decorated</span> <span class="o">=</span> <span class="n">calc2</span><span class="o">.</span><span class="n">decorate</span><span class="p">(</span><span class="n">rxn_decorated</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">product</span> <span class="ow">in</span> <span class="n">rxn_decorated</span><span class="o">.</span><span class="n">products</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">product</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_data</span><span class="p">:</span>
+                        <span class="n">all_data</span><span class="p">[</span><span class="n">product</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">rxn_decorated</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">all_data</span><span class="p">[</span><span class="n">product</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rxn_decorated</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">all_data</span>
+
+    <span class="k">def</span> <span class="nf">_get_cost_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">temp</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cost_function</span> <span class="o">==</span> <span class="s2">&quot;weighted_sum&quot;</span><span class="p">:</span>
+            <span class="n">cf</span> <span class="o">=</span> <span class="n">WeightedSum</span><span class="p">(</span>
+                <span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">,</span> <span class="s2">&quot;primary_competition&quot;</span><span class="p">,</span> <span class="s2">&quot;secondary_competition&quot;</span><span class="p">],</span>
+                <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">cost_function</span> <span class="o">==</span> <span class="s2">&quot;softplus&quot;</span><span class="p">:</span>
+            <span class="n">cf</span> <span class="o">=</span> <span class="n">Softplus</span><span class="p">(</span>
+                <span class="n">temp</span><span class="o">=</span><span class="n">temp</span><span class="p">,</span>
+                <span class="n">params</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">,</span> <span class="s2">&quot;primary_competition&quot;</span><span class="p">,</span> <span class="s2">&quot;secondary_competition&quot;</span><span class="p">],</span>
+                <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cost function </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cost_function</span><span class="si">}</span><span class="s2"> not recognized.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">cf</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_rank_formulas</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">cf</span><span class="p">):</span>
+        <span class="n">ranked_formulas</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">comp</span><span class="p">,</span> <span class="n">rxns</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">formula</span> <span class="o">=</span> <span class="n">comp</span><span class="o">.</span><span class="n">reduced_formula</span>
+            <span class="n">min_cost_rxn</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">rxns</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">rxn</span><span class="p">:</span> <span class="n">cf</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">rxn</span><span class="p">))</span>
+            <span class="n">min_cost</span> <span class="o">=</span> <span class="n">cf</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">min_cost_rxn</span><span class="p">)</span>
+            <span class="n">ranked_formulas</span><span class="p">[</span><span class="n">formula</span><span class="p">]</span> <span class="o">=</span> <span class="n">min_cost</span>
+
+        <span class="k">return</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">ranked_formulas</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_probabilities</span><span class="p">(</span><span class="n">ranked_formulas</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert primary and secondary competition values into net probability of appearance.&quot;&quot;&quot;</span>
+        <span class="n">phases</span><span class="p">,</span> <span class="n">costs</span> <span class="o">=</span> <span class="n">ranked_formulas</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">ranked_formulas</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="n">inverse_rankings</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">cost</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">costs</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">cost</span> <span class="ow">in</span> <span class="n">costs</span><span class="p">]</span>
+        <span class="n">total_inverse_rankings</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">inverse_rankings</span><span class="p">)</span>
+        <span class="n">probabilities</span> <span class="o">=</span> <span class="p">[</span><span class="n">inv_rank</span> <span class="o">/</span> <span class="n">total_inverse_rankings</span> <span class="k">for</span> <span class="n">inv_rank</span> <span class="ow">in</span> <span class="n">inverse_rankings</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">(</span>
+            <span class="nb">sorted</span><span class="p">(</span>
+                <span class="p">{</span><span class="n">k</span><span class="o">.</span><span class="n">reduced_formula</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">phases</span><span class="p">,</span> <span class="n">probabilities</span><span class="p">)}</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>
+                <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_entry_by_formula">
+<a class="viewcode-back" href="../../../dara.prediction.rn.html#dara.prediction.rn.get_entry_by_formula">[docs]</a>
+<span class="k">def</span> <span class="nf">get_entry_by_formula</span><span class="p">(</span><span class="n">gibbs_entries</span><span class="p">:</span> <span class="n">GibbsEntrySet</span><span class="p">,</span> <span class="n">formula</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Either returns the minimum energy entry or a new interpolated entry.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">entry</span> <span class="o">=</span> <span class="n">gibbs_entries</span><span class="o">.</span><span class="n">get_min_entry_by_formula</span><span class="p">(</span><span class="n">formula</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">entry</span> <span class="o">=</span> <span class="n">gibbs_entries</span><span class="o">.</span><span class="n">get_interpolated_entry</span><span class="p">(</span><span class="n">formula</span><span class="p">)</span>  <span class="c1"># if entry is missing, use interpolated one</span>
+    <span class="k">return</span> <span class="n">entry</span></div>
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Yuxing Fei, Matthew J. McDermott
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, UC Berkeley.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,910 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>dara.utils module &#8212; Dara Documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="_static/autodoc_pydantic.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
+
+    <script src="_static/documentation_options.js?v=e645c8fa"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'dara.utils';</script>
+    <link rel="icon" href="_static/logo.svg"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="dara.xrd module" href="dara.xrd.html" />
+    <link rel="prev" title="dara.structure_db module" href="dara.structure_db.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo-wide.svg" class="logo__image only-light" alt="Dara Documentation - Home"/>
+    <script>document.write(`<img src="_static/logo-wide-dark.svg" class="logo__image only-dark" alt="Dara Documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/idocx/dara" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="index.html">
+                    Overview
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="modules.html">API Docs</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="dara.html">dara package</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="dara.bgmn.html">dara.bgmn package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="dara.bgmn.download_bgmn.html">dara.bgmn.download_bgmn module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="dara.data.html">dara.data package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="dara.prediction.html">dara.prediction package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="dara.prediction.base.html">dara.prediction.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dara.prediction.core.html">dara.prediction.core module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dara.prediction.rn.html">dara.prediction.rn module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dara.prediction.rxn_ca.html">dara.prediction.rxn_ca module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="dara.search.html">dara.search package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="dara.search.core.html">dara.search.core module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dara.search.data_model.html">dara.search.data_model module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dara.search.peak_matcher.html">dara.search.peak_matcher module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dara.search.tree.html">dara.search.tree module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="dara.bgmn_worker.html">dara.bgmn_worker module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dara.cif.html">dara.cif module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dara.cif2str.html">dara.cif2str module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dara.eflech_worker.html">dara.eflech_worker module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dara.generate_control_file.html">dara.generate_control_file module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dara.jobs.html">dara.jobs module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dara.peak_detection.html">dara.peak_detection module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dara.plot.html">dara.plot module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dara.refine.html">dara.refine module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dara.result.html">dara.result module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dara.schema.html">dara.schema module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dara.settings.html">dara.settings module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dara.structure_db.html">dara.structure_db module</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">dara.utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dara.xrd.html">dara.xrd module</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/idocx/dara" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/idocx/dara/blob/main/dara.utils.rst?plain=1" target="_blank"
+   class="btn btn-sm btn-source-file-button dropdown-item"
+   title="Show source"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">Show source</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/dara.utils.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>dara.utils module</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.angular_correction"><code class="docutils literal notranslate"><span class="pre">angular_correction()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.bool2yn"><code class="docutils literal notranslate"><span class="pre">bool2yn()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.compositions_to_array"><code class="docutils literal notranslate"><span class="pre">compositions_to_array()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.copy_and_rename_files"><code class="docutils literal notranslate"><span class="pre">copy_and_rename_files()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.datetime_str"><code class="docutils literal notranslate"><span class="pre">datetime_str()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.find_optimal_intensity_threshold"><code class="docutils literal notranslate"><span class="pre">find_optimal_intensity_threshold()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.find_optimal_score_threshold"><code class="docutils literal notranslate"><span class="pre">find_optimal_score_threshold()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.fuzzy_compare"><code class="docutils literal notranslate"><span class="pre">fuzzy_compare()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.get_chemsys_from_formulas"><code class="docutils literal notranslate"><span class="pre">get_chemsys_from_formulas()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.get_composition_distance"><code class="docutils literal notranslate"><span class="pre">get_composition_distance()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.get_composition_from_filename"><code class="docutils literal notranslate"><span class="pre">get_composition_from_filename()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.get_compositional_clusters"><code class="docutils literal notranslate"><span class="pre">get_compositional_clusters()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.get_entries_db"><code class="docutils literal notranslate"><span class="pre">get_entries_db()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.get_entries_in_chemsys_db"><code class="docutils literal notranslate"><span class="pre">get_entries_in_chemsys_db()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.get_entries_in_chemsys_mp"><code class="docutils literal notranslate"><span class="pre">get_entries_in_chemsys_mp()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.get_head_of_compositional_cluster"><code class="docutils literal notranslate"><span class="pre">get_head_of_compositional_cluster()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.get_logger"><code class="docutils literal notranslate"><span class="pre">get_logger()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.get_number"><code class="docutils literal notranslate"><span class="pre">get_number()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.get_optimal_max_two_theta"><code class="docutils literal notranslate"><span class="pre">get_optimal_max_two_theta()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.get_wavelength"><code class="docutils literal notranslate"><span class="pre">get_wavelength()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.intensity_correction"><code class="docutils literal notranslate"><span class="pre">intensity_correction()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.load_symmetrized_structure"><code class="docutils literal notranslate"><span class="pre">load_symmetrized_structure()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.process_phase_name"><code class="docutils literal notranslate"><span class="pre">process_phase_name()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.read_phase_name_from_str"><code class="docutils literal notranslate"><span class="pre">read_phase_name_from_str()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.rpb"><code class="docutils literal notranslate"><span class="pre">rpb()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.rwp"><code class="docutils literal notranslate"><span class="pre">rwp()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.standardize_coords"><code class="docutils literal notranslate"><span class="pre">standardize_coords()</span></code></a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-dara.utils">
+<span id="dara-utils-module"></span><h1>dara.utils module<a class="headerlink" href="#module-dara.utils" title="Link to this heading">#</a></h1>
+<p>Utility functions for the dara package.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.utils.angular_correction">
+<span class="sig-name descname"><span class="pre">angular_correction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/utils.html#angular_correction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.utils.angular_correction" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.utils.bool2yn">
+<span class="sig-name descname"><span class="pre">bool2yn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/utils.html#bool2yn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.utils.bool2yn" title="Link to this definition">#</a></dt>
+<dd><p>Convert boolean to Y (yes) or N (no).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.utils.compositions_to_array">
+<span class="sig-name descname"><span class="pre">compositions_to_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compositions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/utils.html#compositions_to_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.utils.compositions_to_array" title="Link to this definition">#</a></dt>
+<dd><p>Convert a list of compositions/formulas to an array of their fractional
+elemental components.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.utils.copy_and_rename_files">
+<span class="sig-name descname"><span class="pre">copy_and_rename_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_map</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/utils.html#copy_and_rename_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.utils.copy_and_rename_files" title="Link to this definition">#</a></dt>
+<dd><p>Copy files (and rename them) into a destination directory using a provided mapping.</p>
+<p>src_directory: Path to the source directory
+dest_directory: Path to the destination directory
+file_map: Dictionary where keys are original filenames and values are new filenames</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.utils.datetime_str">
+<span class="sig-name descname"><span class="pre">datetime_str</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/utils.html#datetime_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.utils.datetime_str" title="Link to this definition">#</a></dt>
+<dd><p>Get a string representation of the current time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.utils.find_optimal_intensity_threshold">
+<span class="sig-name descname"><span class="pre">find_optimal_intensity_threshold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">intensities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">percentile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">90</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/utils.html#find_optimal_intensity_threshold"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.utils.find_optimal_intensity_threshold" title="Link to this definition">#</a></dt>
+<dd><p>Find the intensity threshold that captures percentile% of the intensities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>intensities</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>] | <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span>) – the list of intensities</p></li>
+<li><p><strong>percentile</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – the percentile to capture, defaults to 90</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the intensity threshold</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.utils.find_optimal_score_threshold">
+<span class="sig-name descname"><span class="pre">find_optimal_score_threshold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scores</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/utils.html#find_optimal_score_threshold"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.utils.find_optimal_score_threshold" title="Link to this definition">#</a></dt>
+<dd><p>Find the inflection point from a list of scores. We will calculate the percentile first.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.utils.fuzzy_compare">
+<span class="sig-name descname"><span class="pre">fuzzy_compare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/utils.html#fuzzy_compare"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.utils.fuzzy_compare" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.utils.get_chemsys_from_formulas">
+<span class="sig-name descname"><span class="pre">get_chemsys_from_formulas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">formulas</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/utils.html#get_chemsys_from_formulas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.utils.get_chemsys_from_formulas" title="Link to this definition">#</a></dt>
+<dd><p>Convert a list of formulas to a chemsys.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.utils.get_composition_distance">
+<span class="sig-name descname"><span class="pre">get_composition_distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comp1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comp2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/utils.html#get_composition_distance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.utils.get_composition_distance" title="Link to this definition">#</a></dt>
+<dd><p>Calculate the distance between two compositions.</p>
+<p>The default is the Manhattan.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.utils.get_composition_from_filename">
+<span class="sig-name descname"><span class="pre">get_composition_from_filename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/utils.html#get_composition_from_filename"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.utils.get_composition_from_filename" title="Link to this definition">#</a></dt>
+<dd><p>Get the composition from the filename. The composition is assumed to be the first
+part of the filename. For example, “BaSnO3_01.xrdml” will return “BaSnO3”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Composition</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.utils.get_compositional_clusters">
+<span class="sig-name descname"><span class="pre">get_compositional_clusters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/utils.html#get_compositional_clusters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.utils.get_compositional_clusters" title="Link to this definition">#</a></dt>
+<dd><p>Get similar clusters of compositions based on their compositional similarity.
+Uses AgglomerativeClustering with a distance threshold of 0.1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.utils.get_entries_db">
+<span class="sig-name descname"><span class="pre">get_entries_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chemsys</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/utils.html#get_entries_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.utils.get_entries_db" title="Link to this definition">#</a></dt>
+<dd><p>Get entries for a specific chemical system from a database.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.utils.get_entries_in_chemsys_db">
+<span class="sig-name descname"><span class="pre">get_entries_in_chemsys_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chemsys</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/utils.html#get_entries_in_chemsys_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.utils.get_entries_in_chemsys_db" title="Link to this definition">#</a></dt>
+<dd><p>Get all computed entries from a database covering all possible sub-chemical systems.</p>
+<p>This is equivalent to MPRester.get_entries_in_chemsys.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">MongoStore</span></code></span>) – the database (must be connected!)</p></li>
+<li><p><strong>chemsys</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>] | <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – a chemical system, either as a string (e.g., “Li-Fe-O”) or as a list of elements.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.utils.get_entries_in_chemsys_mp">
+<span class="sig-name descname"><span class="pre">get_entries_in_chemsys_mp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chemsys</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/utils.html#get_entries_in_chemsys_mp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.utils.get_entries_in_chemsys_mp" title="Link to this definition">#</a></dt>
+<dd><p>Download ComputedStructureEntry objects from Materials Project.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.utils.get_head_of_compositional_cluster">
+<span class="sig-name descname"><span class="pre">get_head_of_compositional_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/utils.html#get_head_of_compositional_cluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.utils.get_head_of_compositional_cluster" title="Link to this definition">#</a></dt>
+<dd><p>Get head of a compositional cluster. This returns the closest stoichiometric
+composition to the average composition. If no stoichiometric composition is found,
+then the nonstoichiometric composition with the smallest distance to the average composition is returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Composition</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.utils.get_logger">
+<span class="sig-name descname"><span class="pre">get_logger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level=10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_format='%(asctime)s</span> <span class="pre">%(levelname)s</span> <span class="pre">%(name)s</span> <span class="pre">%(message)s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream=&lt;_io.TextIOWrapper</span> <span class="pre">name='&lt;stdout&gt;'</span> <span class="pre">mode='w'</span> <span class="pre">encoding='utf-8'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/utils.html#get_logger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.utils.get_logger" title="Link to this definition">#</a></dt>
+<dd><p>Code borrowed from the atomate package.</p>
+<p>Helper method for acquiring logger.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.utils.get_number">
+<span class="sig-name descname"><span class="pre">get_number</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/utils.html#get_number"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.utils.get_number" title="Link to this definition">#</a></dt>
+<dd><p>Get the number from a float or tuple of floats.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.utils.get_optimal_max_two_theta">
+<span class="sig-name descname"><span class="pre">get_optimal_max_two_theta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peak_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensity_filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/utils.html#get_optimal_max_two_theta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.utils.get_optimal_max_two_theta" title="Link to this definition">#</a></dt>
+<dd><p>Get the optimal 2theta max given detected peaks. The range is determined by
+proportion of the detected peaks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fraction</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – The fraction of the detected peaks. Defaults to 0.7.</p></li>
+<li><p><strong>intensity_filter</strong> – The intensity filter; the fraction of the max intensity that
+is required for a peak to be acknowledged in this analysis. Defaults to 0.1.</p></li>
+<li><p><strong>min_threshold</strong> – The minimum threshold for the 2theta range. Defaults to 50. If set
+to None, the minimum threshold will be the 2theta of the last peak.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A tuple of the optimal 2theta range.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.utils.get_wavelength">
+<span class="sig-name descname"><span class="pre">get_wavelength</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wavelength_or_target_metal</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/utils.html#get_wavelength"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.utils.get_wavelength" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.utils.intensity_correction">
+<span class="sig-name descname"><span class="pre">intensity_correction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">intensity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_inv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gsum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelength</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/utils.html#intensity_correction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.utils.intensity_correction" title="Link to this definition">#</a></dt>
+<dd><p>Translated from Profex source (bgmnparparser.cpp:L112)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>intensity</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – the intensity of the peak</p></li>
+<li><p><strong>gsum</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – the gsum of the peak</p></li>
+<li><p><strong>d_inv</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – the inverse of the d-spacing</p></li>
+<li><p><strong>wavelength</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – the wavelength of the X-ray</p></li>
+<li><p><strong>pol</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – the polarization factor, defaults to 1</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the corrected intensity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.utils.load_symmetrized_structure">
+<span class="sig-name descname"><span class="pre">load_symmetrized_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cif_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/utils.html#load_symmetrized_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.utils.load_symmetrized_structure" title="Link to this definition">#</a></dt>
+<dd><p>Load the symmetrized structure from a CIF file. This function will symmetrize the
+structure and provide a spacegroup analyzer object as well.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">SymmetrizedStructure</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SpacegroupAnalyzer</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.utils.process_phase_name">
+<span class="sig-name descname"><span class="pre">process_phase_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/utils.html#process_phase_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.utils.process_phase_name" title="Link to this definition">#</a></dt>
+<dd><p>Process the phase name to remove special characters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.utils.read_phase_name_from_str">
+<span class="sig-name descname"><span class="pre">read_phase_name_from_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/utils.html#read_phase_name_from_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.utils.read_phase_name_from_str" title="Link to this definition">#</a></dt>
+<dd><p>Get the phase name from the str file path.</p>
+<p>Example of str:
+PHASE=BaSnO3 // generated from pymatgen
+FORMULA=BaSnO3 //
+Lattice=Cubic HermannMauguin=P4/m-32/m Setting=1 SpacegroupNo=221 //
+PARAM=A=0.41168_0.40756^0.41580 //
+RP=4 PARAM=k1=0_0^1 k2=0 PARAM=B1=0_0^0.01 PARAM=GEWICHT=0_0 //
+GOAL:BaSnO3=GEWICHT //
+GOAL=GrainSize(1,1,1) //
+E=BA+2 Wyckoff=b x=0.500000 y=0.500000 z=0.500000 TDS=0.010000
+E=SN+4 Wyckoff=a x=0.000000 y=0.000000 z=0.000000 TDS=0.010000
+E=O-2 Wyckoff=d x=0.000000 y=0.000000 z=0.500000 TDS=0.010000</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.utils.rpb">
+<span class="sig-name descname"><span class="pre">rpb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_calc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_obs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_bkg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/utils.html#rpb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.utils.rpb" title="Link to this definition">#</a></dt>
+<dd><p>Calculate the Rietveld profile without background (RPB) for a refinement.</p>
+<p>The result is in percentage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_calc</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span>) – the calculated intensity</p></li>
+<li><p><strong>y_obs</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span>) – the observed intensity</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the RPB</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.utils.rwp">
+<span class="sig-name descname"><span class="pre">rwp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_calc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_obs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/utils.html#rwp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.utils.rwp" title="Link to this definition">#</a></dt>
+<dd><p>Calculate the Rietveld weighted profile (RWP) for a refinement.</p>
+<p>The result is in percentage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_calc</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span>) – the calculated intensity</p></li>
+<li><p><strong>y_obs</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span>) – the observed intensity</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the RWP</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.utils.standardize_coords">
+<span class="sig-name descname"><span class="pre">standardize_coords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/utils.html#standardize_coords"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.utils.standardize_coords" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="dara.structure_db.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">dara.structure_db module</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="dara.xrd.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">dara.xrd module</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.angular_correction"><code class="docutils literal notranslate"><span class="pre">angular_correction()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.bool2yn"><code class="docutils literal notranslate"><span class="pre">bool2yn()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.compositions_to_array"><code class="docutils literal notranslate"><span class="pre">compositions_to_array()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.copy_and_rename_files"><code class="docutils literal notranslate"><span class="pre">copy_and_rename_files()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.datetime_str"><code class="docutils literal notranslate"><span class="pre">datetime_str()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.find_optimal_intensity_threshold"><code class="docutils literal notranslate"><span class="pre">find_optimal_intensity_threshold()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.find_optimal_score_threshold"><code class="docutils literal notranslate"><span class="pre">find_optimal_score_threshold()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.fuzzy_compare"><code class="docutils literal notranslate"><span class="pre">fuzzy_compare()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.get_chemsys_from_formulas"><code class="docutils literal notranslate"><span class="pre">get_chemsys_from_formulas()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.get_composition_distance"><code class="docutils literal notranslate"><span class="pre">get_composition_distance()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.get_composition_from_filename"><code class="docutils literal notranslate"><span class="pre">get_composition_from_filename()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.get_compositional_clusters"><code class="docutils literal notranslate"><span class="pre">get_compositional_clusters()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.get_entries_db"><code class="docutils literal notranslate"><span class="pre">get_entries_db()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.get_entries_in_chemsys_db"><code class="docutils literal notranslate"><span class="pre">get_entries_in_chemsys_db()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.get_entries_in_chemsys_mp"><code class="docutils literal notranslate"><span class="pre">get_entries_in_chemsys_mp()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.get_head_of_compositional_cluster"><code class="docutils literal notranslate"><span class="pre">get_head_of_compositional_cluster()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.get_logger"><code class="docutils literal notranslate"><span class="pre">get_logger()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.get_number"><code class="docutils literal notranslate"><span class="pre">get_number()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.get_optimal_max_two_theta"><code class="docutils literal notranslate"><span class="pre">get_optimal_max_two_theta()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.get_wavelength"><code class="docutils literal notranslate"><span class="pre">get_wavelength()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.intensity_correction"><code class="docutils literal notranslate"><span class="pre">intensity_correction()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.load_symmetrized_structure"><code class="docutils literal notranslate"><span class="pre">load_symmetrized_structure()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.process_phase_name"><code class="docutils literal notranslate"><span class="pre">process_phase_name()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.read_phase_name_from_str"><code class="docutils literal notranslate"><span class="pre">read_phase_name_from_str()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.rpb"><code class="docutils literal notranslate"><span class="pre">rpb()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.rwp"><code class="docutils literal notranslate"><span class="pre">rwp()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.utils.standardize_coords"><code class="docutils literal notranslate"><span class="pre">standardize_coords()</span></code></a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Yuxing Fei, Matthew J. McDermott
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, UC Berkeley.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

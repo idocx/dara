@@ -1,0 +1,544 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dara.generate_control_file &#8212; Dara Documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
+
+    <script src="../../_static/documentation_options.js?v=e645c8fa"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/dara/generate_control_file';</script>
+    <link rel="icon" href="../../_static/logo.svg"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo-wide.svg" class="logo__image only-light" alt="Dara Documentation - Home"/>
+    <script>document.write(`<img src="../../_static/logo-wide-dark.svg" class="logo__image only-dark" alt="Dara Documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/idocx/dara" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../index.html">
+                    Overview
+                </a>
+            </li>
+        </ul>
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../modules.html">API Docs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../dara.html">dara package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../dara.bgmn.html">dara.bgmn package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../dara.bgmn.download_bgmn.html">dara.bgmn.download_bgmn module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dara.data.html">dara.data package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../dara.prediction.html">dara.prediction package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../dara.prediction.base.html">dara.prediction.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../dara.prediction.core.html">dara.prediction.core module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../dara.prediction.rn.html">dara.prediction.rn module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../dara.prediction.rxn_ca.html">dara.prediction.rxn_ca module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../dara.search.html">dara.search package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../dara.search.core.html">dara.search.core module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../dara.search.data_model.html">dara.search.data_model module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../dara.search.peak_matcher.html">dara.search.peak_matcher module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../dara.search.tree.html">dara.search.tree module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dara.bgmn_worker.html">dara.bgmn_worker module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dara.cif.html">dara.cif module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dara.cif2str.html">dara.cif2str module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dara.eflech_worker.html">dara.eflech_worker module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dara.generate_control_file.html">dara.generate_control_file module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dara.jobs.html">dara.jobs module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dara.peak_detection.html">dara.peak_detection module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dara.plot.html">dara.plot module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dara.refine.html">dara.refine module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dara.result.html">dara.result module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dara.schema.html">dara.schema module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dara.settings.html">dara.settings module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dara.structure_db.html">dara.structure_db module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dara.utils.html">dara.utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dara.xrd.html">dara.xrd module</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/idocx/dara" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for dara.generate_control_file</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Generate a control file for BGMN.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Literal</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">dara.utils</span> <span class="kn">import</span> <span class="n">read_phase_name_from_str</span>
+
+
+<div class="viewcode-block" id="copy_instrument_files">
+<a class="viewcode-back" href="../../dara.generate_control_file.html#dara.generate_control_file.copy_instrument_files">[docs]</a>
+<span class="k">def</span> <span class="nf">copy_instrument_files</span><span class="p">(</span><span class="n">instrument_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">working_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy the instrument files to the working directory.&quot;&quot;&quot;</span>
+    <span class="n">instrument_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span> <span class="o">/</span> <span class="s2">&quot;BGMN-Templates&quot;</span> <span class="o">/</span> <span class="s2">&quot;Devices&quot;</span>
+
+    <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">instrument_path</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">instrument_name</span><span class="si">}</span><span class="s2">.*&quot;</span><span class="p">):</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">working_dir</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="copy_xy_pattern">
+<a class="viewcode-back" href="../../dara.generate_control_file.html#dara.generate_control_file.copy_xy_pattern">[docs]</a>
+<span class="k">def</span> <span class="nf">copy_xy_pattern</span><span class="p">(</span><span class="n">pattern_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">working_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy the xy pattern to the working directory.&quot;&quot;&quot;</span>
+    <span class="c1"># if same directory, do nothing</span>
+    <span class="k">if</span> <span class="n">pattern_path</span><span class="o">.</span><span class="n">parent</span> <span class="o">!=</span> <span class="n">working_dir</span><span class="p">:</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">pattern_path</span><span class="p">,</span> <span class="n">working_dir</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">working_dir</span> <span class="o">/</span> <span class="n">pattern_path</span><span class="o">.</span><span class="n">name</span></div>
+
+
+
+<div class="viewcode-block" id="generate_control_file">
+<a class="viewcode-back" href="../../dara.generate_control_file.html#dara.generate_control_file.generate_control_file">[docs]</a>
+<span class="k">def</span> <span class="nf">generate_control_file</span><span class="p">(</span>
+    <span class="n">pattern_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+    <span class="n">str_paths</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span>
+    <span class="n">instrument_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">working_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">n_threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="n">wmin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">wmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">eps2</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;0_-0.01^0.01&quot;</span><span class="p">,</span>
+    <span class="n">wavelength</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;Cu&quot;</span><span class="p">,</span> <span class="s2">&quot;Co&quot;</span><span class="p">,</span> <span class="s2">&quot;Cr&quot;</span><span class="p">,</span> <span class="s2">&quot;Fe&quot;</span><span class="p">,</span> <span class="s2">&quot;Mo&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">=</span> <span class="s2">&quot;Cu&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a control file for BGMN.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pattern_path: the path to the pattern file. It has to be in `.xy` format</span>
+<span class="sd">        str_paths: the paths to the STR files</span>
+<span class="sd">        instrument_name: the name of the instrument</span>
+<span class="sd">        working_dir: the working directory</span>
+<span class="sd">        n_threads: the number of threads to use</span>
+<span class="sd">        wmin: the minimum wavelength</span>
+<span class="sd">        wmax: the maximum wavelength</span>
+<span class="sd">        eps2: the epsilon2 value, it is used to refine sample height</span>
+<span class="sd">        wavelength: the wavelength to use. If a float is provided, it is used as the</span>
+<span class="sd">            wavelength in nm (synchrotron radiation). If a string is provided, it is</span>
+<span class="sd">            the target material in X-ray tubes.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">working_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">control_file_path</span> <span class="o">=</span> <span class="n">pattern_path</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pattern_path</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">.sav&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">control_file_path</span> <span class="o">=</span> <span class="n">working_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pattern_path</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">.sav&quot;</span>
+
+    <span class="n">copy_xy_pattern</span><span class="p">(</span><span class="n">pattern_path</span><span class="p">,</span> <span class="n">control_file_path</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+    <span class="n">copy_instrument_files</span><span class="p">(</span><span class="n">instrument_name</span><span class="p">,</span> <span class="n">control_file_path</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+
+    <span class="n">xy_pattern_path</span> <span class="o">=</span> <span class="n">control_file_path</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="n">pattern_path</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">xy_content</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">pattern_path</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not load pattern file </span><span class="si">{</span><span class="n">pattern_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+
+    <span class="k">if</span> <span class="n">xy_content</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;Pattern contains negative or zero intensities. Setting them to 1e-6.&quot;</span>
+        <span class="p">)</span>
+        <span class="n">xy_content</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">xy_content</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">xy_pattern_path</span><span class="p">,</span> <span class="n">xy_content</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%.6f</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">phases_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;STRUC[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">]=</span><span class="si">{</span><span class="n">str_path</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">str_path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">str_paths</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="p">)</span>
+
+    <span class="n">phase_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">read_phase_name_from_str</span><span class="p">(</span><span class="n">str_path</span><span class="p">)</span> <span class="k">for</span> <span class="n">str_path</span> <span class="ow">in</span> <span class="n">str_paths</span><span class="p">]</span>
+    <span class="n">phase_fraction_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Q</span><span class="si">{</span><span class="n">phase_name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">phase_name</span><span class="si">}</span><span class="s2">/sum&quot;</span> <span class="k">for</span> <span class="n">phase_name</span> <span class="ow">in</span> <span class="n">phase_names</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">goal_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="sa">f</span><span class="s2">&quot;GOAL[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">]=Q</span><span class="si">{</span><span class="n">phase_name</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">phase_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">phase_names</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="n">control_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    % Theoretical instrumental function</span>
+<span class="s2">    VERZERR=</span><span class="si">{</span><span class="n">instrument_name</span><span class="si">}</span><span class="s2">.geq</span>
+<span class="s2">    % Wavelength</span>
+<span class="s2">    </span><span class="si">{</span><span class="sa">f</span><span class="s2">&quot;LAMBDA=</span><span class="si">{</span><span class="n">wavelength</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">wavelength</span><span class="p">,</span><span class="w"> </span><span class="nb">str</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="sa">f</span><span class="s2">&quot;SYNCHROTRON=</span><span class="si">{</span><span class="n">wavelength</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="si">}</span>
+<span class="s2">    </span><span class="si">{</span><span class="sa">f</span><span class="s2">&quot;WMIN=</span><span class="si">{</span><span class="n">wmin</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">wmin</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="si">}</span>
+<span class="s2">    </span><span class="si">{</span><span class="sa">f</span><span class="s2">&quot;WMAX=</span><span class="si">{</span><span class="n">wmax</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">wmax</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="si">}</span>
+<span class="s2">    % Phases</span>
+<span class="s2">    </span><span class="si">{</span><span class="n">phases_str</span><span class="si">}</span>
+<span class="s2">    % Measured data</span>
+<span class="s2">    VAL[1]=</span><span class="si">{</span><span class="n">pattern_path</span><span class="o">.</span><span class="n">name</span><span class="si">}</span>
+<span class="s2">    % Result list output</span>
+<span class="s2">    LIST=</span><span class="si">{</span><span class="n">pattern_path</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">.lst</span>
+<span class="s2">    % Peak list output</span>
+<span class="s2">    OUTPUT=</span><span class="si">{</span><span class="n">pattern_path</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">.par</span>
+<span class="s2">    % Diagram output</span>
+<span class="s2">    DIAGRAMM=</span><span class="si">{</span><span class="n">pattern_path</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">.dia</span>
+<span class="s2">    % Global parameters for zero point and sample displacement</span>
+<span class="s2">    EPS1=0</span>
+<span class="s2">    </span><span class="si">{</span><span class="sa">f</span><span class="s2">&quot;PARAM[1]=EPS2=</span><span class="si">{</span><span class="n">eps2</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">eps2</span><span class="p">,</span><span class="w"> </span><span class="nb">str</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="sa">f</span><span class="s2">&quot;EPS2=</span><span class="si">{</span><span class="n">eps2</span><span class="si">}</span><span class="s2">&quot;</span><span class="si">}</span>
+<span class="s2">    NTHREADS=</span><span class="si">{</span><span class="n">n_threads</span><span class="si">}</span>
+<span class="s2">    PROTOKOLL=Y</span>
+<span class="s2">    sum=</span><span class="si">{</span><span class="s2">&quot;+&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">phase_name</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">phase_name</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">phase_names</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">    </span><span class="si">{</span><span class="n">phase_fraction_str</span><span class="si">}</span>
+<span class="s2">    </span><span class="si">{</span><span class="n">goal_str</span><span class="si">}</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="n">control_file</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\s+&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">control_file</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">control_file_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">control_file</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">control_file_path</span></div>
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Yuxing Fei, Matthew J. McDermott
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, UC Berkeley.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
