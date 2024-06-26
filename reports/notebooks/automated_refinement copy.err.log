@@ -20,41 +20,7 @@ refinement = do_refinement_no_saving(data / pattern_fn, cif_paths)
 
 
 [0;31m---------------------------------------------------------------------------[0m
-[0;31mRuntimeError[0m                              Traceback (most recent call last)
-File [0;32m/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/dara/utils.py:76[0m, in [0;36mload_symmetrized_structure[0;34m(cif_path)[0m
-[1;32m     74[0m [38;5;28;01mtry[39;00m:
-[1;32m     75[0m     structure [38;5;241m=[39m SpacegroupAnalyzer(
-[0;32m---> 76[0m         [43mStructure[49m[38;5;241;43m.[39;49m[43mfrom_file[49m[43m([49m
-[1;32m     77[0m [43m            [49m[43mcif_path[49m[38;5;241;43m.[39;49m[43mas_posix[49m[43m([49m[43m)[49m[43m,[49m[43m [49m[43msite_tolerance[49m[38;5;241;43m=[39;49m[38;5;241;43m1e-3[39;49m[43m,[49m[43m [49m[43moccupancy_tolerance[49m[38;5;241;43m=[39;49m[38;5;241;43m100[39;49m
-[1;32m     78[0m [43m        [49m[43m)[49m
-[1;32m     79[0m     )[38;5;241m.[39mget_refined_structure()
-[1;32m     80[0m     spg [38;5;241m=[39m SpacegroupAnalyzer(structure)
-
-File [0;32m/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/pymatgen/core/structure.py:2860[0m, in [0;36mIStructure.from_file[0;34m(cls, filename, primitive, sort, merge_tol, **kwargs)[0m
-[1;32m   2859[0m [38;5;28;01mif[39;00m fnmatch(fname[38;5;241m.[39mlower(), [38;5;124m"[39m[38;5;124m*.cif*[39m[38;5;124m"[39m) [38;5;129;01mor[39;00m fnmatch(fname[38;5;241m.[39mlower(), [38;5;124m"[39m[38;5;124m*.mcif*[39m[38;5;124m"[39m):
-[0;32m-> 2860[0m     [38;5;28;01mreturn[39;00m [38;5;28;43mcls[39;49m[38;5;241;43m.[39;49m[43mfrom_str[49m[43m([49m[43mcontents[49m[43m,[49m[43m [49m[43mfmt[49m[38;5;241;43m=[39;49m[38;5;124;43m"[39;49m[38;5;124;43mcif[39;49m[38;5;124;43m"[39;49m[43m,[49m[43m [49m[43mprimitive[49m[38;5;241;43m=[39;49m[43mprimitive[49m[43m,[49m[43m [49m[43msort[49m[38;5;241;43m=[39;49m[43msort[49m[43m,[49m[43m [49m[43mmerge_tol[49m[38;5;241;43m=[39;49m[43mmerge_tol[49m[43m,[49m[43m [49m[38;5;241;43m*[39;49m[38;5;241;43m*[39;49m[43mkwargs[49m[43m)[49m
-[1;32m   2861[0m [38;5;28;01mif[39;00m fnmatch(fname, [38;5;124m"[39m[38;5;124m*POSCAR*[39m[38;5;124m"[39m) [38;5;129;01mor[39;00m fnmatch(fname, [38;5;124m"[39m[38;5;124m*CONTCAR*[39m[38;5;124m"[39m) [38;5;129;01mor[39;00m fnmatch(fname, [38;5;124m"[39m[38;5;124m*.vasp[39m[38;5;124m"[39m):
-
-File [0;32m/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/pymatgen/core/structure.py:2774[0m, in [0;36mIStructure.from_str[0;34m(cls, input_string, fmt, primitive, sort, merge_tol, **kwargs)[0m
-[1;32m   2773[0m     parser [38;5;241m=[39m CifParser[38;5;241m.[39mfrom_str(input_string, [38;5;241m*[39m[38;5;241m*[39mkwargs)
-[0;32m-> 2774[0m     struct [38;5;241m=[39m [43mparser[49m[38;5;241;43m.[39;49m[43mparse_structures[49m[43m([49m[43mprimitive[49m[38;5;241;43m=[39;49m[43mprimitive[49m[43m)[49m[[38;5;241m0[39m]
-[1;32m   2775[0m [38;5;28;01melif[39;00m fmt_low [38;5;241m==[39m [38;5;124m"[39m[38;5;124mposcar[39m[38;5;124m"[39m:
-
-File [0;32m/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/pymatgen/io/cif.py:1185[0m, in [0;36mCifParser.parse_structures[0;34m(self, primitive, symmetrized, check_occu, on_error)[0m
-[1;32m   1184[0m [38;5;28;01mif[39;00m os[38;5;241m.[39mgetenv([38;5;124m"[39m[38;5;124mCI[39m[38;5;124m"[39m) [38;5;129;01mand[39;00m datetime[38;5;241m.[39mnow() [38;5;241m>[39m datetime([38;5;241m2024[39m, [38;5;241m3[39m, [38;5;241m1[39m):  [38;5;66;03m# March 2024 seems long enough # pragma: no cover[39;00m
-[0;32m-> 1185[0m     [38;5;28;01mraise[39;00m [38;5;167;01mRuntimeError[39;00m([38;5;124m"[39m[38;5;124mremove the change of default primitive=True to False made on 2023-10-24[39m[38;5;124m"[39m)
-[1;32m   1186[0m warnings[38;5;241m.[39mwarn(
-[1;32m   1187[0m     [38;5;124m"[39m[38;5;124mThe default value of primitive was changed from True to False in [39m[38;5;124m"[39m
-[1;32m   1188[0m     [38;5;124m"[39m[38;5;124mhttps://github.com/materialsproject/pymatgen/pull/3419. CifParser now returns the cell [39m[38;5;124m"[39m
-[1;32m   1189[0m     [38;5;124m"[39m[38;5;124min the CIF file as is. If you want the primitive cell, please set primitive=True explicitly.[39m[38;5;124m"[39m,
-[1;32m   1190[0m     [38;5;167;01mUserWarning[39;00m,
-[1;32m   1191[0m )
-
-[0;31mRuntimeError[0m: remove the change of default primitive=True to False made on 2023-10-24
-
-During handling of the above exception, another exception occurred:
-
-[0;31mRuntimeError[0m                              Traceback (most recent call last)
+[0;31mFileNotFoundError[0m                         Traceback (most recent call last)
 Cell [0;32mIn[3], line 1[0m
 [0;32m----> 1[0m refinement [38;5;241m=[39m [43mdo_refinement_no_saving[49m[43m([49m[43mdata[49m[43m [49m[38;5;241;43m/[39;49m[43m [49m[43mpattern_fn[49m[43m,[49m[43m [49m[43mcif_paths[49m[43m)[49m
 
@@ -79,67 +45,20 @@ File [0;32m/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages
 [1;32m    108[0m [38;5;28;01melse[39;00m:
 [1;32m    109[0m     [38;5;28;01mif[39;00m phase_path_[38;5;241m.[39mparent [38;5;241m!=[39m working_dir:
 
-File [0;32m/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/dara/cif2str.py:302[0m, in [0;36mcif2str[0;34m(cif_path, phase_name_suffix, working_dir, lattice_range, gewicht, rp, k1, k2, b1)[0m
-[1;32m    267[0m [38;5;250m[39m[38;5;124;03m"""[39;00m
-[1;32m    268[0m [38;5;124;03mConvert CIF to Str format.[39;00m
-[1;32m    269[0m 
-[0;32m   (...)[0m
-[1;32m    294[0m 
-[1;32m    295[0m [38;5;124;03m"""[39;00m
-[1;32m    296[0m str_path [38;5;241m=[39m (
-[1;32m    297[0m     cif_path[38;5;241m.[39mparent [38;5;241m/[39m [38;5;124mf[39m[38;5;124m"[39m[38;5;132;01m{[39;00mcif_path[38;5;241m.[39mstem[38;5;132;01m}[39;00m[38;5;124m.str[39m[38;5;124m"[39m
-[1;32m    298[0m     [38;5;28;01mif[39;00m working_dir [38;5;129;01mis[39;00m [38;5;28;01mNone[39;00m
-[1;32m    299[0m     [38;5;28;01melse[39;00m working_dir [38;5;241m/[39m [38;5;124mf[39m[38;5;124m"[39m[38;5;132;01m{[39;00mcif_path[38;5;241m.[39mstem[38;5;132;01m}[39;00m[38;5;124m.str[39m[38;5;124m"[39m
-[1;32m    300[0m )
-[0;32m--> 302[0m structure, spg [38;5;241m=[39m [43mload_symmetrized_structure[49m[43m([49m[43mcif_path[49m[43m)[49m
+File [0;32m/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/dara/cif2str.py:305[0m, in [0;36mcif2str[0;34m(cif_path, phase_name_suffix, working_dir, lattice_range, gewicht, rp, k1, k2, b1)[0m
+[1;32m    302[0m structure, spg [38;5;241m=[39m load_symmetrized_structure(cif_path)
 [1;32m    304[0m hall_number [38;5;241m=[39m [38;5;28mstr[39m(spg[38;5;241m.[39mget_symmetry_dataset()[[38;5;124m"[39m[38;5;124mhall_number[39m[38;5;124m"[39m])
-[1;32m    305[0m [38;5;28;01mwith[39;00m (Path([38;5;18m__file__[39m)[38;5;241m.[39mparent [38;5;241m/[39m [38;5;124m"[39m[38;5;124mdata[39m[38;5;124m"[39m [38;5;241m/[39m [38;5;124m"[39m[38;5;124mspglib_db[39m[38;5;124m"[39m [38;5;241m/[39m [38;5;124m"[39m[38;5;124mspg.json[39m[38;5;124m"[39m)[38;5;241m.[39mopen(
-[1;32m    306[0m     [38;5;124m"[39m[38;5;124mr[39m[38;5;124m"[39m, encoding[38;5;241m=[39m[38;5;124m"[39m[38;5;124mutf-8[39m[38;5;124m"[39m
-[1;32m    307[0m ) [38;5;28;01mas[39;00m f:
+[0;32m--> 305[0m [38;5;28;01mwith[39;00m [43m([49m[43mPath[49m[43m([49m[38;5;18;43m__file__[39;49m[43m)[49m[38;5;241;43m.[39;49m[43mparent[49m[43m [49m[38;5;241;43m/[39;49m[43m [49m[38;5;124;43m"[39;49m[38;5;124;43mdata[39;49m[38;5;124;43m"[39;49m[43m [49m[38;5;241;43m/[39;49m[43m [49m[38;5;124;43m"[39;49m[38;5;124;43mspglib_db[39;49m[38;5;124;43m"[39;49m[43m [49m[38;5;241;43m/[39;49m[43m [49m[38;5;124;43m"[39;49m[38;5;124;43mspg.json[39;49m[38;5;124;43m"[39;49m[43m)[49m[38;5;241;43m.[39;49m[43mopen[49m[43m([49m
+[1;32m    306[0m [43m    [49m[38;5;124;43m"[39;49m[38;5;124;43mr[39;49m[38;5;124;43m"[39;49m[43m,[49m[43m [49m[43mencoding[49m[38;5;241;43m=[39;49m[38;5;124;43m"[39;49m[38;5;124;43mutf-8[39;49m[38;5;124;43m"[39;49m
+[1;32m    307[0m [43m[49m[43m)[49m [38;5;28;01mas[39;00m f:
+[1;32m    308[0m     spg_group_db [38;5;241m=[39m json[38;5;241m.[39mload(f)
+[1;32m    309[0m settings [38;5;241m=[39m spg_group_db[hall_number][[38;5;124m"[39m[38;5;124msettings[39m[38;5;124m"[39m]
 
-File [0;32m/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/dara/utils.py:86[0m, in [0;36mload_symmetrized_structure[0;34m(cif_path)[0m
-[1;32m     81[0m     symmetrized_structure: SymmetrizedStructure [38;5;241m=[39m (
-[1;32m     82[0m         spg[38;5;241m.[39mget_symmetrized_structure()
-[1;32m     83[0m     )
-[1;32m     84[0m [38;5;28;01mexcept[39;00m [38;5;167;01mException[39;00m:  [38;5;66;03m# try with a higher site tolerance[39;00m
-[1;32m     85[0m     structure [38;5;241m=[39m SpacegroupAnalyzer(
-[0;32m---> 86[0m         [43mStructure[49m[38;5;241;43m.[39;49m[43mfrom_file[49m[43m([49m
-[1;32m     87[0m [43m            [49m[43mcif_path[49m[38;5;241;43m.[39;49m[43mas_posix[49m[43m([49m[43m)[49m[43m,[49m[43m [49m[43msite_tolerance[49m[38;5;241;43m=[39;49m[38;5;241;43m1e-2[39;49m[43m,[49m[43m [49m[43moccupancy_tolerance[49m[38;5;241;43m=[39;49m[38;5;241;43m100[39;49m
-[1;32m     88[0m [43m        [49m[43m)[49m
-[1;32m     89[0m     )[38;5;241m.[39mget_refined_structure()
-[1;32m     90[0m     spg [38;5;241m=[39m SpacegroupAnalyzer(structure)
-[1;32m     91[0m     symmetrized_structure [38;5;241m=[39m spg[38;5;241m.[39mget_symmetrized_structure()
+File [0;32m/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/pathlib.py:1119[0m, in [0;36mPath.open[0;34m(self, mode, buffering, encoding, errors, newline)[0m
+[1;32m   1117[0m [38;5;28;01mif[39;00m [38;5;124m"[39m[38;5;124mb[39m[38;5;124m"[39m [38;5;129;01mnot[39;00m [38;5;129;01min[39;00m mode:
+[1;32m   1118[0m     encoding [38;5;241m=[39m io[38;5;241m.[39mtext_encoding(encoding)
+[0;32m-> 1119[0m [38;5;28;01mreturn[39;00m [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43m_accessor[49m[38;5;241;43m.[39;49m[43mopen[49m[43m([49m[38;5;28;43mself[39;49m[43m,[49m[43m [49m[43mmode[49m[43m,[49m[43m [49m[43mbuffering[49m[43m,[49m[43m [49m[43mencoding[49m[43m,[49m[43m [49m[43merrors[49m[43m,[49m
+[1;32m   1120[0m [43m                           [49m[43mnewline[49m[43m)[49m
 
-File [0;32m/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/pymatgen/core/structure.py:2860[0m, in [0;36mIStructure.from_file[0;34m(cls, filename, primitive, sort, merge_tol, **kwargs)[0m
-[1;32m   2858[0m     contents [38;5;241m=[39m f[38;5;241m.[39mread()
-[1;32m   2859[0m [38;5;28;01mif[39;00m fnmatch(fname[38;5;241m.[39mlower(), [38;5;124m"[39m[38;5;124m*.cif*[39m[38;5;124m"[39m) [38;5;129;01mor[39;00m fnmatch(fname[38;5;241m.[39mlower(), [38;5;124m"[39m[38;5;124m*.mcif*[39m[38;5;124m"[39m):
-[0;32m-> 2860[0m     [38;5;28;01mreturn[39;00m [38;5;28;43mcls[39;49m[38;5;241;43m.[39;49m[43mfrom_str[49m[43m([49m[43mcontents[49m[43m,[49m[43m [49m[43mfmt[49m[38;5;241;43m=[39;49m[38;5;124;43m"[39;49m[38;5;124;43mcif[39;49m[38;5;124;43m"[39;49m[43m,[49m[43m [49m[43mprimitive[49m[38;5;241;43m=[39;49m[43mprimitive[49m[43m,[49m[43m [49m[43msort[49m[38;5;241;43m=[39;49m[43msort[49m[43m,[49m[43m [49m[43mmerge_tol[49m[38;5;241;43m=[39;49m[43mmerge_tol[49m[43m,[49m[43m [49m[38;5;241;43m*[39;49m[38;5;241;43m*[39;49m[43mkwargs[49m[43m)[49m
-[1;32m   2861[0m [38;5;28;01mif[39;00m fnmatch(fname, [38;5;124m"[39m[38;5;124m*POSCAR*[39m[38;5;124m"[39m) [38;5;129;01mor[39;00m fnmatch(fname, [38;5;124m"[39m[38;5;124m*CONTCAR*[39m[38;5;124m"[39m) [38;5;129;01mor[39;00m fnmatch(fname, [38;5;124m"[39m[38;5;124m*.vasp[39m[38;5;124m"[39m):
-[1;32m   2862[0m     struct [38;5;241m=[39m [38;5;28mcls[39m[38;5;241m.[39mfrom_str(contents, fmt[38;5;241m=[39m[38;5;124m"[39m[38;5;124mposcar[39m[38;5;124m"[39m, primitive[38;5;241m=[39mprimitive, sort[38;5;241m=[39msort, merge_tol[38;5;241m=[39mmerge_tol, [38;5;241m*[39m[38;5;241m*[39mkwargs)
-
-File [0;32m/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/pymatgen/core/structure.py:2774[0m, in [0;36mIStructure.from_str[0;34m(cls, input_string, fmt, primitive, sort, merge_tol, **kwargs)[0m
-[1;32m   2771[0m     [38;5;28;01mfrom[39;00m [38;5;21;01mpymatgen[39;00m[38;5;21;01m.[39;00m[38;5;21;01mio[39;00m[38;5;21;01m.[39;00m[38;5;21;01mcif[39;00m [38;5;28;01mimport[39;00m CifParser
-[1;32m   2773[0m     parser [38;5;241m=[39m CifParser[38;5;241m.[39mfrom_str(input_string, [38;5;241m*[39m[38;5;241m*[39mkwargs)
-[0;32m-> 2774[0m     struct [38;5;241m=[39m [43mparser[49m[38;5;241;43m.[39;49m[43mparse_structures[49m[43m([49m[43mprimitive[49m[38;5;241;43m=[39;49m[43mprimitive[49m[43m)[49m[[38;5;241m0[39m]
-[1;32m   2775[0m [38;5;28;01melif[39;00m fmt_low [38;5;241m==[39m [38;5;124m"[39m[38;5;124mposcar[39m[38;5;124m"[39m:
-[1;32m   2776[0m     [38;5;28;01mfrom[39;00m [38;5;21;01mpymatgen[39;00m[38;5;21;01m.[39;00m[38;5;21;01mio[39;00m[38;5;21;01m.[39;00m[38;5;21;01mvasp[39;00m [38;5;28;01mimport[39;00m Poscar
-
-File [0;32m/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/pymatgen/io/cif.py:1185[0m, in [0;36mCifParser.parse_structures[0;34m(self, primitive, symmetrized, check_occu, on_error)[0m
-[1;32m   1160[0m [38;5;250m[39m[38;5;124;03m"""Return list of structures in CIF file.[39;00m
-[1;32m   1161[0m 
-[1;32m   1162[0m [38;5;124;03mArgs:[39;00m
-[0;32m   (...)[0m
-[1;32m   1182[0m [38;5;124;03m    list[Structure]: All structures in CIF file.[39;00m
-[1;32m   1183[0m [38;5;124;03m"""[39;00m
-[1;32m   1184[0m [38;5;28;01mif[39;00m os[38;5;241m.[39mgetenv([38;5;124m"[39m[38;5;124mCI[39m[38;5;124m"[39m) [38;5;129;01mand[39;00m datetime[38;5;241m.[39mnow() [38;5;241m>[39m datetime([38;5;241m2024[39m, [38;5;241m3[39m, [38;5;241m1[39m):  [38;5;66;03m# March 2024 seems long enough # pragma: no cover[39;00m
-[0;32m-> 1185[0m     [38;5;28;01mraise[39;00m [38;5;167;01mRuntimeError[39;00m([38;5;124m"[39m[38;5;124mremove the change of default primitive=True to False made on 2023-10-24[39m[38;5;124m"[39m)
-[1;32m   1186[0m warnings[38;5;241m.[39mwarn(
-[1;32m   1187[0m     [38;5;124m"[39m[38;5;124mThe default value of primitive was changed from True to False in [39m[38;5;124m"[39m
-[1;32m   1188[0m     [38;5;124m"[39m[38;5;124mhttps://github.com/materialsproject/pymatgen/pull/3419. CifParser now returns the cell [39m[38;5;124m"[39m
-[1;32m   1189[0m     [38;5;124m"[39m[38;5;124min the CIF file as is. If you want the primitive cell, please set primitive=True explicitly.[39m[38;5;124m"[39m,
-[1;32m   1190[0m     [38;5;167;01mUserWarning[39;00m,
-[1;32m   1191[0m )
-[1;32m   1192[0m [38;5;28;01mif[39;00m [38;5;129;01mnot[39;00m check_occu:  [38;5;66;03m# added in https://github.com/materialsproject/pymatgen/pull/2836[39;00m
-
-[0;31mRuntimeError[0m: remove the change of default primitive=True to False made on 2023-10-24
+[0;31mFileNotFoundError[0m: [Errno 2] No such file or directory: '/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/dara/data/spglib_db/spg.json'
 
