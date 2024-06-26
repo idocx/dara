@@ -103,7 +103,7 @@
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
 <aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">Currently the document is under construction.</div>
+  <div class="bd-header-announcement__content">Currently the document is still under construction.</div>
 </aside>
 
   
@@ -192,6 +192,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../tutorials.html">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../notebooks/automated_refinement.html">1. Automated Refinement with BGMN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../notebooks/phase_search.html">2. Phase Searching with Tree Search</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../modules.html">API Docs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -696,20 +697,20 @@ document.write(`
     <span class="c1"># remove results that are too bad (dead end in the tree search)</span>
     <span class="k">while</span> <span class="n">all_rhos</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">max</span><span class="p">(</span><span class="n">all_rhos</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">min</span><span class="p">(</span><span class="n">all_rhos</span><span class="p">)</span> <span class="o">+</span> <span class="mi">5</span><span class="p">:</span>
         <span class="n">all_rhos</span> <span class="o">=</span> <span class="p">[</span><span class="n">result</span><span class="o">.</span><span class="n">refinement_result</span><span class="o">.</span><span class="n">lst_data</span><span class="o">.</span><span class="n">rho</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span><span class="p">]</span>
-
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">all_rhos</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
             <span class="c1"># get the first natural break</span>
             <span class="n">interval</span> <span class="o">=</span> <span class="n">jenkspy</span><span class="o">.</span><span class="n">jenks_breaks</span><span class="p">(</span><span class="n">all_rhos</span><span class="p">,</span> <span class="n">n_classes</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
             <span class="n">rho_cutoff</span> <span class="o">=</span> <span class="n">interval</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">results</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">result</span>
-                <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span>
-                <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">refinement_result</span><span class="o">.</span><span class="n">lst_data</span><span class="o">.</span><span class="n">rho</span> <span class="o">&lt;=</span> <span class="n">rho_cutoff</span>
-            <span class="p">]</span>
-            <span class="n">all_rhos</span> <span class="o">=</span> <span class="p">[</span><span class="n">result</span><span class="o">.</span><span class="n">refinement_result</span><span class="o">.</span><span class="n">lst_data</span><span class="o">.</span><span class="n">rho</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">all_rhos</span><span class="p">))</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="nb">max</span><span class="p">(</span><span class="n">all_rhos</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">all_rhos</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
+            <span class="n">rho_cutoff</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">all_rhos</span><span class="p">)</span> <span class="o">+</span> <span class="mi">10</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">break</span>
-
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">result</span>
+            <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span>
+            <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">refinement_result</span><span class="o">.</span><span class="n">lst_data</span><span class="o">.</span><span class="n">rho</span> <span class="o">&lt;=</span> <span class="n">rho_cutoff</span>
+        <span class="p">]</span>
+        <span class="n">all_rhos</span> <span class="o">=</span> <span class="p">[</span><span class="n">result</span><span class="o">.</span><span class="n">refinement_result</span><span class="o">.</span><span class="n">lst_data</span><span class="o">.</span><span class="n">rho</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">sorting</span><span class="p">:</span>
         <span class="n">results</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">refinement_result</span><span class="o">.</span><span class="n">lst_data</span><span class="o">.</span><span class="n">rwp</span><span class="p">)</span>
 
@@ -1429,6 +1430,8 @@ document.write(`
             <span class="n">wmin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">refinement_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;wmin&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
             <span class="n">wmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">peak_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No peaks are detected in the pattern.&quot;</span><span class="p">)</span>
         <span class="n">optimal_wmax</span> <span class="o">=</span> <span class="n">get_optimal_max_two_theta</span><span class="p">(</span><span class="n">peak_list</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The wmax is automatically adjusted to </span><span class="si">{</span><span class="n">optimal_wmax</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">refinement_params</span><span class="p">[</span><span class="s2">&quot;wmax&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optimal_wmax</span>

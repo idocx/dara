@@ -11,10 +11,12 @@ Backended by [BGMN](http://www.bgmn.de), Dara provides a simple and automated wa
 
 :::{grid-item-card} {octicon}`search;1.5em;sd-mr-1` Phase searching
 
-Use the MyST role and directive syntax to harness the full capability of Sphinx, such as admonitions and figures, and all existing Sphinx extensions.
+Dara provides a tree-search-based algorithm to search for phases in powder X-ray diffraction data. It needs only inputs of
+(1) the raw X-ray diffraction pattern; (2) the reference phases. Dara also implements `ICSDDatabase` and `CODDatabase` to
+help users query the references in the chemical system from all the ICSD and COD databases.
 
 +++
-[Go to tutorial »](roles-directives)
+[Go to tutorial »](notebooks/phase_search)
 :::
 
 ::::

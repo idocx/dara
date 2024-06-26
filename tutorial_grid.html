@@ -104,7 +104,7 @@
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
 <aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">Currently the document is under construction.</div>
+  <div class="bd-header-announcement__content">Currently the document is still under construction.</div>
 </aside>
 
   
@@ -193,6 +193,7 @@
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="tutorials.html">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/automated_refinement.html">1. Automated Refinement with BGMN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/phase_search.html">2. Phase Searching with Tree Search</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="modules.html">API Docs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -461,10 +462,12 @@ document.write(`
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
 <svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-search sd-mr-1" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.25 2a8.25 8.25 0 0 1 6.34 13.53l5.69 5.69a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215l-5.69-5.69A8.25 8.25 0 1 1 10.25 2ZM3.5 10.25a6.75 6.75 0 1 0 13.5 0 6.75 6.75 0 0 0-13.5 0Z"></path></svg> Phase searching</div>
-<p class="sd-card-text">Use the MyST role and directive syntax to harness the full capability of Sphinx, such as admonitions and figures, and all existing Sphinx extensions.</p>
+<p class="sd-card-text">Dara provides a tree-search-based algorithm to search for phases in powder X-ray diffraction data. It needs only inputs of
+(1) the raw X-ray diffraction pattern; (2) the reference phases. Dara also implements <code class="docutils literal notranslate"><span class="pre">ICSDDatabase</span></code> and <code class="docutils literal notranslate"><span class="pre">CODDatabase</span></code> to
+help users query the references in the chemical system from all the ICSD and COD databases.</p>
 </div>
 <div class="sd-card-footer docutils">
-<p class="sd-card-text"><a class="reference internal" href="#roles-directives"><span class="xref myst">Go to tutorial »</span></a></p>
+<p class="sd-card-text"><a class="reference internal" href="notebooks/phase_search.html"><span class="doc std std-doc">Go to tutorial »</span></a></p>
 </div>
 </div>
 </div>
