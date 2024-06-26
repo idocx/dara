@@ -22,7 +22,8 @@ sd_hide_title: true
 Dara is a Python package for refining and analyzing phases in powder X-ray diffraction (XRD) data.
 </p>
 
-::::{card} {octicon}`download;1.5em;sd-mr-1` Installation
+::::{admonition} Installation
+:class: note
 
 ```
 pip install dara
