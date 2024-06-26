@@ -431,7 +431,10 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-from-source">Installation from source</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-from-source">Installation from source</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#special-instructions-installation-on-old-cluster-e-g-lawrencium-lbnl">Special instructions: installation on old cluster (e.g., Lawrencium, LBNL)</a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -455,6 +458,57 @@ document.write(`
 pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
 </pre></div>
 </div>
+<section id="special-instructions-installation-on-old-cluster-e-g-lawrencium-lbnl">
+<h3>Special instructions: installation on old cluster (e.g., Lawrencium, LBNL)<a class="headerlink" href="#special-instructions-installation-on-old-cluster-e-g-lawrencium-lbnl" title="Link to this heading">#</a></h3>
+<p>The supplied BGMNwin folder may not work on your machine/cluster.</p>
+<p>For example, installing BGMN on Lawrencium (or perhaps another older Linux cluster) may lead to an error with GLIBC versions when you run bgmn:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>version `GLIBC_2.29 not found (required by …)
+</pre></div>
+</div>
+<p>To fix, we need to install GLIBC 2.29. First, make sure to run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>module<span class="w"> </span>load<span class="w"> </span>gcc
+</pre></div>
+</div>
+<p>Now follow the directions below. These are based on this post:
+<a class="reference external" href="https://stackoverflow.com/questions/50564999/lib64-libc-so-6-version-glibc-2-14-not-found-why-am-i-getting-this-error">https://stackoverflow.com/questions/50564999/lib64-libc-so-6-version-glibc-2-14-not-found-why-am-i-getting-this-error</a></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>~/glibc229
+<span class="nb">cd</span><span class="w"> </span>~/glibc229
+wget<span class="w"> </span>http://ftp.gnu.org/gnu/glibc/glibc-2.29.tar.gz
+tar<span class="w"> </span>zxvf<span class="w"> </span>glibc-2.29.tar.gz
+<span class="nb">cd</span><span class="w"> </span>glibc-2.29
+mkdir<span class="w"> </span>build
+<span class="nb">cd</span><span class="w"> </span>build
+../configure<span class="w"> </span>--prefix<span class="o">=</span><span class="nv">$HOME</span>/.local
+make<span class="w"> </span>-j4
+make<span class="w"> </span>install
+</pre></div>
+</div>
+<p>WARNING: you can’t set LD_LIBRARY_PATH without breaking everything. Instead, we take this approach:</p>
+<p><strong>INSTALL PATCHELF</strong></p>
+<p>Git clone and follow setup instructions here: <a class="github reference external" href="https://github.com/NixOS/patchelf?tab=readme-ov-file">NixOS/patchelf</a></p>
+<p>This command will fix every binary. Make sure DARA is installed in a folder called $HOME/dara/</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>patchelf<span class="w"> </span>--set-interpreter<span class="w"> </span><span class="nv">$HOME</span>/.local/lib/ld-linux-x86-64.so.2<span class="w"> </span>--set-rpath<span class="w"> </span><span class="nv">$HOME</span>/.local/lib/<span class="w"> </span><span class="nv">$HOME</span>/dara/dara/src/dara/bgmn/BGMNwin/bgmn<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>patchelf<span class="w"> </span>--set-interpreter<span class="w"> </span><span class="nv">$HOME</span>/.local/lib/ld-linux-x86-64.so.2<span class="w"> </span>--set-rpath<span class="w"> </span><span class="nv">$HOME</span>/.local/lib/<span class="w"> </span><span class="nv">$HOME</span>/dara/dara/src/dara/bgmn/BGMNwin/eflech<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>patchelf<span class="w"> </span>--set-interpreter<span class="w"> </span><span class="nv">$HOME</span>/.local/lib/ld-linux-x86-64.so.2<span class="w"> </span>--set-rpath<span class="w"> </span><span class="nv">$HOME</span>/.local/lib/<span class="w"> </span><span class="nv">$HOME</span>/dara/dara/src/dara/bgmn/BGMNwin/geomet<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>patchelf<span class="w"> </span>--set-interpreter<span class="w"> </span><span class="nv">$HOME</span>/.local/lib/ld-linux-x86-64.so.2<span class="w"> </span>--set-rpath<span class="w"> </span><span class="nv">$HOME</span>/.local/lib/<span class="w"> </span><span class="nv">$HOME</span>/dara/dara/src/dara/bgmn/BGMNwin/gertest<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>patchelf<span class="w"> </span>--set-interpreter<span class="w"> </span><span class="nv">$HOME</span>/.local/lib/ld-linux-x86-64.so.2<span class="w"> </span>--set-rpath<span class="w"> </span><span class="nv">$HOME</span>/.local/lib/<span class="w"> </span><span class="nv">$HOME</span>/dara/dara/src/dara/bgmn/BGMNwin/index<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>patchelf<span class="w"> </span>--set-interpreter<span class="w"> </span><span class="nv">$HOME</span>/.local/lib/ld-linux-x86-64.so.2<span class="w"> </span>--set-rpath<span class="w"> </span><span class="nv">$HOME</span>/.local/lib/<span class="w"> </span><span class="nv">$HOME</span>/dara/dara/src/dara/bgmn/BGMNwin/lamtest<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>patchelf<span class="w"> </span>--set-interpreter<span class="w"> </span><span class="nv">$HOME</span>/.local/lib/ld-linux-x86-64.so.2<span class="w"> </span>--set-rpath<span class="w"> </span><span class="nv">$HOME</span>/.local/lib/<span class="w"> </span><span class="nv">$HOME</span>/dara/dara/src/dara/bgmn/BGMNwin/makegeq<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>patchelf<span class="w"> </span>--set-interpreter<span class="w"> </span><span class="nv">$HOME</span>/.local/lib/ld-linux-x86-64.so.2<span class="w"> </span>--set-rpath<span class="w"> </span><span class="nv">$HOME</span>/.local/lib/<span class="w"> </span><span class="nv">$HOME</span>/dara/dara/src/dara/bgmn/BGMNwin/output<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>patchelf<span class="w"> </span>--set-interpreter<span class="w"> </span><span class="nv">$HOME</span>/.local/lib/ld-linux-x86-64.so.2<span class="w"> </span>--set-rpath<span class="w"> </span><span class="nv">$HOME</span>/.local/lib/<span class="w"> </span><span class="nv">$HOME</span>/dara/dara/src/dara/bgmn/BGMNwin/plot1<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>patchelf<span class="w"> </span>--set-interpreter<span class="w"> </span><span class="nv">$HOME</span>/.local/lib/ld-linux-x86-64.so.2<span class="w"> </span>--set-rpath<span class="w"> </span><span class="nv">$HOME</span>/.local/lib/<span class="w"> </span><span class="nv">$HOME</span>/dara/dara/src/dara/bgmn/BGMNwin/spacegrp<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>patchelf<span class="w"> </span>--set-interpreter<span class="w"> </span><span class="nv">$HOME</span>/.local/lib/ld-linux-x86-64.so.2<span class="w"> </span>--set-rpath<span class="w"> </span><span class="nv">$HOME</span>/.local/lib/<span class="w"> </span><span class="nv">$HOME</span>/dara/dara/src/dara/bgmn/BGMNwin/teil<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>patchelf<span class="w"> </span>--set-interpreter<span class="w"> </span><span class="nv">$HOME</span>/.local/lib/ld-linux-x86-64.so.2<span class="w"> </span>--set-rpath<span class="w"> </span><span class="nv">$HOME</span>/.local/lib/<span class="w"> </span><span class="nv">$HOME</span>/dara/dara/src/dara/bgmn/BGMNwin/verzerr
+</pre></div>
+</div>
+<hr class="docutils" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>IF GLIBC installation error occurs, and it looks related to the version of make/gmake:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>checking version of gmake... 3.82, bad
+</pre></div>
+</div>
+<p>Then you must install newer version and symbolic link:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-O<span class="w"> </span>http://ftp.gnu.org/gnu/make/make-4.2.1.tar.gz
+tar<span class="w"> </span>xvf<span class="w"> </span>make-4.2.1.tar.gz
+<span class="nb">cd</span><span class="w"> </span>make-4.2.1
+./configure<span class="w"> </span>--prefix<span class="o">=</span><span class="nv">$HOME</span>/.local/bin<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>make<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>make<span class="w"> </span>install
+<span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span>/<span class="nv">$HOME</span>/.local/bin:<span class="nv">$PATH</span>
+ln<span class="w"> </span>-s<span class="w"> </span><span class="nv">$HOME</span>/.local/bin/make<span class="w"> </span><span class="nv">$HOME</span>/.local/bin/gmake
+</pre></div>
+</div>
+<p>Now try again to install GLIBC….</p>
+</div>
+</section>
 </section>
 </section>
 
@@ -503,7 +557,10 @@ pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </s
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-from-source">Installation from source</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-from-source">Installation from source</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#special-instructions-installation-on-old-cluster-e-g-lawrencium-lbnl">Special instructions: installation on old cluster (e.g., Lawrencium, LBNL)</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 
