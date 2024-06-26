@@ -1,0 +1,940 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Tutorial 1: Automated Refinement &#8212; Dara Documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=2a76c96f"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/automated_refinement';</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="icon" href="../_static/logo.svg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dara" href="../modules.html" />
+    <link rel="prev" title="Tutorials" href="../tutorials.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content">Currently the document is under construction.</div>
+</aside>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo-wide.svg" class="logo__image only-light" alt="Dara Documentation - Home"/>
+    <script>document.write(`<img src="../_static/logo-wide-dark.svg" class="logo__image only-dark" alt="Dara Documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/idocx/dara" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Overview
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../tutorials.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">1. Automated Refinement with BGMN</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../modules.html">API Docs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../dara.html">dara package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../dara.bgmn.html">dara.bgmn package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../dara.bgmn.download_bgmn.html">dara.bgmn.download_bgmn module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../dara.data.html">dara.data package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../dara.prediction.html">dara.prediction package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../dara.prediction.base.html">dara.prediction.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../dara.prediction.core.html">dara.prediction.core module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../dara.prediction.rn.html">dara.prediction.rn module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../dara.prediction.rxn_ca.html">dara.prediction.rxn_ca module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../dara.search.html">dara.search package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../dara.search.core.html">dara.search.core module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../dara.search.data_model.html">dara.search.data_model module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../dara.search.peak_matcher.html">dara.search.peak_matcher module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../dara.search.tree.html">dara.search.tree module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../dara.bgmn_worker.html">dara.bgmn_worker module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dara.cif.html">dara.cif module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dara.cif2str.html">dara.cif2str module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dara.eflech_worker.html">dara.eflech_worker module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dara.generate_control_file.html">dara.generate_control_file module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dara.jobs.html">dara.jobs module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dara.peak_detection.html">dara.peak_detection module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dara.plot.html">dara.plot module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dara.refine.html">dara.refine module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dara.result.html">dara.result module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dara.schema.html">dara.schema module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dara.settings.html">dara.settings module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dara.structure_db.html">dara.structure_db module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dara.utils.html">dara.utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dara.xrd.html">dara.xrd module</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/idocx/dara" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/idocx/dara/blob/docs/notebooks/automated_refinement.ipynb?plain=1" target="_blank"
+   class="btn btn-sm btn-source-file-button dropdown-item"
+   title="Show source"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">Show source</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/automated_refinement.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Tutorial 1: Automated Refinement</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-refinement">Basic Refinement</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#do-refinement">Do refinement</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visualization">Visualization</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#save-the-refinement-plot">Save the refinement plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#refining-with-customized-phase-parameters">Refining with customized phase parameters</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#input-parameter-format">Input parameter format</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#specify-different-parameters-for-different-phases">Specify different parameters for different phases</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#refining-with-different-instrument-profiles-angle-range-wavelength">Refining with different instrument profiles, angle range, wavelength.</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#save-the-proejct-file-to-a-folder">Save the proejct file to a folder</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="tutorial-1-automated-refinement">
+<h1>Tutorial 1: Automated Refinement<a class="headerlink" href="#tutorial-1-automated-refinement" title="Link to this heading">#</a></h1>
+<p>Dara provides a basic wrapper to the refinement software BGMN. It implements a robust optimization algorithm that can refine automatically in most cases. This tutorial will show you how to interact with BGMN software and how to submit, adjust, and visualize your refinements.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dara.refine</span> <span class="kn">import</span> <span class="n">do_refinement_no_saving</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+  from .autonotebook import tqdm as notebook_tqdm
+2024-06-26 01:27:27,720	INFO util.py:154 -- Missing packages: [&#39;ipywidgets&#39;]. Run `pip install -U ipywidgets`, then restart the notebook server for rich notebook output.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;tutorial_data&quot;</span><span class="p">)</span>
+<span class="n">cif_paths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.cif&quot;</span><span class="p">))</span>  <span class="c1"># include all the cif files in the data folder</span>
+
+<span class="n">pattern_fn</span> <span class="o">=</span> <span class="s2">&quot;CaNi(PO3)4_800_240_Ca(OH)2_(NH4)2HPO4_NiO.xy&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="basic-refinement">
+<h2>Basic Refinement<a class="headerlink" href="#basic-refinement" title="Link to this heading">#</a></h2>
+<p>A one-line refinement with the default settings.</p>
+<section id="do-refinement">
+<h3>Do refinement<a class="headerlink" href="#do-refinement" title="Link to this heading">#</a></h3>
+<p>By running <code class="docutils literal notranslate"><span class="pre">do_refinement_no_saving</span></code>, the refinement will be performed and the results will be printed out. There will be no BGMN refinement saved in the disk.</p>
+<p>The only two things you will need to feed into the system:</p>
+<ul class="simple">
+<li><p>the path to the pattern. Currently, Dara only supports the <code class="docutils literal notranslate"><span class="pre">xy</span></code>, <code class="docutils literal notranslate"><span class="pre">xrdml</span></code>, <code class="docutils literal notranslate"><span class="pre">raw</span></code> formats.</p></li>
+<li><p>a list of cif file paths. The cif will be used as the reference structure for the refinement.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">refinement</span> <span class="o">=</span> <span class="n">do_refinement_no_saving</span><span class="p">(</span><span class="n">data</span> <span class="o">/</span> <span class="n">pattern_fn</span><span class="p">,</span> <span class="n">cif_paths</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">RuntimeError</span><span class="g g-Whitespace">                              </span>Traceback (most recent call last)
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/dara/utils.py:76,</span> in <span class="ni">load_symmetrized_structure</span><span class="nt">(cif_path)</span>
+<span class="g g-Whitespace">     </span><span class="mi">74</span> <span class="k">try</span><span class="p">:</span>
+<span class="g g-Whitespace">     </span><span class="mi">75</span>     <span class="n">structure</span> <span class="o">=</span> <span class="n">SpacegroupAnalyzer</span><span class="p">(</span>
+<span class="ne">---&gt; </span><span class="mi">76</span>         <span class="n">Structure</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span>
+<span class="g g-Whitespace">     </span><span class="mi">77</span>             <span class="n">cif_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">(),</span> <span class="n">site_tolerance</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">occupancy_tolerance</span><span class="o">=</span><span class="mi">100</span>
+<span class="g g-Whitespace">     </span><span class="mi">78</span>         <span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">79</span>     <span class="p">)</span><span class="o">.</span><span class="n">get_refined_structure</span><span class="p">()</span>
+<span class="g g-Whitespace">     </span><span class="mi">80</span>     <span class="n">spg</span> <span class="o">=</span> <span class="n">SpacegroupAnalyzer</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/pymatgen/core/structure.py:2860,</span> in <span class="ni">IStructure.from_file</span><span class="nt">(cls, filename, primitive, sort, merge_tol, **kwargs)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2859</span> <span class="k">if</span> <span class="n">fnmatch</span><span class="p">(</span><span class="n">fname</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="s2">&quot;*.cif*&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">fnmatch</span><span class="p">(</span><span class="n">fname</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="s2">&quot;*.mcif*&quot;</span><span class="p">):</span>
+<span class="ne">-&gt; </span><span class="mi">2860</span>     <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="n">contents</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;cif&quot;</span><span class="p">,</span> <span class="n">primitive</span><span class="o">=</span><span class="n">primitive</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="n">sort</span><span class="p">,</span> <span class="n">merge_tol</span><span class="o">=</span><span class="n">merge_tol</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2861</span> <span class="k">if</span> <span class="n">fnmatch</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;*POSCAR*&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">fnmatch</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;*CONTCAR*&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">fnmatch</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;*.vasp&quot;</span><span class="p">):</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/pymatgen/core/structure.py:2774,</span> in <span class="ni">IStructure.from_str</span><span class="nt">(cls, input_string, fmt, primitive, sort, merge_tol, **kwargs)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2773</span>     <span class="n">parser</span> <span class="o">=</span> <span class="n">CifParser</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="n">input_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="ne">-&gt; </span><span class="mi">2774</span>     <span class="n">struct</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_structures</span><span class="p">(</span><span class="n">primitive</span><span class="o">=</span><span class="n">primitive</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="g g-Whitespace">   </span><span class="mi">2775</span> <span class="k">elif</span> <span class="n">fmt_low</span> <span class="o">==</span> <span class="s2">&quot;poscar&quot;</span><span class="p">:</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/pymatgen/io/cif.py:1185,</span> in <span class="ni">CifParser.parse_structures</span><span class="nt">(self, primitive, symmetrized, check_occu, on_error)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1184</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;CI&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2024</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>  <span class="c1"># March 2024 seems long enough # pragma: no cover</span>
+<span class="ne">-&gt; </span><span class="mi">1185</span>     <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;remove the change of default primitive=True to False made on 2023-10-24&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1186</span> <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1187</span>     <span class="s2">&quot;The default value of primitive was changed from True to False in &quot;</span>
+<span class="g g-Whitespace">   </span><span class="mi">1188</span>     <span class="s2">&quot;https://github.com/materialsproject/pymatgen/pull/3419. CifParser now returns the cell &quot;</span>
+<span class="g g-Whitespace">   </span><span class="mi">1189</span>     <span class="s2">&quot;in the CIF file as is. If you want the primitive cell, please set primitive=True explicitly.&quot;</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1190</span>     <span class="ne">UserWarning</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1191</span> <span class="p">)</span>
+
+<span class="ne">RuntimeError</span>: remove the change of default primitive=True to False made on 2023-10-24
+
+<span class="n">During</span> <span class="n">handling</span> <span class="n">of</span> <span class="n">the</span> <span class="n">above</span> <span class="n">exception</span><span class="p">,</span> <span class="n">another</span> <span class="n">exception</span> <span class="n">occurred</span><span class="p">:</span>
+
+<span class="ne">RuntimeError</span><span class="g g-Whitespace">                              </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">refinement</span> <span class="o">=</span> <span class="n">do_refinement_no_saving</span><span class="p">(</span><span class="n">data</span> <span class="o">/</span> <span class="n">pattern_fn</span><span class="p">,</span> <span class="n">cif_paths</span><span class="p">)</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/dara/refine.py:141,</span> in <span class="ni">do_refinement_no_saving</span><span class="nt">(pattern_path, phases, wavelength, instrument_name, phase_params, refinement_params, show_progress)</span>
+<span class="g g-Whitespace">    </span><span class="mi">138</span> <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdir</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">139</span>     <span class="n">working_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">141</span>     <span class="k">return</span> <span class="n">do_refinement</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">142</span>         <span class="n">pattern_path</span><span class="o">=</span><span class="n">pattern_path</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">143</span>         <span class="n">phases</span><span class="o">=</span><span class="n">phases</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">144</span>         <span class="n">wavelength</span><span class="o">=</span><span class="n">wavelength</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">145</span>         <span class="n">instrument_name</span><span class="o">=</span><span class="n">instrument_name</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">146</span>         <span class="n">working_dir</span><span class="o">=</span><span class="n">working_dir</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">147</span>         <span class="n">phase_params</span><span class="o">=</span><span class="n">phase_params</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">148</span>         <span class="n">refinement_params</span><span class="o">=</span><span class="n">refinement_params</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">149</span>         <span class="n">show_progress</span><span class="o">=</span><span class="n">show_progress</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">150</span>     <span class="p">)</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/dara/refine.py:107,</span> in <span class="ni">do_refinement</span><span class="nt">(pattern_path, phases, wavelength, instrument_name, working_dir, phase_params, refinement_params, show_progress)</span>
+<span class="g g-Whitespace">    </span><span class="mi">105</span> <span class="n">phase_params_</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">phase</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">106</span> <span class="k">if</span> <span class="n">phase_path_</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.cif&quot;</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">107</span>     <span class="n">str_path</span> <span class="o">=</span> <span class="n">cif2str</span><span class="p">(</span><span class="n">phase_path_</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">working_dir</span><span class="p">,</span> <span class="o">**</span><span class="n">phase_params_</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">108</span> <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">109</span>     <span class="k">if</span> <span class="n">phase_path_</span><span class="o">.</span><span class="n">parent</span> <span class="o">!=</span> <span class="n">working_dir</span><span class="p">:</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/dara/cif2str.py:302,</span> in <span class="ni">cif2str</span><span class="nt">(cif_path, phase_name_suffix, working_dir, lattice_range, gewicht, rp, k1, k2, b1)</span>
+<span class="g g-Whitespace">    </span><span class="mi">267</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">268</span><span class="sd"> Convert CIF to Str format.</span>
+<span class="g g-Whitespace">    </span><span class="mi">269</span><span class="sd"> </span>
+<span class="sd">   (...)</span>
+<span class="g g-Whitespace">    </span><span class="mi">294</span><span class="sd"> </span>
+<span class="g g-Whitespace">    </span><span class="mi">295</span><span class="sd"> &quot;&quot;&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">296</span> <span class="n">str_path</span> <span class="o">=</span> <span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">297</span>     <span class="n">cif_path</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cif_path</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">.str&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">298</span>     <span class="k">if</span> <span class="n">working_dir</span> <span class="ow">is</span> <span class="kc">None</span>
+<span class="g g-Whitespace">    </span><span class="mi">299</span>     <span class="k">else</span> <span class="n">working_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cif_path</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">.str&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">300</span> <span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">302</span> <span class="n">structure</span><span class="p">,</span> <span class="n">spg</span> <span class="o">=</span> <span class="n">load_symmetrized_structure</span><span class="p">(</span><span class="n">cif_path</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">304</span> <span class="n">hall_number</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">spg</span><span class="o">.</span><span class="n">get_symmetry_dataset</span><span class="p">()[</span><span class="s2">&quot;hall_number&quot;</span><span class="p">])</span>
+<span class="g g-Whitespace">    </span><span class="mi">305</span> <span class="k">with</span> <span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span> <span class="o">/</span> <span class="s2">&quot;spglib_db&quot;</span> <span class="o">/</span> <span class="s2">&quot;spg.json&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">306</span>     <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">307</span> <span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/dara/utils.py:86,</span> in <span class="ni">load_symmetrized_structure</span><span class="nt">(cif_path)</span>
+<span class="g g-Whitespace">     </span><span class="mi">81</span>     <span class="n">symmetrized_structure</span><span class="p">:</span> <span class="n">SymmetrizedStructure</span> <span class="o">=</span> <span class="p">(</span>
+<span class="g g-Whitespace">     </span><span class="mi">82</span>         <span class="n">spg</span><span class="o">.</span><span class="n">get_symmetrized_structure</span><span class="p">()</span>
+<span class="g g-Whitespace">     </span><span class="mi">83</span>     <span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">84</span> <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># try with a higher site tolerance</span>
+<span class="g g-Whitespace">     </span><span class="mi">85</span>     <span class="n">structure</span> <span class="o">=</span> <span class="n">SpacegroupAnalyzer</span><span class="p">(</span>
+<span class="ne">---&gt; </span><span class="mi">86</span>         <span class="n">Structure</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span>
+<span class="g g-Whitespace">     </span><span class="mi">87</span>             <span class="n">cif_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">(),</span> <span class="n">site_tolerance</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">,</span> <span class="n">occupancy_tolerance</span><span class="o">=</span><span class="mi">100</span>
+<span class="g g-Whitespace">     </span><span class="mi">88</span>         <span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">89</span>     <span class="p">)</span><span class="o">.</span><span class="n">get_refined_structure</span><span class="p">()</span>
+<span class="g g-Whitespace">     </span><span class="mi">90</span>     <span class="n">spg</span> <span class="o">=</span> <span class="n">SpacegroupAnalyzer</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">91</span>     <span class="n">symmetrized_structure</span> <span class="o">=</span> <span class="n">spg</span><span class="o">.</span><span class="n">get_symmetrized_structure</span><span class="p">()</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/pymatgen/core/structure.py:2860,</span> in <span class="ni">IStructure.from_file</span><span class="nt">(cls, filename, primitive, sort, merge_tol, **kwargs)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2858</span>     <span class="n">contents</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="g g-Whitespace">   </span><span class="mi">2859</span> <span class="k">if</span> <span class="n">fnmatch</span><span class="p">(</span><span class="n">fname</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="s2">&quot;*.cif*&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">fnmatch</span><span class="p">(</span><span class="n">fname</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="s2">&quot;*.mcif*&quot;</span><span class="p">):</span>
+<span class="ne">-&gt; </span><span class="mi">2860</span>     <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="n">contents</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;cif&quot;</span><span class="p">,</span> <span class="n">primitive</span><span class="o">=</span><span class="n">primitive</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="n">sort</span><span class="p">,</span> <span class="n">merge_tol</span><span class="o">=</span><span class="n">merge_tol</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2861</span> <span class="k">if</span> <span class="n">fnmatch</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;*POSCAR*&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">fnmatch</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;*CONTCAR*&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">fnmatch</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;*.vasp&quot;</span><span class="p">):</span>
+<span class="g g-Whitespace">   </span><span class="mi">2862</span>     <span class="n">struct</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="n">contents</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;poscar&quot;</span><span class="p">,</span> <span class="n">primitive</span><span class="o">=</span><span class="n">primitive</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="n">sort</span><span class="p">,</span> <span class="n">merge_tol</span><span class="o">=</span><span class="n">merge_tol</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/pymatgen/core/structure.py:2774,</span> in <span class="ni">IStructure.from_str</span><span class="nt">(cls, input_string, fmt, primitive, sort, merge_tol, **kwargs)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2771</span>     <span class="kn">from</span> <span class="nn">pymatgen.io.cif</span> <span class="kn">import</span> <span class="n">CifParser</span>
+<span class="g g-Whitespace">   </span><span class="mi">2773</span>     <span class="n">parser</span> <span class="o">=</span> <span class="n">CifParser</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="n">input_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="ne">-&gt; </span><span class="mi">2774</span>     <span class="n">struct</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_structures</span><span class="p">(</span><span class="n">primitive</span><span class="o">=</span><span class="n">primitive</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="g g-Whitespace">   </span><span class="mi">2775</span> <span class="k">elif</span> <span class="n">fmt_low</span> <span class="o">==</span> <span class="s2">&quot;poscar&quot;</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">2776</span>     <span class="kn">from</span> <span class="nn">pymatgen.io.vasp</span> <span class="kn">import</span> <span class="n">Poscar</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/pymatgen/io/cif.py:1185,</span> in <span class="ni">CifParser.parse_structures</span><span class="nt">(self, primitive, symmetrized, check_occu, on_error)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1160</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;Return list of structures in CIF file.</span>
+<span class="g g-Whitespace">   </span><span class="mi">1161</span><span class="sd"> </span>
+<span class="g g-Whitespace">   </span><span class="mi">1162</span><span class="sd"> Args:</span>
+<span class="sd">   (...)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1182</span><span class="sd">     list[Structure]: All structures in CIF file.</span>
+<span class="g g-Whitespace">   </span><span class="mi">1183</span><span class="sd"> &quot;&quot;&quot;</span>
+<span class="g g-Whitespace">   </span><span class="mi">1184</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;CI&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2024</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>  <span class="c1"># March 2024 seems long enough # pragma: no cover</span>
+<span class="ne">-&gt; </span><span class="mi">1185</span>     <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;remove the change of default primitive=True to False made on 2023-10-24&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1186</span> <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1187</span>     <span class="s2">&quot;The default value of primitive was changed from True to False in &quot;</span>
+<span class="g g-Whitespace">   </span><span class="mi">1188</span>     <span class="s2">&quot;https://github.com/materialsproject/pymatgen/pull/3419. CifParser now returns the cell &quot;</span>
+<span class="g g-Whitespace">   </span><span class="mi">1189</span>     <span class="s2">&quot;in the CIF file as is. If you want the primitive cell, please set primitive=True explicitly.&quot;</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1190</span>     <span class="ne">UserWarning</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1191</span> <span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1192</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">check_occu</span><span class="p">:</span>  <span class="c1"># added in https://github.com/materialsproject/pymatgen/pull/2836</span>
+
+<span class="ne">RuntimeError</span>: remove the change of default primitive=True to False made on 2023-10-24
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="visualization">
+<h3>Visualization<a class="headerlink" href="#visualization" title="Link to this heading">#</a></h3>
+<p>You can call <code class="docutils literal notranslate"><span class="pre">visualize</span></code> to visualize the refinement results. The observed, calculated, and difference patterns will be plotted.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">refinement</span><span class="o">.</span><span class="n">visualize</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+</div>
+</div>
+<section id="save-the-refinement-plot">
+<h4>Save the refinement plot<a class="headerlink" href="#save-the-refinement-plot" title="Link to this heading">#</a></h4>
+<p>Optionally, if you want to share the plot with others, you can save the plot by calling <code class="docutils literal notranslate"><span class="pre">write_iamge</span></code> or <code class="docutils literal notranslate"><span class="pre">write_html</span></code> in the <code class="docutils literal notranslate"><span class="pre">plotly.Figure</span></code> object returned by <code class="docutils literal notranslate"><span class="pre">.visualize()</span></code>. The plot will be saved in the disk.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">refinement</span><span class="o">.</span><span class="n">visualize</span><span class="p">()</span><span class="o">.</span><span class="n">write_html</span><span class="p">(</span><span class="s2">&quot;tutorial_refinement.html&quot;</span><span class="p">)</span>  <span class="c1"># output the interactive html file to the disk</span>
+<span class="n">refinement</span><span class="o">.</span><span class="n">visualize</span><span class="p">()</span><span class="o">.</span><span class="n">write_image</span><span class="p">(</span><span class="s2">&quot;tutorial_refinement.png&quot;</span><span class="p">)</span>  <span class="c1"># output the png image to the disk</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="refining-with-customized-phase-parameters">
+<h2>Refining with customized phase parameters<a class="headerlink" href="#refining-with-customized-phase-parameters" title="Link to this heading">#</a></h2>
+<p>The refinement with default setting looks good. But can it be better?</p>
+<p>Dara supports the basic refinement parameters in BGMN. You can adjust the refinement parameters by passing the parameters to the <code class="docutils literal notranslate"><span class="pre">do_refinement_no_saving</span></code> function.</p>
+<p>Common parameters include:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lattice_range</span></code>: you can (and need to) specify the range that the lattice parameters can vary. Usually, it can be a small range, like 0.01 ~ 0.05. It is applied to all lattice parameters (a, b, c, alpha, beta, gamma).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">b1</span></code>: controls the width of the peak. <code class="docutils literal notranslate"><span class="pre">b1</span></code> describes the average particle size in the XRD sample. The larger the <code class="docutils literal notranslate"><span class="pre">b1</span></code>, the broader the peak. Usually, it is constraint to a small range, like from 0 to 0.005. If the <code class="docutils literal notranslate"><span class="pre">b1</span></code> is too large, you will see the peaks go too broad. In this case, your simulated pattern will look like an amorphous material that can be easily fit into the background.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">k1</span></code>: controls the width of the peak. <code class="docutils literal notranslate"><span class="pre">k1</span></code> describes how width the particle size distribute in the sample. The larger the <code class="docutils literal notranslate"><span class="pre">k1</span></code>, the smaller the distribution is. Usually, it can be constraint to 0 ~ 1.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">k2</span></code>: describes the microstrain in the sample. The larger the <code class="docutils literal notranslate"><span class="pre">k2</span></code>, the larger the microstrain. Usually, it can be a fixed value, like 0.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gewicht</span></code>: it contains the information of scale factor. However, in BGMN, it can also be used to specify the preferred orientation you would like to use in the refinement. By specifying the preferred orientation, you can vary the intensity of a set of reflections in the pattern, which can help you fit your pattern better. BGMN is able to decide which reflection to adjust automatically. You only need to specify how strong the preferred orientation is. Usually, it can be <code class="docutils literal notranslate"><span class="pre">SPHAR0</span></code> (none), <code class="docutils literal notranslate"><span class="pre">SPHAR2</span></code> (two preferred orientation parameters), or <code class="docutils literal notranslate"><span class="pre">SPHAR4</span></code> (four preferred orientation parameters), … (up to <code class="docutils literal notranslate"><span class="pre">SPHAR10</span></code>). The larger the <code class="docutils literal notranslate"><span class="pre">gewicht</span></code>, the stronger the preferred orientation is. But it can cause overfitting as well.</p></li>
+</ul>
+<section id="input-parameter-format">
+<h3>Input parameter format<a class="headerlink" href="#input-parameter-format" title="Link to this heading">#</a></h3>
+<p>In Dara, all the phase parameters are passed to <code class="docutils literal notranslate"><span class="pre">phase_params</span></code> as a dictionary. The key is the parameter name, and the value is the parameter value. Dara supports three types of values:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">fixed</span></code>. This is a string. The paramter will be fixed to the default value (usually 0).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">(initial</span> <span class="pre">value)_(min</span> <span class="pre">value)^(max</span> <span class="pre">value)</span></code>. This is a string. The parameter will be varied from the initial value to the min value to the max value. The min value begins with <code class="docutils literal notranslate"><span class="pre">_</span></code>, and the max value begins with <code class="docutils literal notranslate"><span class="pre">^</span></code>.</p></li>
+<li><p>Other values. It can be a string or a number. For example, setting <code class="docutils literal notranslate"><span class="pre">gewicht</span></code> to <code class="docutils literal notranslate"><span class="pre">SPHAR2</span></code> means that the preferred orientation is <code class="docutils literal notranslate"><span class="pre">SPHAR2</span></code>; setting <code class="docutils literal notranslate"><span class="pre">lattice_range</span></code> to 0.05 means that the lattice parameters can vary up to 5%.</p></li>
+</ul>
+<p>If you want to allow 5% variation in lattice parameters, <code class="docutils literal notranslate"><span class="pre">b1</span></code> to be (started from 0, min = 0, max = 0.005), <code class="docutils literal notranslate"><span class="pre">k1</span></code> to be (started from 0, min = 0, max = 1), <code class="docutils literal notranslate"><span class="pre">k2</span></code> fixed to 0, and <code class="docutils literal notranslate"><span class="pre">gewicht</span></code> to <code class="docutils literal notranslate"><span class="pre">SPHAR2</span></code>, you can pass the following dictionary to <code class="docutils literal notranslate"><span class="pre">phase_params</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phase_params</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;lattice_range&#39;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
+    <span class="s1">&#39;b1&#39;</span><span class="p">:</span> <span class="s2">&quot;0_0^0.005&quot;</span><span class="p">,</span>
+    <span class="s1">&#39;k1&#39;</span><span class="p">:</span> <span class="s2">&quot;0_0^1&quot;</span><span class="p">,</span>
+    <span class="s1">&#39;k2&#39;</span><span class="p">:</span> <span class="s2">&quot;fixed&quot;</span><span class="p">,</span>
+    <span class="s1">&#39;gewicht&#39;</span><span class="p">:</span> <span class="s1">&#39;SPHAR2&#39;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">refinement</span> <span class="o">=</span> <span class="n">do_refinement_no_saving</span><span class="p">(</span><span class="n">data</span> <span class="o">/</span> <span class="n">pattern_fn</span><span class="p">,</span> <span class="n">cif_paths</span><span class="p">,</span> <span class="n">phase_params</span><span class="o">=</span><span class="p">{</span>
+    <span class="s1">&#39;lattice_range&#39;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
+    <span class="s1">&#39;b1&#39;</span><span class="p">:</span> <span class="s2">&quot;0_0^0.005&quot;</span><span class="p">,</span>
+    <span class="s1">&#39;k1&#39;</span><span class="p">:</span> <span class="s2">&quot;0_0^1&quot;</span><span class="p">,</span>
+    <span class="s1">&#39;k2&#39;</span><span class="p">:</span> <span class="s2">&quot;fixed&quot;</span><span class="p">,</span>
+    <span class="s1">&#39;gewicht&#39;</span><span class="p">:</span> <span class="s1">&#39;SPHAR2&#39;</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">refinement</span><span class="o">.</span><span class="n">visualize</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+</div>
+</div>
+<p>Now you can see the result is slightly better.</p>
+</section>
+<section id="specify-different-parameters-for-different-phases">
+<h3>Specify different parameters for different phases<a class="headerlink" href="#specify-different-parameters-for-different-phases" title="Link to this heading">#</a></h3>
+<p>In the previous example, the refinement option is applied to all phases. But you can also specify different parameters for different phases. To do so, you will need to pass a special <code class="docutils literal notranslate"><span class="pre">RefinementPhase</span></code> object to the <code class="docutils literal notranslate"><span class="pre">phases</span></code> parameter.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dara</span> <span class="kn">import</span> <span class="n">RefinementPhase</span>
+
+<span class="n">phases</span> <span class="o">=</span> <span class="p">[</span><span class="n">RefinementPhase</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="n">cif_path</span><span class="p">)</span> <span class="k">for</span> <span class="n">cif_path</span> <span class="ow">in</span> <span class="n">cif_paths</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">phase</span> <span class="ow">in</span> <span class="n">phases</span><span class="p">:</span>
+    <span class="c1"># use a smaller lattice range for each phase</span>
+    <span class="n">phase</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;lattice_range&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.01</span>
+
+
+<span class="n">refinement</span> <span class="o">=</span> <span class="n">do_refinement_no_saving</span><span class="p">(</span>
+    <span class="n">data</span> <span class="o">/</span> <span class="n">pattern_fn</span><span class="p">,</span> 
+    <span class="n">phases</span><span class="o">=</span><span class="n">phases</span><span class="p">,</span>
+    <span class="c1"># if one parameter is both specified in phase_params and in the RefinementPhase object, the value in RefinementPhase will be used.</span>
+    <span class="n">phase_params</span><span class="o">=</span><span class="p">{</span>
+        <span class="s1">&#39;lattice_range&#39;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>  <span class="c1"># &lt;- this will be ignored because it has already been set in the eahc RefinementPhase object</span>
+        <span class="s1">&#39;b1&#39;</span><span class="p">:</span> <span class="s2">&quot;0_0^0.005&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;k1&#39;</span><span class="p">:</span> <span class="s2">&quot;0_0^1&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;k2&#39;</span><span class="p">:</span> <span class="s2">&quot;fixed&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;gewicht&#39;</span><span class="p">:</span> <span class="s1">&#39;SPHAR2&#39;</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="refining-with-different-instrument-profiles-angle-range-wavelength">
+<h2>Refining with different instrument profiles, angle range, wavelength.<a class="headerlink" href="#refining-with-different-instrument-profiles-angle-range-wavelength" title="Link to this heading">#</a></h2>
+<p>If you would like to do refinement in a different instrument profiles or angle range, you can specify it in the refinement function as well.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">instrument_name</span></code>: the instrument profile you would like to use. You can find the available instrument profiles in the <code class="docutils literal notranslate"><span class="pre">dara/data/BGMN-Templates/Devices</span></code> folder.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wavelength</span></code>: the wavelength you would like to use in the refinement. It can be two types:</p>
+<ul>
+<li><p>a number: the wavelength in nm. It is useful when you analyzing the data from a synchrotron.</p></li>
+<li><p>a string: the element symbol. It represents the target material in the X-ray tube. BGMN can automatically find the distribution of the wavelength for the given metal. Currently, it supports sources of [“Cu”, “Co”, “Cr”, “Fe”, “Mo”]</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wmin</span></code>, <code class="docutils literal notranslate"><span class="pre">wmax</span></code>: the angle range you would like to use in the refinement. It is set in <code class="docutils literal notranslate"><span class="pre">refinement_params</span></code>.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">refinement</span> <span class="o">=</span> <span class="n">do_refinement_no_saving</span><span class="p">(</span>
+    <span class="n">data</span> <span class="o">/</span> <span class="n">pattern_fn</span><span class="p">,</span>
+    <span class="n">cif_paths</span><span class="p">,</span> 
+    <span class="n">instrument_name</span><span class="o">=</span><span class="s2">&quot;Aeris-fds-Pixcel1d-Medipix3&quot;</span><span class="p">,</span>
+    <span class="n">wavelength</span><span class="o">=</span><span class="s2">&quot;Cu&quot;</span><span class="p">,</span>
+    <span class="n">refinement_params</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;wmin&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>  <span class="c1"># set the minimum two-thera in the refinement to be 20 deg.</span>
+        <span class="s2">&quot;wmax&quot;</span><span class="p">:</span> <span class="mi">50</span>  <span class="c1"># set the maximum two-theta in the refinement to be 50 deg.</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">refinement</span><span class="o">.</span><span class="n">visualize</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+</div>
+</div>
+</section>
+<section id="save-the-proejct-file-to-a-folder">
+<h2>Save the proejct file to a folder<a class="headerlink" href="#save-the-proejct-file-to-a-folder" title="Link to this heading">#</a></h2>
+<p>Usually you don’t have to read the refinement file. But if you would like to save the refinement file, you can call the <code class="docutils literal notranslate"><span class="pre">do_refinement</span></code> function. The refinement file will be saved in the path specified by <code class="docutils literal notranslate"><span class="pre">working_dir</span></code>. Other than that, <code class="docutils literal notranslate"><span class="pre">do_refinement</span></code> and <code class="docutils literal notranslate"><span class="pre">do_refinement_no_saving</span></code> share the same parameters and output.</p>
+<p>You can modify the refinement project file yourself or with help from Profex software.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dara</span> <span class="kn">import</span> <span class="n">do_refinement</span>
+
+<span class="n">refinement</span> <span class="o">=</span> <span class="n">do_refinement</span><span class="p">(</span><span class="n">data</span> <span class="o">/</span> <span class="n">pattern_fn</span><span class="p">,</span> <span class="n">cif_paths</span><span class="p">,</span> <span class="n">working_dir</span><span class="o">=</span><span class="s2">&quot;tutorial_refinement&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">refinement_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;tutorial_refinement&quot;</span><span class="p">)</span>
+
+<span class="c1"># show all the files in the folder</span>
+<span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">refinement_folder</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&gt; CaNi(PO3)4_15_sym.str
+&gt; NiO_225_sym.str
+&gt; CaNi(PO3)4_800_240_Ca(OH)2_(NH4)2HPO4_NiO.xy
+&gt; CaNi(PO3)4_800_240_Ca(OH)2_(NH4)2HPO4_NiO.sav
+&gt; Aeris-fds-Pixcel1d-Medipix3.geq
+&gt; Aeris-fds-Pixcel1d-Medipix3.sav
+&gt; CaNi(PO3)4_800_240_Ca(OH)2_(NH4)2HPO4_NiO.dia
+&gt; Aeris-fds-Pixcel1d-Medipix3.ger
+&gt; CaNi(PO3)4_800_240_Ca(OH)2_(NH4)2HPO4_NiO.lst
+&gt; Aeris-fds-Pixcel1d-Medipix3.tpl
+&gt; CaNi(PO3)4_800_240_Ca(OH)2_(NH4)2HPO4_NiO.par
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../tutorials.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Tutorials</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../modules.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">dara</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-refinement">Basic Refinement</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#do-refinement">Do refinement</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visualization">Visualization</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#save-the-refinement-plot">Save the refinement plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#refining-with-customized-phase-parameters">Refining with customized phase parameters</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#input-parameter-format">Input parameter format</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#specify-different-parameters-for-different-phases">Specify different parameters for different phases</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#refining-with-different-instrument-profiles-angle-range-wavelength">Refining with different instrument profiles, angle range, wavelength.</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#save-the-proejct-file-to-a-folder">Save the proejct file to a folder</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Yuxing Fei, Matthew J. McDermott
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Ceder Group.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
