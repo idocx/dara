@@ -2,6 +2,22 @@
 ```bash
 pip install dara
 ```
+## Install optional dependencies
+### Reaction Network Plugin
+If you would like to use the reaction network to remove the unlikely phases, 
+you need to install the `prediction` extra:
+
+```bash 
+pip install "dara[prediction]"
+```
+
+### Jobflow Plugin
+If you would like to use the jobflow to manage your phase searching jobs,
+you need to install the `workflows` extra:
+
+```bash
+pip install "dara[workflows]"
+```
 
 ## Installation from source
 ```bash
@@ -9,7 +25,8 @@ git clone https://github.com/idocx/dara
 cd dara
 pip install -e .
 ```
-### Special instructions: installation on old cluster (e.g., Lawrencium, LBNL)
+
+## Special instructions: installation on old cluster (e.g., Lawrencium, LBNL)
 
 The supplied BGMNwin folder may not work on your machine/cluster.
 

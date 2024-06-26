@@ -431,10 +431,13 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-from-source">Installation from source</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#special-instructions-installation-on-old-cluster-e-g-lawrencium-lbnl">Special instructions: installation on old cluster (e.g., Lawrencium, LBNL)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-optional-dependencies">Install optional dependencies</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reaction-network-plugin">Reaction Network Plugin</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jobflow-plugin">Jobflow Plugin</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-from-source">Installation from source</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#special-instructions-installation-on-old-cluster-e-g-lawrencium-lbnl">Special instructions: installation on old cluster (e.g., Lawrencium, LBNL)</a></li>
 </ul>
             </nav>
         </div>
@@ -451,6 +454,25 @@ document.write(`
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>dara
 </pre></div>
 </div>
+<section id="install-optional-dependencies">
+<h2>Install optional dependencies<a class="headerlink" href="#install-optional-dependencies" title="Link to this heading">#</a></h2>
+<section id="reaction-network-plugin">
+<h3>Reaction Network Plugin<a class="headerlink" href="#reaction-network-plugin" title="Link to this heading">#</a></h3>
+<p>If you would like to use the reaction network to remove the unlikely phases,
+you need to install the <code class="docutils literal notranslate"><span class="pre">prediction</span></code> extra:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;dara[prediction]&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="jobflow-plugin">
+<h3>Jobflow Plugin<a class="headerlink" href="#jobflow-plugin" title="Link to this heading">#</a></h3>
+<p>If you would like to use the jobflow to manage your phase searching jobs,
+you need to install the <code class="docutils literal notranslate"><span class="pre">workflows</span></code> extra:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;dara[workflows]&quot;</span>
+</pre></div>
+</div>
+</section>
+</section>
 <section id="installation-from-source">
 <h2>Installation from source<a class="headerlink" href="#installation-from-source" title="Link to this heading">#</a></h2>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/idocx/dara
@@ -458,8 +480,9 @@ document.write(`
 pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
 </pre></div>
 </div>
+</section>
 <section id="special-instructions-installation-on-old-cluster-e-g-lawrencium-lbnl">
-<h3>Special instructions: installation on old cluster (e.g., Lawrencium, LBNL)<a class="headerlink" href="#special-instructions-installation-on-old-cluster-e-g-lawrencium-lbnl" title="Link to this heading">#</a></h3>
+<h2>Special instructions: installation on old cluster (e.g., Lawrencium, LBNL)<a class="headerlink" href="#special-instructions-installation-on-old-cluster-e-g-lawrencium-lbnl" title="Link to this heading">#</a></h2>
 <p>The supplied BGMNwin folder may not work on your machine/cluster.</p>
 <p>For example, installing BGMN on Lawrencium (or perhaps another older Linux cluster) may lead to an error with GLIBC versions when you run bgmn:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>version `GLIBC_2.29 not found (required by …)
@@ -510,7 +533,6 @@ ln<span class="w"> </span>-s<span class="w"> </span><span class="nv">$HOME</span
 </div>
 </section>
 </section>
-</section>
 
 
                 </article>
@@ -557,10 +579,13 @@ ln<span class="w"> </span>-s<span class="w"> </span><span class="nv">$HOME</span
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-from-source">Installation from source</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#special-instructions-installation-on-old-cluster-e-g-lawrencium-lbnl">Special instructions: installation on old cluster (e.g., Lawrencium, LBNL)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-optional-dependencies">Install optional dependencies</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reaction-network-plugin">Reaction Network Plugin</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jobflow-plugin">Jobflow Plugin</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-from-source">Installation from source</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#special-instructions-installation-on-old-cluster-e-g-lawrencium-lbnl">Special instructions: installation on old cluster (e.g., Lawrencium, LBNL)</a></li>
 </ul>
   </nav></div>
 
