@@ -1,40 +1,59 @@
-# Installation
+# Installation of DARA
+
+## Installation from PyPI (recommended)
+
+The easiest way to install the latest release of Dara is via pip from PyPI:
+
 ```bash
 pip install dara
 ```
-## Install optional dependencies
-### Reaction Network Plugin
-If you would like to use the reaction network to remove the unlikely phases, 
-you need to install the `prediction` extra:
 
-```bash 
-pip install "dara[prediction]"
-```
+Note that this approach will only acquire the latest release. For the most recent
+changes, you may want to install from source (see below).
 
-### Jobflow Plugin
-If you would like to use the jobflow to manage your phase searching jobs,
-you need to install the `workflows` extra:
+## Installation from source (GitHub)
 
-```bash
-pip install "dara[workflows]"
-```
+This approach is recommended if you want to use the latest features and bug fixes. It is
+a good idea to install Dara in a dedicated virtual environment to avoid conflicts with other
+Python packages.
 
-## Installation from source
 ```bash
 git clone https://github.com/idocx/dara
 cd dara
 pip install -e .
 ```
 
-## Special instructions: installation on old cluster (e.g., Lawrencium, LBNL)
+## Installation of optional dependencies
 
-The supplied BGMNwin folder may not work on your machine/cluster.
+### Jobflow Plugin
 
-For example, installing BGMN on Lawrencium (or perhaps another older Linux cluster) may lead to an error with GLIBC versions when you run bgmn:
+If you would like to use the jobflow to launch phase search jobs,
+you need to install the `workflows` extra:
+
+```bash
+pip install "dara[workflows]"
+```
+
+### Reaction Network Plugin
+
+If you would like to use reaction-network to remove the unlikely phases,
+you need to install the `prediction` extra:
+
+```bash
+pip install "dara[prediction]"
+```
+
+### Special case: installation on older cluster (e.g., Lawrencium, LBNL)
+
+BGMN (the refinement backend) is a compiled program, and it may not be directly usable
+on some machines, such as computational clusters (e.g., Lawrencium at Lawrence Berkeley
+National Laboratory).
+
+For example, you may see an error GLIBC versions when you run `bgmn`:
 
     version `GLIBC_2.29 not found (required by …)
 
-To fix, we need to install GLIBC 2.29. First, make sure to run:
+To fix this issue specifically, we need to install GLIBC 2.29. First, make sure to run:
 
 ```bash
 module load gcc
@@ -56,22 +75,25 @@ make -j4
 make install
 ```
 
-WARNING: you can’t set LD_LIBRARY_PATH without breaking everything. Instead, we take this approach:
+Unfortunately, you can’t set *LD_LIBRARY_PATH* without breaking everything. Instead, we take this approach:
 
-**INSTALL PATCHELF**
+#### Installation of Patchelf
 
 Git clone and follow setup instructions here: <https://github.com/NixOS/patchelf?tab=readme-ov-file>
 
-This command will fix every binary. Make sure DARA is installed in a folder called $HOME/dara/
+The command below will edit every binary. First, make sure Dara is installed in a folder
+located as `$HOME/dara/`. Then run:
 
 ```bash
 patchelf --set-interpreter $HOME/.local/lib/ld-linux-x86-64.so.2 --set-rpath $HOME/.local/lib/ $HOME/dara/dara/src/dara/bgmn/BGMNwin/bgmn && patchelf --set-interpreter $HOME/.local/lib/ld-linux-x86-64.so.2 --set-rpath $HOME/.local/lib/ $HOME/dara/dara/src/dara/bgmn/BGMNwin/eflech && patchelf --set-interpreter $HOME/.local/lib/ld-linux-x86-64.so.2 --set-rpath $HOME/.local/lib/ $HOME/dara/dara/src/dara/bgmn/BGMNwin/geomet && patchelf --set-interpreter $HOME/.local/lib/ld-linux-x86-64.so.2 --set-rpath $HOME/.local/lib/ $HOME/dara/dara/src/dara/bgmn/BGMNwin/gertest && patchelf --set-interpreter $HOME/.local/lib/ld-linux-x86-64.so.2 --set-rpath $HOME/.local/lib/ $HOME/dara/dara/src/dara/bgmn/BGMNwin/index && patchelf --set-interpreter $HOME/.local/lib/ld-linux-x86-64.so.2 --set-rpath $HOME/.local/lib/ $HOME/dara/dara/src/dara/bgmn/BGMNwin/lamtest && patchelf --set-interpreter $HOME/.local/lib/ld-linux-x86-64.so.2 --set-rpath $HOME/.local/lib/ $HOME/dara/dara/src/dara/bgmn/BGMNwin/makegeq && patchelf --set-interpreter $HOME/.local/lib/ld-linux-x86-64.so.2 --set-rpath $HOME/.local/lib/ $HOME/dara/dara/src/dara/bgmn/BGMNwin/output && patchelf --set-interpreter $HOME/.local/lib/ld-linux-x86-64.so.2 --set-rpath $HOME/.local/lib/ $HOME/dara/dara/src/dara/bgmn/BGMNwin/plot1 && patchelf --set-interpreter $HOME/.local/lib/ld-linux-x86-64.so.2 --set-rpath $HOME/.local/lib/ $HOME/dara/dara/src/dara/bgmn/BGMNwin/spacegrp && patchelf --set-interpreter $HOME/.local/lib/ld-linux-x86-64.so.2 --set-rpath $HOME/.local/lib/ $HOME/dara/dara/src/dara/bgmn/BGMNwin/teil && patchelf --set-interpreter $HOME/.local/lib/ld-linux-x86-64.so.2 --set-rpath $HOME/.local/lib/ $HOME/dara/dara/src/dara/bgmn/BGMNwin/verzerr
 ```
 
+You may need to edit this command to work with your specific installation.
+
 ---
 
 :::{note}
-IF GLIBC installation error occurs, and it looks related to the version of make/gmake:
+If the earlier GLIBC installation failed, and it looks like it's related to the version of make/gmake:
 
     checking version of gmake... 3.82, bad
 

@@ -52,7 +52,7 @@
     <link rel="icon" href="_static/logo.svg"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Installation" href="install.html" />
+    <link rel="next" title="Installation of DARA" href="install.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -193,8 +193,8 @@
         <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="tutorials.html">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/automated_refinement.html">1. Automated Refinement with BGMN</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/phase_search.html">2. Phase Searching with Tree Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/automated_refinement.html">1. Automated refinement with BGMN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/phase_search.html">2. Phase analysis with tree search</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="modules.html">API Docs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -456,10 +456,25 @@ document.write(`
 <h1 class="sd-d-none">Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h1>
 <a class="reference internal image-reference" href="_images/logo-with-text.svg"><img alt="_images/logo-with-text.svg" class="align-center" src="_images/logo-with-text.svg" width="100%" /></a>
 <p class="keynote">
-Dara is a Python package for refining and analyzing phases in powder X-ray diffraction (XRD) data.
+Dara is a Python package for phase analysis and refinement of powder X-ray diffraction (XRD) data.
 </p>
+<p>Some features of Dara include:</p>
+<ul class="simple">
+<li><p><strong>Automated refinement</strong>: Automatically refine a powder XRD pattern with the Rietveld
+method by calling the BGMN program from Python.</p></li>
+<li><p><strong>Phase identification</strong>: Identify phases in a powder XRD pattern using a parallelized
+tree search procedure customized to use any crystallographic database or provided
+CIFs.</p></li>
+<li><p><strong>Multiple hypotheses</strong>: Compare between multiple possible fits (hypotheses) during phase
+identification performed on a powder XRD pattern.</p></li>
+<li><p><strong>Data visualization</strong>: Plot powder XRD data and the results of phase identification
+and refinement, including missing/extra peaks.</p></li>
+<li><p><strong>Constrained search</strong>: Constrain phase search space using suggested pre-filtering of
+crystallographic databases, as well as reaction energetics and predicted products.</p></li>
+</ul>
 <div class="note admonition">
-<p class="admonition-title">Installation</p>
+<p class="admonition-title">Installation (recommended)</p>
+<p>The easiest way to install the latest release of Dara is via pip from PyPI:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">dara</span>
 </pre></div>
 </div>
@@ -475,7 +490,8 @@ Dara is a Python package for refining and analyzing phases in powder X-ray diffr
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
 <svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-note sd-mr-1" viewBox="0 0 24 24" aria-hidden="true"><path d="M0 4.75C0 3.784.784 3 1.75 3h20.5c.966 0 1.75.784 1.75 1.75v14.5A1.75 1.75 0 0 1 22.25 21H1.75A1.75 1.75 0 0 1 0 19.25Zm1.75-.25a.25.25 0 0 0-.25.25v14.5c0 .138.112.25.25.25h20.5a.25.25 0 0 0 .25-.25V4.75a.25.25 0 0 0-.25-.25Z"></path><path d="M5 8.75A.75.75 0 0 1 5.75 8h11.5a.75.75 0 0 1 0 1.5H5.75A.75.75 0 0 1 5 8.75Zm0 4a.75.75 0 0 1 .75-.75h5.5a.75.75 0 0 1 0 1.5h-5.5a.75.75 0 0 1-.75-.75Z"></path></svg> Automated Refinement</div>
-<p class="sd-card-text">Backended by <a class="reference external" href="http://www.bgmn.de">BGMN</a>, Dara provides a simple and automated way to refine phases in powder X-ray diffraction data.</p>
+<p class="sd-card-text">Using <a class="reference external" href="http://www.bgmn.de">BGMN</a> as a backend, Dara provides a simple and automated way
+to refine phases in powder X-ray diffraction (XRD) data.</p>
 </div>
 <div class="sd-card-footer docutils">
 <p class="sd-card-text"><a class="reference internal" href="notebooks/automated_refinement.html"><span class="doc std std-doc">Go to tutorial »</span></a></p>
@@ -487,9 +503,11 @@ Dara is a Python package for refining and analyzing phases in powder X-ray diffr
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
 <svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-search sd-mr-1" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.25 2a8.25 8.25 0 0 1 6.34 13.53l5.69 5.69a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215l-5.69-5.69A8.25 8.25 0 1 1 10.25 2ZM3.5 10.25a6.75 6.75 0 1 0 13.5 0 6.75 6.75 0 0 0-13.5 0Z"></path></svg> Phase searching</div>
-<p class="sd-card-text">Dara provides a tree-search-based algorithm to search for phases in powder X-ray diffraction data. It needs only inputs of
-(1) the raw X-ray diffraction pattern; (2) the reference phases. Dara also implements <code class="docutils literal notranslate"><span class="pre">ICSDDatabase</span></code> and <code class="docutils literal notranslate"><span class="pre">CODDatabase</span></code> to
-help users query the references in the chemical system from all the ICSD and COD databases.</p>
+<p class="sd-card-text">Dara provides a parallelilzed tree search algorithm to search for phases in powder X-ray
+diffraction data. It needs only two inputs:
+(1) the raw X-ray diffraction pattern and (2) the reference phases. For the latter, Dara
+also implements <code class="docutils literal notranslate"><span class="pre">CODDatabase</span></code> and <code class="docutils literal notranslate"><span class="pre">ICSDDatabase</span></code> to
+help users query the reference CIFs in chemical system of interest in the COD and ICSD databases.</p>
 </div>
 <div class="sd-card-footer docutils">
 <p class="sd-card-text"><a class="reference internal" href="notebooks/phase_search.html"><span class="doc std std-doc">Go to tutorial »</span></a></p>
@@ -501,7 +519,8 @@ help users query the references in the chemical system from all the ICSD and COD
 <hr class="docutils" />
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p>This project gets a lot of inspiration from <a class="reference external" href="https://www.profex-xrd.org/">Profex</a> project.</p>
+<p>This project gets a lot of inspiration from the <a class="reference external" href="https://www.profex-xrd.org/">Profex</a>
+project led by Nicola Dobelin. We are very grateful for their work.</p>
 </div>
 <div class="toctree-wrapper compound">
 </div>
@@ -524,7 +543,7 @@ help users query the references in the chemical system from all the ICSD and COD
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Installation</p>
+        <p class="prev-next-title">Installation of DARA</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

@@ -19,11 +19,26 @@ sd_hide_title: true
 ```
 
 <p class="keynote">
-Dara is a Python package for refining and analyzing phases in powder X-ray diffraction (XRD) data.
+Dara is a Python package for phase analysis and refinement of powder X-ray diffraction (XRD) data.
 </p>
 
-::::{admonition} Installation
+Some features of Dara include:
+
+* **Automated refinement**: Automatically refine a powder XRD pattern with the Rietveld
+  method by calling the BGMN program from Python.
+* **Phase identification**: Identify phases in a powder XRD pattern using a parallelized
+  tree search procedure customized to use any crystallographic database or provided
+  CIFs.
+* **Multiple hypotheses**: Compare between multiple possible fits (hypotheses) during phase
+  identification performed on a powder XRD pattern.
+* **Data visualization**: Plot powder XRD data and the results of phase identification
+  and refinement, including missing/extra peaks.
+* **Constrained search**: Constrain phase search space using suggested pre-filtering of
+  crystallographic databases, as well as reaction energetics and predicted products.
+
+::::{admonition} Installation (recommended)
 :class: note
+The easiest way to install the latest release of Dara is via pip from PyPI:
 
 ```
 pip install dara
@@ -34,15 +49,17 @@ pip install dara
 ::::
 
 ---
+
 ## Tutorials
+
 ```{include} tutorial_grid.md
 ```
 
---- 
+---
 :::{seealso}
-This project gets a lot of inspiration from [Profex](https://www.profex-xrd.org/) project.
+This project gets a lot of inspiration from the [Profex](https://www.profex-xrd.org/)
+project led by Nicola Dobelin. We are very grateful for their work.
 :::
-
 
 ```{toctree}
 :maxdepth: 2
