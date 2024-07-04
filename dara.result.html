@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="_static/documentation_options.js?v=2a76c96f"></script>
+    <script src="_static/documentation_options.js?v=918a4b72"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -457,6 +457,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.PhaseResult"><code class="docutils literal notranslate"><span class="pre">PhaseResult</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.PhaseResult.a"><code class="docutils literal notranslate"><span class="pre">PhaseResult.a</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.PhaseResult.alpha"><code class="docutils literal notranslate"><span class="pre">PhaseResult.alpha</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.PhaseResult.atom_positions_string"><code class="docutils literal notranslate"><span class="pre">PhaseResult.atom_positions_string</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.PhaseResult.b"><code class="docutils literal notranslate"><span class="pre">PhaseResult.b</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.PhaseResult.beta"><code class="docutils literal notranslate"><span class="pre">PhaseResult.beta</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.PhaseResult.c"><code class="docutils literal notranslate"><span class="pre">PhaseResult.c</span></code></a></li>
@@ -469,6 +470,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.PhaseResult.unit"><code class="docutils literal notranslate"><span class="pre">PhaseResult.unit</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.PhaseResult.xray_density"><code class="docutils literal notranslate"><span class="pre">PhaseResult.xray_density</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.PhaseResult.check_gewicht"><code class="docutils literal notranslate"><span class="pre">PhaseResult.check_gewicht</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.PhaseResult.get_structure"><code class="docutils literal notranslate"><span class="pre">PhaseResult.get_structure()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.RefinementResult"><code class="docutils literal notranslate"><span class="pre">RefinementResult</span></code></a><ul class="visible nav section-nav flex-column">
@@ -892,6 +894,18 @@ document.write(`
 <span class="w">               </span><span class="p">],</span>
 <span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Gamma&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;Atomic positions for phase&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">                  </span><span class="p">},</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">                  </span><span class="p">}</span>
+<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Atomic Positions For Phase&quot;</span>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">         </span><span class="p">},</span>
 <span class="w">         </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -1247,6 +1261,18 @@ document.write(`
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Gamma&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;Atomic positions for phase&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Atomic Positions For Phase&quot;</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">   </span><span class="p">},</span>
 <span class="w">   </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
@@ -1267,6 +1293,7 @@ document.write(`
 <dd class="field-odd"><ul class="simple">
 <li><p><a class="reference internal" href="#dara.result.PhaseResult.a" title="dara.result.PhaseResult.a"><code class="xref py py-obj docutils literal notranslate"><span class="pre">a</span> <span class="pre">(float</span> <span class="pre">|</span> <span class="pre">tuple[float,</span> <span class="pre">float]</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#dara.result.PhaseResult.alpha" title="dara.result.PhaseResult.alpha"><code class="xref py py-obj docutils literal notranslate"><span class="pre">alpha</span> <span class="pre">(float</span> <span class="pre">|</span> <span class="pre">tuple[float,</span> <span class="pre">float]</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#dara.result.PhaseResult.atom_positions_string" title="dara.result.PhaseResult.atom_positions_string"><code class="xref py py-obj docutils literal notranslate"><span class="pre">atom_positions_string</span> <span class="pre">(str</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#dara.result.PhaseResult.b" title="dara.result.PhaseResult.b"><code class="xref py py-obj docutils literal notranslate"><span class="pre">b</span> <span class="pre">(float</span> <span class="pre">|</span> <span class="pre">tuple[float,</span> <span class="pre">float]</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#dara.result.PhaseResult.beta" title="dara.result.PhaseResult.beta"><code class="xref py py-obj docutils literal notranslate"><span class="pre">beta</span> <span class="pre">(float</span> <span class="pre">|</span> <span class="pre">tuple[float,</span> <span class="pre">float]</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#dara.result.PhaseResult.c" title="dara.result.PhaseResult.c"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c</span> <span class="pre">(float</span> <span class="pre">|</span> <span class="pre">tuple[float,</span> <span class="pre">float]</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
@@ -1301,6 +1328,18 @@ document.write(`
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="dara.result.PhaseResult.alpha">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">alpha</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional[Union[float,</span> <span class="pre">tuple[float,</span> <span class="pre">float]]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"> <span class="pre">(alias</span> <span class="pre">'ALPHA')</span></em><a class="headerlink" href="#dara.result.PhaseResult.alpha" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Validated by<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#dara.result.PhaseResult.check_gewicht" title="dara.result.PhaseResult.check_gewicht"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_gewicht</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="dara.result.PhaseResult.atom_positions_string">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">atom_positions_string</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional[str]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"> <span class="pre">(alias</span> <span class="pre">'Atomic</span> <span class="pre">positions</span> <span class="pre">for</span> <span class="pre">phase')</span></em><a class="headerlink" href="#dara.result.PhaseResult.atom_positions_string" title="Link to this definition">#</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Validated by<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1446,6 +1485,20 @@ document.write(`
 <dt class="sig sig-object py" id="dara.result.PhaseResult.check_gewicht">
 <em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_gewicht</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><em class="xref py py-obj"><span class="pre">all</span> <span class="pre">fields</span></em><a class="reference internal" href="_modules/dara/result.html#PhaseResult.check_gewicht"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.result.PhaseResult.check_gewicht" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dara.result.PhaseResult.get_structure">
+<span class="sig-name descname"><span class="pre">get_structure</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/result.html#PhaseResult.get_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.result.PhaseResult.get_structure" title="Link to this definition">#</a></dt>
+<dd><p>Get the refined structure from the phase result.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the refined structure as <code class="docutils literal notranslate"><span class="pre">pymatgen.Structure</span></code> object</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -1826,6 +1879,18 @@ document.write(`
 <span class="w">               </span><span class="p">],</span>
 <span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Gamma&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;Atomic positions for phase&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">                  </span><span class="p">},</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">                  </span><span class="p">}</span>
+<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Atomic Positions For Phase&quot;</span>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">         </span><span class="p">},</span>
 <span class="w">         </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -2107,6 +2172,7 @@ Atomic positions for phase NiO
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.PhaseResult"><code class="docutils literal notranslate"><span class="pre">PhaseResult</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.PhaseResult.a"><code class="docutils literal notranslate"><span class="pre">PhaseResult.a</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.PhaseResult.alpha"><code class="docutils literal notranslate"><span class="pre">PhaseResult.alpha</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.PhaseResult.atom_positions_string"><code class="docutils literal notranslate"><span class="pre">PhaseResult.atom_positions_string</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.PhaseResult.b"><code class="docutils literal notranslate"><span class="pre">PhaseResult.b</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.PhaseResult.beta"><code class="docutils literal notranslate"><span class="pre">PhaseResult.beta</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.PhaseResult.c"><code class="docutils literal notranslate"><span class="pre">PhaseResult.c</span></code></a></li>
@@ -2119,6 +2185,7 @@ Atomic positions for phase NiO
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.PhaseResult.unit"><code class="docutils literal notranslate"><span class="pre">PhaseResult.unit</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.PhaseResult.xray_density"><code class="docutils literal notranslate"><span class="pre">PhaseResult.xray_density</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.PhaseResult.check_gewicht"><code class="docutils literal notranslate"><span class="pre">PhaseResult.check_gewicht</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.PhaseResult.get_structure"><code class="docutils literal notranslate"><span class="pre">PhaseResult.get_structure()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.RefinementResult"><code class="docutils literal notranslate"><span class="pre">RefinementResult</span></code></a><ul class="visible nav section-nav flex-column">

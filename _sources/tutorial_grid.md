@@ -1,7 +1,7 @@
 ::::{grid} 1 2 2 2
 :gutter: 1 1 1 2
 
-:::{grid-item-card} {octicon}`note;1.5em;sd-mr-1` Automated Refinement
+:::{grid-item-card} ✨ Automated Refinement
 
 Using [BGMN](http://www.bgmn.de) as a backend, Dara provides a simple and automated way
 to refine phases in powder X-ray diffraction (XRD) data.
@@ -10,7 +10,7 @@ to refine phases in powder X-ray diffraction (XRD) data.
 [Go to tutorial »](notebooks/automated_refinement)
 :::
 
-:::{grid-item-card} {octicon}`search;1.5em;sd-mr-1` Phase searching
+:::{grid-item-card} 🔍 Phase searching
 
 Dara provides a parallelilzed tree search algorithm to search for phases in powder X-ray
 diffraction data. It needs only two inputs:
