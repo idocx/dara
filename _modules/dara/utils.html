@@ -980,9 +980,7 @@ document.write(`
 
 <div class="viewcode-block" id="get_wavelength">
 <a class="viewcode-back" href="../../dara.utils.html#dara.utils.get_wavelength">[docs]</a>
-<span class="k">def</span> <span class="nf">get_wavelength</span><span class="p">(</span>
-    <span class="n">wavelength_or_target_metal</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;Cu&quot;</span><span class="p">,</span> <span class="s2">&quot;Co&quot;</span><span class="p">,</span> <span class="s2">&quot;Cr&quot;</span><span class="p">,</span> <span class="s2">&quot;Fe&quot;</span><span class="p">,</span> <span class="s2">&quot;Mo&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="nb">float</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">get_wavelength</span><span class="p">(</span><span class="n">wavelength_or_target_metal</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
     <span class="n">element_data</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;cu&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.540598</span><span class="p">,</span> <span class="mf">1.544426</span><span class="p">,</span> <span class="mf">1.392250</span><span class="p">),</span>
         <span class="s2">&quot;cr&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.289760</span><span class="p">,</span> <span class="mf">2.293663</span><span class="p">,</span> <span class="mf">2.084920</span><span class="p">),</span>
@@ -993,6 +991,10 @@ document.write(`
         <span class="s2">&quot;ag&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.5594075</span><span class="p">,</span> <span class="mf">0.563798</span><span class="p">,</span> <span class="mf">0.497069</span><span class="p">),</span>
         <span class="s2">&quot;w&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.20901</span><span class="p">,</span> <span class="mf">0.213828</span><span class="p">,</span> <span class="mf">0.184374</span><span class="p">),</span>
     <span class="p">}</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">wavelength_or_target_metal</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">wavelength_or_target_metal</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">pass</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wavelength_or_target_metal</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">wavelength_or_target_metal</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">element_data</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">(</span>
