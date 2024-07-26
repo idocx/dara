@@ -438,6 +438,7 @@ document.write(`
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.xrd.XRDData"><code class="docutils literal notranslate"><span class="pre">XRDData</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.xrd.XRDData.angles"><code class="docutils literal notranslate"><span class="pre">XRDData.angles</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.xrd.XRDData.errors"><code class="docutils literal notranslate"><span class="pre">XRDData.errors</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.xrd.XRDData.from_file"><code class="docutils literal notranslate"><span class="pre">XRDData.from_file()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.xrd.XRDData.intensities"><code class="docutils literal notranslate"><span class="pre">XRDData.intensities</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.xrd.XRDData.plot"><code class="docutils literal notranslate"><span class="pre">XRDData.plot()</span></code></a></li>
@@ -515,7 +516,7 @@ document.write(`
 
 <dl class="py class">
 <dt class="sig sig-object py" id="dara.xrd.XRDData">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">XRDData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">angles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensities</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/xrd.html#XRDData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.xrd.XRDData" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">XRDData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">angles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/xrd.html#XRDData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.xrd.XRDData" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MSONable</span></code></p>
 <p>General XRD data class; this is the base class for XRDMLFile, XYFile and other
 XRD data formats. This class ensures that all XRD data can be serialized.</p>
@@ -523,6 +524,12 @@ XRD data formats. This class ensures that all XRD data can be serialized.</p>
 <dt class="sig sig-object py" id="dara.xrd.XRDData.angles">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">angles</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#dara.xrd.XRDData.angles" title="Link to this definition">#</a></dt>
 <dd><p>2-theta values.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dara.xrd.XRDData.errors">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">errors</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#dara.xrd.XRDData.errors" title="Link to this definition">#</a></dt>
+<dd><p>Errors in intensity values.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -615,7 +622,7 @@ the Aeris instrument.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="dara.xrd.XYFile">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">XYFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">angles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensities</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/xrd.html#XYFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.xrd.XYFile" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">XYFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">angles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/xrd.html#XYFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.xrd.XYFile" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#dara.xrd.XRDData" title="dara.xrd.XRDData"><code class="xref py py-class docutils literal notranslate"><span class="pre">XRDData</span></code></a></p>
 <p>XY file class, useful for loading .xy data.</p>
 <dl class="py method">
@@ -752,6 +759,7 @@ the Aeris instrument.</p>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.xrd.XRDData"><code class="docutils literal notranslate"><span class="pre">XRDData</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.xrd.XRDData.angles"><code class="docutils literal notranslate"><span class="pre">XRDData.angles</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.xrd.XRDData.errors"><code class="docutils literal notranslate"><span class="pre">XRDData.errors</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.xrd.XRDData.from_file"><code class="docutils literal notranslate"><span class="pre">XRDData.from_file()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.xrd.XRDData.intensities"><code class="docutils literal notranslate"><span class="pre">XRDData.intensities</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.xrd.XRDData.plot"><code class="docutils literal notranslate"><span class="pre">XRDData.plot()</span></code></a></li>
