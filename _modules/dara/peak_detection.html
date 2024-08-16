@@ -375,6 +375,7 @@ document.write(`
     <span class="n">wmin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">wmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">show_progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">nthreads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
     <span class="n">eflech_worker</span> <span class="o">=</span> <span class="n">EflechWorker</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">eflech_worker</span><span class="o">.</span><span class="n">run_peak_detection</span><span class="p">(</span>
@@ -384,6 +385,7 @@ document.write(`
         <span class="n">wmin</span><span class="o">=</span><span class="n">wmin</span><span class="p">,</span>
         <span class="n">wmax</span><span class="o">=</span><span class="n">wmax</span><span class="p">,</span>
         <span class="n">show_progress</span><span class="o">=</span><span class="n">show_progress</span><span class="p">,</span>
+        <span class="n">nthreads</span><span class="o">=</span><span class="n">nthreads</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 </pre></div>
