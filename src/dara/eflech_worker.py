@@ -51,6 +51,7 @@ class EflechWorker:
         wmin: float = None,
         wmax: float = None,
         nthreads: int = None,
+        timeout: int = 1800,
     ) -> pd.DataFrame:
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_dir = Path(temp_dir)
@@ -88,17 +89,20 @@ class EflechWorker:
                 nthreads=nthreads,
             )
 
-            self.run_eflech(
+            teil_output = self.run_eflech(
                 control_file_path,
                 mode="teil",
                 working_dir=temp_dir,
                 show_progress=show_progress,
+                timeout=timeout,
             )
+
             self.run_eflech(
                 control_file_path,
                 mode="eflech",
                 working_dir=temp_dir,
                 show_progress=show_progress,
+                timeout=timeout,
             )
 
             return self.parse_peak_list(temp_dir, wavelength=wavelength)
@@ -141,13 +145,14 @@ class EflechWorker:
         mode: Literal["eflech", "teil"],
         working_dir: Path,
         show_progress: bool = False,
-    ):
+        timeout: int = 1800,
+    ) -> str:
         if mode == "eflech":
             cp = subprocess.run(
                 [self.eflech_path.as_posix(), control_file_path.as_posix()],
                 cwd=working_dir.as_posix(),
                 capture_output=not show_progress,
-                timeout=1800,
+                timeout=timeout,
                 check=False,
             )
         elif mode == "teil":
@@ -155,7 +160,7 @@ class EflechWorker:
                 [self.teil_path.as_posix(), control_file_path.as_posix()],
                 cwd=working_dir.as_posix(),
                 capture_output=not show_progress,
-                timeout=1800,
+                timeout=timeout,
                 check=False,
             )
         else:
@@ -167,6 +172,7 @@ class EflechWorker:
                 f"{cp.stdout}\n"
                 f"{cp.stderr}"
             )
+        return cp.stdout.decode()
 
     def parse_peak_list(
         self,

@@ -19,6 +19,7 @@ def detect_peaks(
     wmax: float = None,
     show_progress: bool = False,
     nthreads: int = None,
+    timeout: int = 1800,
 ) -> pd.DataFrame:
     eflech_worker = EflechWorker()
     return eflech_worker.run_peak_detection(
@@ -29,4 +30,5 @@ def detect_peaks(
         wmax=wmax,
         show_progress=show_progress,
         nthreads=nthreads,
+        timeout=timeout,
     )

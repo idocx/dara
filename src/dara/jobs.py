@@ -13,7 +13,7 @@ from pymatgen.core import Composition
 
 from dara.cif import Cif
 from dara.prediction.core import PhasePredictor
-from dara.refine import do_refinement, do_refinement_no_saving, RefinementPhase
+from dara.refine import RefinementPhase, do_refinement, do_refinement_no_saving
 from dara.schema import PhaseSearchDocument, RefinementDocument
 from dara.search import search_phases
 from dara.search.data_model import SearchResult
