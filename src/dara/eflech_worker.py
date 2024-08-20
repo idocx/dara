@@ -4,11 +4,14 @@ import os
 import re
 import subprocess
 import tempfile
+import warnings
 from pathlib import Path
 from typing import Literal
 
 import numpy as np
 import pandas as pd
+import pybaselines as pb
+from sklearn.cluster import AgglomerativeClustering
 
 from dara.bgmn.download_bgmn import download_bgmn
 from dara.generate_control_file import (
@@ -93,9 +96,41 @@ class EflechWorker:
                 control_file_path,
                 mode="teil",
                 working_dir=temp_dir,
-                show_progress=show_progress,
+                show_progress=False,  # we need the output for further processing
                 timeout=timeout,
             )
+
+            ru = re.search(r"RU=(\d+)", teil_output)
+            if ru:
+                ru = int(ru.group(1))
+            else:
+                raise RuntimeError(
+                    "RU value not found in teil output. The output is: \n" + teil_output
+                )
+            control_file_content = control_file_path.read_text()
+            all_wmin2 = re.findall(r"WMIN2\[\d+\]==(.*?)\n", control_file_content)
+            all_wmax2 = re.findall(r"WMAX2\[\d+\]==(.*?)\n", control_file_content)
+            all_wmin2 = [float(wmin) for wmin in all_wmin2]
+            all_wmax2 = [float(wmax) for wmax in all_wmax2]
+
+            two_theta_range = xy_content[-1, 0] - xy_content[0, 0]
+            print(
+                [wmax - wmin for wmin, wmax in zip(all_wmin2, all_wmax2)],
+                two_theta_range,
+            )
+            # if teil cannot find a good split of the pattern, we will try to split it manually
+            if (
+                not all_wmin2
+                or not all_wmax2
+                or any(
+                    wmax - wmin > 0.5 * two_theta_range
+                    for wmin, wmax in zip(all_wmin2, all_wmax2)
+                )
+            ):
+                warnings.warn(
+                    "teil cannot find a good split of the pattern. Trying to split it with dara-teil."
+                )
+                self.patch_control_file_after_teil(control_file_path, ru, xy_content)
 
             self.run_eflech(
                 control_file_path,
@@ -125,7 +160,7 @@ class EflechWorker:
             {f"WMIN={wmin}" if wmin is not None else ""}
             {f"WMAX={wmax}" if wmax is not None else ""}
             NTHREADS={nthreads if nthreads is not None else os.cpu_count()}
-            TEST=ND234U
+            TEST=ND234U+-
             OUTPUTMASK=output-$
             TITELMASK=output-$"""
 
@@ -146,7 +181,7 @@ class EflechWorker:
         working_dir: Path,
         show_progress: bool = False,
         timeout: int = 1800,
-    ) -> str:
+    ) -> str | None:
         if mode == "eflech":
             cp = subprocess.run(
                 [self.eflech_path.as_posix(), control_file_path.as_posix()],
@@ -156,10 +191,12 @@ class EflechWorker:
                 check=False,
             )
         elif mode == "teil":
+            if show_progress:
+                warnings.warn("show_progress=True is not supported for teil mode.")
             cp = subprocess.run(
                 [self.teil_path.as_posix(), control_file_path.as_posix()],
                 cwd=working_dir.as_posix(),
-                capture_output=not show_progress,
+                capture_output=True,
                 timeout=timeout,
                 check=False,
             )
@@ -172,7 +209,8 @@ class EflechWorker:
                 f"{cp.stdout}\n"
                 f"{cp.stderr}"
             )
-        return cp.stdout.decode()
+        if cp.stdout is not None:
+            return cp.stdout.decode()
 
     def parse_peak_list(
         self,
@@ -262,3 +300,112 @@ class EflechWorker:
                     peak_list.append([d_inv, intensity, b1, b2])
 
         return peak_list
+
+    def patch_control_file_after_teil(
+        self, control_file_path: Path, ru: int, xy_content: np.ndarray
+    ):
+        """
+        Patch the control file after teil is run. If the divided pattern is still too large,
+        we will divide it further to save the computation time.
+
+        Args:
+            control_file_path: the path to the control file
+            ru: the degree of background, get from teil output
+            xy_content: the xy of the pattern
+        """
+        control_file_content = control_file_path.read_text()
+
+        val_name = re.search(r"VAL\[1]=(\S+)", control_file_content).group(1)
+        output_mask = re.search(r"OUTPUTMASK=(\S+)", control_file_content).group(1)
+        titel_mask = re.search(r"TITELMASK=(\S+)", control_file_content).group(1)
+
+        breakpoints = self.get_background_breakpoints(ru, xy_content)
+
+        partial_pattern_str = "% dara-teil has computed the following angular ranges\n"
+        for i, (breakpoint_1, breakpoint_2) in enumerate(
+            zip(breakpoints[:-1], breakpoints[1:]), start=1
+        ):
+            partial_pattern_str += (
+                f"% Dara Teil {i}\n"
+                f"WMIN[{i}]=={breakpoint_1['lower_bound']:.6f}\n"
+                f"WMIN2[{i}]=={breakpoint_1['mean']:.6f}\n"
+                f"WMAX[{i}]=={breakpoint_2['upper_bound']:.6f}\n"
+                f"WMAX2[{i}]=={breakpoint_2['mean']:.6f}\n"
+                f"VAL[{i},1]={val_name}\n"
+                f"OUTPUT[{i}]={output_mask.replace('$', str(i))}\n"
+                f"TITEL[{i}]={titel_mask.replace('$', str(i))}\n"
+            )
+
+        control_file_content = re.sub(
+            r"%teil has computed the following angular ranges.*"
+            r"(?=\n%these constants have been notated by TEIL for internal use)",
+            partial_pattern_str,
+            control_file_content,
+            flags=re.DOTALL,
+        )
+        control_file_path.write_text(control_file_content)
+
+    @staticmethod
+    def get_background_breakpoints(
+        ru: int, xy_content: np.ndarray
+    ) -> list[dict[str, float]]:
+        """
+        Get the background breakpoints from the teil output.
+
+        Args:
+            ru: the degree of background, get from teil output
+            xy_content: the xy of the pattern
+
+        Returns
+        -------
+            the background breakpoints
+        """
+        baseline_fitter = pb.Baseline(xy_content[:, 0])
+
+        bkg = baseline_fitter.penalized_poly(xy_content[:, 1], poly_order=ru)[0]
+
+        # use the negative residuals as an approximation of the background std
+        residuals = xy_content[:, 1] - bkg
+        bkg_std = residuals[residuals < 0].std()
+
+        # allow a two sigma std (assuming the noise is normally distributed)
+        bkg_area = np.arange(len(xy_content))[residuals < bkg_std * 2]
+
+        points_per_deg = int(len(xy_content) / (xy_content[-1, 0] - xy_content[0, 0]))
+
+        clustering = AgglomerativeClustering(
+            n_clusters=None,
+            distance_threshold=points_per_deg * 0.05,
+            linkage="single",
+        )
+        clustering.fit(bkg_area.reshape(-1, 1))
+
+        # include the start and end points of the whole pattern
+        breakpoints = [
+            {
+                "mean": xy_content[0, 0],
+                "lower_bound": xy_content[0, 0],
+                "upper_bound": xy_content[0, 0],
+            },
+            {
+                "mean": xy_content[-1, 0],
+                "lower_bound": xy_content[-1, 0],
+                "upper_bound": xy_content[-1, 0],
+            },
+        ]
+        for i in range(clustering.n_clusters_):
+            all_points_in_cluster = xy_content[bkg_area, 0][clustering.labels_ == i]
+
+            if all_points_in_cluster[-1] - all_points_in_cluster[0] < 0.5:
+                continue
+
+            breakpoint_ = {
+                "mean": all_points_in_cluster.mean(),
+                "lower_bound": np.percentile(all_points_in_cluster, 25),
+                "upper_bound": np.percentile(all_points_in_cluster, 75),
+            }
+
+            breakpoints.append(breakpoint_)
+
+        # sorted by mean
+        return sorted(breakpoints, key=lambda x: x["mean"])
