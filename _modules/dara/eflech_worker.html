@@ -359,11 +359,14 @@ document.write(`
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Literal</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">pybaselines</span> <span class="k">as</span> <span class="nn">pb</span>
+<span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">AgglomerativeClustering</span>
 
 <span class="kn">from</span> <span class="nn">dara.bgmn.download_bgmn</span> <span class="kn">import</span> <span class="n">download_bgmn</span>
 <span class="kn">from</span> <span class="nn">dara.generate_control_file</span> <span class="kn">import</span> <span class="p">(</span>
@@ -410,6 +413,7 @@ document.write(`
         <span class="n">wmin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">wmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">nthreads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1800</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">temp_dir</span><span class="p">:</span>
             <span class="n">temp_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">)</span>
@@ -447,17 +451,52 @@ document.write(`
                 <span class="n">nthreads</span><span class="o">=</span><span class="n">nthreads</span><span class="p">,</span>
             <span class="p">)</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">run_eflech</span><span class="p">(</span>
+            <span class="n">teil_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_eflech</span><span class="p">(</span>
                 <span class="n">control_file_path</span><span class="p">,</span>
                 <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;teil&quot;</span><span class="p">,</span>
                 <span class="n">working_dir</span><span class="o">=</span><span class="n">temp_dir</span><span class="p">,</span>
-                <span class="n">show_progress</span><span class="o">=</span><span class="n">show_progress</span><span class="p">,</span>
+                <span class="n">show_progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># we need the output for further processing</span>
+                <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
             <span class="p">)</span>
+
+            <span class="n">ru</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;RU=(\d+)&quot;</span><span class="p">,</span> <span class="n">teil_output</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ru</span><span class="p">:</span>
+                <span class="n">ru</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ru</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="s2">&quot;RU value not found in teil output. The output is: </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">teil_output</span>
+                <span class="p">)</span>
+            <span class="n">control_file_content</span> <span class="o">=</span> <span class="n">control_file_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
+            <span class="n">all_wmin2</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;WMIN2\[\d+\]==(.*?)\n&quot;</span><span class="p">,</span> <span class="n">control_file_content</span><span class="p">)</span>
+            <span class="n">all_wmax2</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;WMAX2\[\d+\]==(.*?)\n&quot;</span><span class="p">,</span> <span class="n">control_file_content</span><span class="p">)</span>
+            <span class="n">all_wmin2</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">wmin</span><span class="p">)</span> <span class="k">for</span> <span class="n">wmin</span> <span class="ow">in</span> <span class="n">all_wmin2</span><span class="p">]</span>
+            <span class="n">all_wmax2</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">wmax</span><span class="p">)</span> <span class="k">for</span> <span class="n">wmax</span> <span class="ow">in</span> <span class="n">all_wmax2</span><span class="p">]</span>
+
+            <span class="n">two_theta_range</span> <span class="o">=</span> <span class="n">xy_content</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">xy_content</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">wmax</span> <span class="o">-</span> <span class="n">wmin</span> <span class="k">for</span> <span class="n">wmin</span><span class="p">,</span> <span class="n">wmax</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">all_wmin2</span><span class="p">,</span> <span class="n">all_wmax2</span><span class="p">)],</span>
+                <span class="n">two_theta_range</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="c1"># if teil cannot find a good split of the pattern, we will try to split it manually</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="ow">not</span> <span class="n">all_wmin2</span>
+                <span class="ow">or</span> <span class="ow">not</span> <span class="n">all_wmax2</span>
+                <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span>
+                    <span class="n">wmax</span> <span class="o">-</span> <span class="n">wmin</span> <span class="o">&gt;</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">two_theta_range</span>
+                    <span class="k">for</span> <span class="n">wmin</span><span class="p">,</span> <span class="n">wmax</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">all_wmin2</span><span class="p">,</span> <span class="n">all_wmax2</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">):</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="s2">&quot;teil cannot find a good split of the pattern. Trying to split it with dara-teil.&quot;</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">patch_control_file_after_teil</span><span class="p">(</span><span class="n">control_file_path</span><span class="p">,</span> <span class="n">ru</span><span class="p">,</span> <span class="n">xy_content</span><span class="p">)</span>
+
             <span class="bp">self</span><span class="o">.</span><span class="n">run_eflech</span><span class="p">(</span>
                 <span class="n">control_file_path</span><span class="p">,</span>
                 <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;eflech&quot;</span><span class="p">,</span>
                 <span class="n">working_dir</span><span class="o">=</span><span class="n">temp_dir</span><span class="p">,</span>
                 <span class="n">show_progress</span><span class="o">=</span><span class="n">show_progress</span><span class="p">,</span>
+                <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
             <span class="p">)</span>
 
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_peak_list</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">,</span> <span class="n">wavelength</span><span class="o">=</span><span class="n">wavelength</span><span class="p">)</span></div>
@@ -483,7 +522,7 @@ document.write(`
 <span class="s2">            </span><span class="si">{</span><span class="sa">f</span><span class="s2">&quot;WMIN=</span><span class="si">{</span><span class="n">wmin</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">wmin</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="si">}</span>
 <span class="s2">            </span><span class="si">{</span><span class="sa">f</span><span class="s2">&quot;WMAX=</span><span class="si">{</span><span class="n">wmax</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">wmax</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="si">}</span>
 <span class="s2">            NTHREADS=</span><span class="si">{</span><span class="n">nthreads</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">nthreads</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">os</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span><span class="si">}</span>
-<span class="s2">            TEST=ND234U</span>
+<span class="s2">            TEST=ND234U+-</span>
 <span class="s2">            OUTPUTMASK=output-$</span>
 <span class="s2">            TITELMASK=output-$&quot;&quot;&quot;</span>
 
@@ -506,21 +545,24 @@ document.write(`
         <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;eflech&quot;</span><span class="p">,</span> <span class="s2">&quot;teil&quot;</span><span class="p">],</span>
         <span class="n">working_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
         <span class="n">show_progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">):</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1800</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;eflech&quot;</span><span class="p">:</span>
             <span class="n">cp</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
                 <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">eflech_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">(),</span> <span class="n">control_file_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()],</span>
                 <span class="n">cwd</span><span class="o">=</span><span class="n">working_dir</span><span class="o">.</span><span class="n">as_posix</span><span class="p">(),</span>
                 <span class="n">capture_output</span><span class="o">=</span><span class="ow">not</span> <span class="n">show_progress</span><span class="p">,</span>
-                <span class="n">timeout</span><span class="o">=</span><span class="mi">1800</span><span class="p">,</span>
+                <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
                 <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;teil&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">show_progress</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;show_progress=True is not supported for teil mode.&quot;</span><span class="p">)</span>
             <span class="n">cp</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
                 <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">teil_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">(),</span> <span class="n">control_file_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()],</span>
                 <span class="n">cwd</span><span class="o">=</span><span class="n">working_dir</span><span class="o">.</span><span class="n">as_posix</span><span class="p">(),</span>
-                <span class="n">capture_output</span><span class="o">=</span><span class="ow">not</span> <span class="n">show_progress</span><span class="p">,</span>
-                <span class="n">timeout</span><span class="o">=</span><span class="mi">1800</span><span class="p">,</span>
+                <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
                 <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -531,7 +573,9 @@ document.write(`
                 <span class="sa">f</span><span class="s2">&quot;Error in BGMN </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">control_file_path</span><span class="si">}</span><span class="s2">. The exit code is </span><span class="si">{</span><span class="n">cp</span><span class="o">.</span><span class="n">returncode</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cp</span><span class="o">.</span><span class="n">stdout</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cp</span><span class="o">.</span><span class="n">stderr</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span></div>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">cp</span><span class="o">.</span><span class="n">stdout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">cp</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="EflechWorker.parse_peak_list">
@@ -627,6 +671,121 @@ document.write(`
                     <span class="n">peak_list</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">d_inv</span><span class="p">,</span> <span class="n">intensity</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">b2</span><span class="p">])</span>
 
         <span class="k">return</span> <span class="n">peak_list</span></div>
+
+
+<div class="viewcode-block" id="EflechWorker.patch_control_file_after_teil">
+<a class="viewcode-back" href="../../dara.eflech_worker.html#dara.eflech_worker.EflechWorker.patch_control_file_after_teil">[docs]</a>
+    <span class="k">def</span> <span class="nf">patch_control_file_after_teil</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">control_file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">ru</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">xy_content</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Patch the control file after teil is run. If the divided pattern is still too large,</span>
+<span class="sd">        we will divide it further to save the computation time.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            control_file_path: the path to the control file</span>
+<span class="sd">            ru: the degree of background, get from teil output</span>
+<span class="sd">            xy_content: the xy of the pattern</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">control_file_content</span> <span class="o">=</span> <span class="n">control_file_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
+
+        <span class="n">val_name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;VAL\[1]=(\S+)&quot;</span><span class="p">,</span> <span class="n">control_file_content</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">output_mask</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;OUTPUTMASK=(\S+)&quot;</span><span class="p">,</span> <span class="n">control_file_content</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">titel_mask</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;TITELMASK=(\S+)&quot;</span><span class="p">,</span> <span class="n">control_file_content</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">breakpoints</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_background_breakpoints</span><span class="p">(</span><span class="n">ru</span><span class="p">,</span> <span class="n">xy_content</span><span class="p">)</span>
+
+        <span class="n">partial_pattern_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">% d</span><span class="s2">ara-teil has computed the following angular ranges</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">breakpoint_1</span><span class="p">,</span> <span class="n">breakpoint_2</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
+            <span class="nb">zip</span><span class="p">(</span><span class="n">breakpoints</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">breakpoints</span><span class="p">[</span><span class="mi">1</span><span class="p">:]),</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span>
+        <span class="p">):</span>
+            <span class="n">partial_pattern_str</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;% Dara Teil </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;WMIN[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">]==</span><span class="si">{</span><span class="n">breakpoint_1</span><span class="p">[</span><span class="s1">&#39;lower_bound&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;WMIN2[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">]==</span><span class="si">{</span><span class="n">breakpoint_1</span><span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;WMAX[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">]==</span><span class="si">{</span><span class="n">breakpoint_2</span><span class="p">[</span><span class="s1">&#39;upper_bound&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;WMAX2[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">]==</span><span class="si">{</span><span class="n">breakpoint_2</span><span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;VAL[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">,1]=</span><span class="si">{</span><span class="n">val_name</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;OUTPUT[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">]=</span><span class="si">{</span><span class="n">output_mask</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;$&#39;</span><span class="p">,</span><span class="w"> </span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;TITEL[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">]=</span><span class="si">{</span><span class="n">titel_mask</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;$&#39;</span><span class="p">,</span><span class="w"> </span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">control_file_content</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
+            <span class="sa">r</span><span class="s2">&quot;%teil has computed the following angular ranges.*&quot;</span>
+            <span class="sa">r</span><span class="s2">&quot;(?=\n%these constants have been notated by TEIL for internal use)&quot;</span><span class="p">,</span>
+            <span class="n">partial_pattern_str</span><span class="p">,</span>
+            <span class="n">control_file_content</span><span class="p">,</span>
+            <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">control_file_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">control_file_content</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="EflechWorker.get_background_breakpoints">
+<a class="viewcode-back" href="../../dara.eflech_worker.html#dara.eflech_worker.EflechWorker.get_background_breakpoints">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_background_breakpoints</span><span class="p">(</span>
+        <span class="n">ru</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">xy_content</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the background breakpoints from the teil output.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ru: the degree of background, get from teil output</span>
+<span class="sd">            xy_content: the xy of the pattern</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">            the background breakpoints</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">baseline_fitter</span> <span class="o">=</span> <span class="n">pb</span><span class="o">.</span><span class="n">Baseline</span><span class="p">(</span><span class="n">xy_content</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">bkg</span> <span class="o">=</span> <span class="n">baseline_fitter</span><span class="o">.</span><span class="n">penalized_poly</span><span class="p">(</span><span class="n">xy_content</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">poly_order</span><span class="o">=</span><span class="n">ru</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># use the negative residuals as an approximation of the background std</span>
+        <span class="n">residuals</span> <span class="o">=</span> <span class="n">xy_content</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">bkg</span>
+        <span class="n">bkg_std</span> <span class="o">=</span> <span class="n">residuals</span><span class="p">[</span><span class="n">residuals</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+
+        <span class="c1"># allow a two sigma std (assuming the noise is normally distributed)</span>
+        <span class="n">bkg_area</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xy_content</span><span class="p">))[</span><span class="n">residuals</span> <span class="o">&lt;</span> <span class="n">bkg_std</span> <span class="o">*</span> <span class="mi">2</span><span class="p">]</span>
+
+        <span class="n">points_per_deg</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xy_content</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">xy_content</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">xy_content</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]))</span>
+
+        <span class="n">clustering</span> <span class="o">=</span> <span class="n">AgglomerativeClustering</span><span class="p">(</span>
+            <span class="n">n_clusters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">distance_threshold</span><span class="o">=</span><span class="n">points_per_deg</span> <span class="o">*</span> <span class="mf">0.05</span><span class="p">,</span>
+            <span class="n">linkage</span><span class="o">=</span><span class="s2">&quot;single&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">clustering</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">bkg_area</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+        <span class="c1"># include the start and end points of the whole pattern</span>
+        <span class="n">breakpoints</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;mean&quot;</span><span class="p">:</span> <span class="n">xy_content</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                <span class="s2">&quot;lower_bound&quot;</span><span class="p">:</span> <span class="n">xy_content</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                <span class="s2">&quot;upper_bound&quot;</span><span class="p">:</span> <span class="n">xy_content</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;mean&quot;</span><span class="p">:</span> <span class="n">xy_content</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                <span class="s2">&quot;lower_bound&quot;</span><span class="p">:</span> <span class="n">xy_content</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                <span class="s2">&quot;upper_bound&quot;</span><span class="p">:</span> <span class="n">xy_content</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+            <span class="p">},</span>
+        <span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">clustering</span><span class="o">.</span><span class="n">n_clusters_</span><span class="p">):</span>
+            <span class="n">all_points_in_cluster</span> <span class="o">=</span> <span class="n">xy_content</span><span class="p">[</span><span class="n">bkg_area</span><span class="p">,</span> <span class="mi">0</span><span class="p">][</span><span class="n">clustering</span><span class="o">.</span><span class="n">labels_</span> <span class="o">==</span> <span class="n">i</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">all_points_in_cluster</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">all_points_in_cluster</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">breakpoint_</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;mean&quot;</span><span class="p">:</span> <span class="n">all_points_in_cluster</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+                <span class="s2">&quot;lower_bound&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">all_points_in_cluster</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span>
+                <span class="s2">&quot;upper_bound&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">all_points_in_cluster</span><span class="p">,</span> <span class="mi">75</span><span class="p">),</span>
+            <span class="p">}</span>
+
+            <span class="n">breakpoints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">breakpoint_</span><span class="p">)</span>
+
+        <span class="c1"># sorted by mean</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">breakpoints</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;mean&quot;</span><span class="p">])</span></div>
 </div>
 
 </pre></div>
