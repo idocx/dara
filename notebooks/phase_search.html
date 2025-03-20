@@ -16,8 +16,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
+  <!--
+    this give us a css class that will be invisible only if js is disabled
   -->
   <noscript>
     <style>
@@ -27,10 +27,10 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
@@ -38,10 +38,10 @@
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
   
   <!-- So that users can add custom icons -->
-  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../_static/documentation_options.js?v=918a4b72"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
@@ -233,9 +233,14 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -444,9 +449,9 @@ reaction sample between <code class="docutils literal notranslate"><span class="
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">from</span> <span class="nn">dara</span> <span class="kn">import</span> <span class="n">search_phases</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dara</span><span class="w"> </span><span class="kn">import</span> <span class="n">search_phases</span>
 </pre></div>
 </div>
 </div>
@@ -472,7 +477,7 @@ the filtering.</p>
 <p>In this example, we will use <code class="docutils literal notranslate"><span class="pre">ICSDDatabase</span></code> to download all the phases in the chemical system of <code class="docutils literal notranslate"><span class="pre">Ge-O-Zn</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dara.structure_db</span> <span class="kn">import</span> <span class="n">ICSDDatabase</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dara.structure_db</span><span class="w"> </span><span class="kn">import</span> <span class="n">ICSDDatabase</span>
 
 <span class="c1"># The COD database contains methods to filter phases in the chemical system</span>
 <span class="n">icsd_database</span> <span class="o">=</span> <span class="n">ICSDDatabase</span><span class="p">()</span>
@@ -483,7 +488,7 @@ the filtering.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2024-12-06 19:39:09,585 WARNING dara.structure_db Local copy of database not found. Attempting to download structures...
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-03-20 04:44:39,929 WARNING dara.structure_db Local copy of database not found. Attempting to download structures...
 </pre></div>
 </div>
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
@@ -493,22 +498,22 @@ the filtering.</p>
 <span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="c1"># gather reference phases and save them to a directory called &quot;cifs&quot;</span>
 <span class="ne">----&gt; </span><span class="mi">7</span> <span class="n">all_icsd_ids</span> <span class="o">=</span> <span class="n">icsd_database</span><span class="o">.</span><span class="n">get_cifs_by_chemsys</span><span class="p">(</span><span class="n">chemical_system</span><span class="p">,</span> <span class="n">dest_dir</span><span class="o">=</span><span class="s2">&quot;cifs&quot;</span><span class="p">)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.15/x64/lib/python3.10/site-packages/dara/structure_db.py:107,</span> in <span class="ni">StructureDatabase.get_cifs_by_chemsys</span><span class="nt">(self, chemsys, e_hull_filter, copy_files, dest_dir, exclude_gases)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.16/x64/lib/python3.10/site-packages/dara/structure_db.py:107,</span> in <span class="ni">StructureDatabase.get_cifs_by_chemsys</span><span class="nt">(self, chemsys, e_hull_filter, copy_files, dest_dir, exclude_gases)</span>
 <span class="g g-Whitespace">    </span><span class="mi">104</span>         <span class="k">if</span> <span class="n">sub_chemsys</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">preparsed_info</span><span class="p">:</span>
 <span class="g g-Whitespace">    </span><span class="mi">105</span>             <span class="n">all_data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preparsed_info</span><span class="p">[</span><span class="n">sub_chemsys</span><span class="p">])</span>
 <span class="ne">--&gt; </span><span class="mi">107</span> <span class="n">file_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_file_map</span><span class="p">(</span><span class="n">all_data</span><span class="p">,</span> <span class="n">e_hull_filter</span><span class="p">,</span> <span class="n">exclude_gases</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">109</span> <span class="k">if</span> <span class="n">copy_files</span><span class="p">:</span>
 <span class="g g-Whitespace">    </span><span class="mi">110</span>     <span class="n">copy_and_rename_files</span><span class="p">(</span><span class="n">file_map</span><span class="p">,</span> <span class="n">dest_dir</span><span class="p">)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.15/x64/lib/python3.10/site-packages/dara/structure_db.py:140,</span> in <span class="ni">StructureDatabase._generate_file_map</span><span class="nt">(self, all_data, e_hull_filter, exclude_gases, download_folder)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.16/x64/lib/python3.10/site-packages/dara/structure_db.py:140,</span> in <span class="ni">StructureDatabase._generate_file_map</span><span class="nt">(self, all_data, e_hull_filter, exclude_gases, download_folder)</span>
 <span class="g g-Whitespace">    </span><span class="mi">138</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_copy_found</span><span class="p">:</span>
 <span class="g g-Whitespace">    </span><span class="mi">139</span>     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Local copy of database not found. Attempting to download structures...&quot;</span><span class="p">)</span>
 <span class="ne">--&gt; </span><span class="mi">140</span>     <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">download_structures</span><span class="p">([</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">all_data</span><span class="p">],</span> <span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default_folder</span><span class="o">=</span><span class="n">download_folder</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">142</span> <span class="n">file_map</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="g g-Whitespace">    </span><span class="mi">143</span> <span class="k">for</span> <span class="n">formula</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">sg</span><span class="p">,</span> <span class="n">e_hull</span> <span class="ow">in</span> <span class="n">all_data</span><span class="p">:</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.15/x64/lib/python3.10/site-packages/dara/structure_db.py:322,</span> in <span class="ni">ICSDDatabase.download_structures</span><span class="nt">(self, ids, save, default_folder)</span>
-<span class="g g-Whitespace">    </span><span class="mi">320</span> <span class="k">def</span> <span class="nf">download_structures</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_folder</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Cif</span><span class="p">]:</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.16/x64/lib/python3.10/site-packages/dara/structure_db.py:322,</span> in <span class="ni">ICSDDatabase.download_structures</span><span class="nt">(self, ids, save, default_folder)</span>
+<span class="g g-Whitespace">    </span><span class="mi">320</span> <span class="k">def</span><span class="w"> </span><span class="nf">download_structures</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_folder</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Cif</span><span class="p">]:</span>
 <span class="g g-Whitespace">    </span><span class="mi">321</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;Download structures from the ICSD database.&quot;&quot;&quot;</span>
 <span class="ne">--&gt; </span><span class="mi">322</span>     <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
 <span class="g g-Whitespace">    </span><span class="mi">323</span>         <span class="s2">&quot;Downloading from the online ICSD database will not be implemented. Please use a local copy of CIFs&quot;</span>
@@ -706,7 +711,7 @@ By Yuxing Fei, Matthew J. McDermott
 
   <p class="copyright">
     
-      © Copyright 2024, Ceder Group.
+      © Copyright 2025, Ceder Group.
       <br/>
     
   </p>
@@ -730,8 +735,8 @@ By Yuxing Fei, Matthew J. McDermott
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
   </footer>
