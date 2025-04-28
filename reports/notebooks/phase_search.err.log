@@ -25,7 +25,7 @@ all_icsd_ids = icsd_database.get_cifs_by_chemsys(chemical_system, dest_dir="cifs
 ------------------
 
 ----- stdout -----
-2025-04-28 17:07:03,000 WARNING dara.structure_db Local copy of database not found. Attempting to download structures...
+2025-04-28 22:02:49,737 WARNING dara.structure_db Local copy of database not found. Attempting to download structures...
 ------------------
 
 [0;31m---------------------------------------------------------------------------[0m
