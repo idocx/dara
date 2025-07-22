@@ -23,26 +23,6 @@ cd dara
 pip install -e .
 ```
 
-## Installation of optional dependencies
-
-### Jobflow Plugin
-
-If you would like to use the jobflow to launch phase search jobs,
-you need to install the `workflows` extra:
-
-```bash
-pip install "dara[workflows]"
-```
-
-### Reaction Network Plugin
-
-If you would like to use reaction-network to remove the unlikely phases,
-you need to install the `prediction` extra:
-
-```bash
-pip install "dara[prediction]"
-```
-
 ### Special case: installation on older cluster (e.g., Lawrencium, LBNL)
 
 BGMN (the refinement backend) is a compiled program, and it may not be directly usable

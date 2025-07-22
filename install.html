@@ -425,10 +425,7 @@
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-from-pypi-recommended">Installation from PyPI (recommended)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-from-source-github">Installation from source (GitHub)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-of-optional-dependencies">Installation of optional dependencies</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jobflow-plugin">Jobflow Plugin</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reaction-network-plugin">Reaction Network Plugin</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-from-source-github">Installation from source (GitHub)</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#special-case-installation-on-older-cluster-e-g-lawrencium-lbnl">Special case: installation on older cluster (e.g., Lawrencium, LBNL)</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-of-patchelf">Installation of Patchelf</a></li>
 </ul>
@@ -467,25 +464,6 @@ Python packages.</p>
 pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
 </pre></div>
 </div>
-</section>
-<section id="installation-of-optional-dependencies">
-<h2>Installation of optional dependencies<a class="headerlink" href="#installation-of-optional-dependencies" title="Link to this heading">#</a></h2>
-<section id="jobflow-plugin">
-<h3>Jobflow Plugin<a class="headerlink" href="#jobflow-plugin" title="Link to this heading">#</a></h3>
-<p>If you would like to use the jobflow to launch phase search jobs,
-you need to install the <code class="docutils literal notranslate"><span class="pre">workflows</span></code> extra:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;dara[workflows]&quot;</span>
-</pre></div>
-</div>
-</section>
-<section id="reaction-network-plugin">
-<h3>Reaction Network Plugin<a class="headerlink" href="#reaction-network-plugin" title="Link to this heading">#</a></h3>
-<p>If you would like to use reaction-network to remove the unlikely phases,
-you need to install the <code class="docutils literal notranslate"><span class="pre">prediction</span></code> extra:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;dara[prediction]&quot;</span>
-</pre></div>
-</div>
-</section>
 <section id="special-case-installation-on-older-cluster-e-g-lawrencium-lbnl">
 <h3>Special case: installation on older cluster (e.g., Lawrencium, LBNL)<a class="headerlink" href="#special-case-installation-on-older-cluster-e-g-lawrencium-lbnl" title="Link to this heading">#</a></h3>
 <p>BGMN (the refinement backend) is a compiled program, and it may not be directly usable
@@ -593,10 +571,7 @@ ln<span class="w"> </span>-s<span class="w"> </span><span class="nv">$HOME</span
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-from-pypi-recommended">Installation from PyPI (recommended)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-from-source-github">Installation from source (GitHub)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-of-optional-dependencies">Installation of optional dependencies</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jobflow-plugin">Jobflow Plugin</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reaction-network-plugin">Reaction Network Plugin</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-from-source-github">Installation from source (GitHub)</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#special-case-installation-on-older-cluster-e-g-lawrencium-lbnl">Special case: installation on older cluster (e.g., Lawrencium, LBNL)</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-of-patchelf">Installation of Patchelf</a></li>
 </ul>

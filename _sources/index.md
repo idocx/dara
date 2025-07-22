@@ -60,6 +60,7 @@ dara server
 ```
 
 Then open your browser and navigate to `http://localhost:8898`. You will have a full application with all the features of Dara, including data management, phase analysis, and refinement.
+::::
 
 
 ## Tutorials
