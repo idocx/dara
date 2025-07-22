@@ -94,9 +94,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">Currently the document is still under construction.</div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -179,6 +176,7 @@
         </ul>
         <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="web_server.html">Web Server</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="tutorials.html">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/automated_refinement.html">1. Automated refinement with BGMN</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/phase_search.html">2. Phase analysis with tree search</a></li>
@@ -205,9 +203,18 @@
 <li class="toctree-l4"><a class="reference internal" href="dara.search.tree.html">dara.search.tree module</a></li>
 </ul>
 </details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="dara.server.html">dara.server package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="dara.server.api_router.html">dara.server.api_router module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dara.server.app.html">dara.server.app module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dara.server.setting.html">dara.server.setting module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dara.server.utils.html">dara.server.utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dara.server.worker.html">dara.server.worker module</a></li>
+</ul>
+</details></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.bgmn_worker.html">dara.bgmn_worker module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.cif.html">dara.cif module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.cif2str.html">dara.cif2str module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dara.cli.html">dara.cli module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.eflech_worker.html">dara.eflech_worker module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.generate_control_file.html">dara.generate_control_file module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.jobs.html">dara.jobs module</a></li>
@@ -373,6 +380,8 @@
 </li>
       <li><a href="dara.search.peak_matcher.html#dara.search.peak_matcher.absolute_log_error">absolute_log_error() (in module dara.search.peak_matcher)</a>
 </li>
+      <li><a href="dara.server.worker.html#dara.server.worker.add_job_to_queue">add_job_to_queue() (in module dara.server.worker)</a>
+</li>
       <li><a href="dara.search.tree.html#dara.search.tree.BaseSearchTree.add_subtree">add_subtree() (BaseSearchTree method)</a>
 </li>
   </ul></td>
@@ -435,12 +444,18 @@
 </li>
       <li><a href="dara.cif.html#dara.cif.CifBlock">CifBlock (class in dara.cif)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dara.schema.html#dara.schema.PhaseSearchDocument.cifs_folder_name">cifs_folder_name (PhaseSearchDocument attribute)</a>
 
       <ul>
         <li><a href="dara.jobs.html#dara.jobs.PhaseSearchMaker.cifs_folder_name">(PhaseSearchMaker attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="dara.cli.html#dara.cli.DaraCli.cli_cmd">cli_cmd() (DaraCli method)</a>
+
+      <ul>
+        <li><a href="dara.cli.html#dara.cli.Server.cli_cmd">(Server method)</a>
 </li>
       </ul></li>
       <li><a href="dara.structure_db.html#dara.structure_db.CODDatabase">CODDatabase (class in dara.structure_db)</a>
@@ -448,6 +463,8 @@
       <li><a href="dara.utils.html#dara.utils.compositions_to_array">compositions_to_array() (in module dara.utils)</a>
 </li>
       <li><a href="dara.settings.html#dara.settings.DaraSettings.CONFIG_FILE">CONFIG_FILE (DaraSettings attribute)</a>
+</li>
+      <li><a href="dara.server.utils.html#dara.server.utils.convert_to_local_tz">convert_to_local_tz() (in module dara.server.utils)</a>
 </li>
       <li><a href="dara.utils.html#dara.utils.copy_and_rename_files">copy_and_rename_files() (in module dara.utils)</a>
 </li>
@@ -507,6 +524,13 @@
 
       <ul>
         <li><a href="dara.cif2str.html#module-dara.cif2str">module</a>
+</li>
+      </ul></li>
+      <li>
+    dara.cli
+
+      <ul>
+        <li><a href="dara.cli.html#module-dara.cli">module</a>
 </li>
       </ul></li>
       <li>
@@ -586,8 +610,6 @@
         <li><a href="dara.prediction.rxn_ca.html#module-dara.prediction.rxn_ca">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     dara.refine
 
@@ -609,6 +631,8 @@
         <li><a href="dara.schema.html#module-dara.schema">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     dara.search
 
@@ -645,6 +669,41 @@
 </li>
       </ul></li>
       <li>
+    dara.server
+
+      <ul>
+        <li><a href="dara.server.html#module-dara.server">module</a>
+</li>
+      </ul></li>
+      <li>
+    dara.server.api_router
+
+      <ul>
+        <li><a href="dara.server.api_router.html#module-dara.server.api_router">module</a>
+</li>
+      </ul></li>
+      <li>
+    dara.server.setting
+
+      <ul>
+        <li><a href="dara.server.setting.html#module-dara.server.setting">module</a>
+</li>
+      </ul></li>
+      <li>
+    dara.server.utils
+
+      <ul>
+        <li><a href="dara.server.utils.html#module-dara.server.utils">module</a>
+</li>
+      </ul></li>
+      <li>
+    dara.server.worker
+
+      <ul>
+        <li><a href="dara.server.worker.html#module-dara.server.worker">module</a>
+</li>
+      </ul></li>
+      <li>
     dara.settings
 
       <ul>
@@ -672,6 +731,8 @@
         <li><a href="dara.xrd.html#module-dara.xrd">module</a>
 </li>
       </ul></li>
+      <li><a href="dara.server.setting.html#dara.server.setting.DaraServerSettings.database_backend">database_backend (DaraServerSettings attribute)</a>, <a href="dara.server.setting.html#id0">[1]</a>
+</li>
       <li><a href="dara.utils.html#dara.utils.datetime_str">datetime_str() (in module dara.utils)</a>
 </li>
       <li><a href="dara.structure_db.html#dara.structure_db.CODDatabase.default_folder_path">default_folder_path (CODDatabase property)</a>
@@ -786,7 +847,11 @@
         <li><a href="dara.generate_control_file.html#dara.generate_control_file.generate_control_file">(in module dara.generate_control_file)</a>
 </li>
       </ul></li>
+      <li><a href="dara.server.worker.html#dara.server.worker.get_all_pending_jobs">get_all_pending_jobs() (in module dara.server.worker)</a>
+</li>
       <li><a href="dara.search.tree.html#dara.search.tree.BaseSearchTree.get_all_possible_nodes_at_same_level">get_all_possible_nodes_at_same_level() (BaseSearchTree method)</a>
+</li>
+      <li><a href="dara.server.api_router.html#dara.server.api_router.get_all_tasks">get_all_tasks() (in module dara.server.api_router)</a>
 </li>
       <li><a href="dara.eflech_worker.html#dara.eflech_worker.EflechWorker.get_background_breakpoints">get_background_breakpoints() (EflechWorker static method)</a>
 </li>
@@ -801,6 +866,8 @@
       <li><a href="dara.utils.html#dara.utils.get_composition_from_filename">get_composition_from_filename() (in module dara.utils)</a>
 </li>
       <li><a href="dara.utils.html#dara.utils.get_compositional_clusters">get_compositional_clusters() (in module dara.utils)</a>
+</li>
+      <li><a href="dara.server.setting.html#dara.server.setting.get_dara_server_settings">get_dara_server_settings() (in module dara.server.setting)</a>
 </li>
       <li><a href="dara.cif.html#dara.cif.Cif.get_disordered_cifs">get_disordered_cifs() (Cif method)</a>
 </li>
@@ -826,13 +893,15 @@
       </ul></li>
       <li><a href="dara.structure_db.html#dara.structure_db.StructureDatabase.get_formula_data">get_formula_data() (StructureDatabase method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dara.cif.html#dara.cif.get_formula_with_disorder">get_formula_with_disorder() (in module dara.cif)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dara.utils.html#dara.utils.get_head_of_compositional_cluster">get_head_of_compositional_cluster() (in module dara.utils)</a>
 </li>
       <li><a href="dara.search.peak_matcher.html#dara.search.peak_matcher.PeakMatcher.get_isolated_peaks">get_isolated_peaks() (PeakMatcher method)</a>
+</li>
+      <li><a href="dara.server.utils.html#dara.server.utils.get_job_store">get_job_store() (in module dara.server.utils)</a>
 </li>
       <li><a href="dara.cif2str.html#dara.cif2str.get_lattice_parameters_from_lattice">get_lattice_parameters_from_lattice() (in module dara.cif2str)</a>
 </li>
@@ -852,13 +921,19 @@
 </li>
       <li><a href="dara.result.html#dara.result.get_result">get_result() (in module dara.result)</a>
 </li>
+      <li><a href="dara.server.utils.html#dara.server.utils.get_result_store">get_result_store() (in module dara.server.utils)</a>
+</li>
       <li><a href="dara.search.tree.html#dara.search.tree.BaseSearchTree.get_search_results">get_search_results() (BaseSearchTree method)</a>
 </li>
       <li><a href="dara.cif2str.html#dara.cif2str.get_std_position">get_std_position() (in module dara.cif2str)</a>
 </li>
+      <li><a href="dara.server.utils.html#dara.server.utils.get_store">get_store() (in module dara.server.utils)</a>
+</li>
       <li><a href="dara.result.html#dara.result.PhaseResult.get_structure">get_structure() (PhaseResult method)</a>
 </li>
       <li><a href="dara.utils.html#dara.utils.get_wavelength">get_wavelength() (in module dara.utils)</a>
+</li>
+      <li><a href="dara.server.utils.html#dara.server.utils.get_worker_store">get_worker_store() (in module dara.server.utils)</a>
 </li>
       <li><a href="dara.xrd.html#dara.xrd.get_xrdml_data">get_xrdml_data() (in module dara.xrd)</a>
 </li>
@@ -884,11 +959,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dara.result.html#dara.result.PhaseResult.hermann_mauguin">hermann_mauguin (PhaseResult attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dara.xrd.html#dara.xrd.hex2float">hex2float() (in module dara.xrd)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dara.xrd.html#dara.xrd.hex2int">hex2int() (in module dara.xrd)</a>
+</li>
+      <li><a href="dara.server.setting.html#dara.server.setting.DaraServerSettings.host">host (DaraServerSettings attribute)</a>, <a href="dara.server.setting.html#id1">[1]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -960,6 +1037,8 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="dara.cli.html#dara.cli.main">main() (in module dara.cli)</a>
+</li>
       <li><a href="dara.jobs.html#dara.jobs.PhaseSearchMaker.make">make() (PhaseSearchMaker method)</a>
 
       <ul>
@@ -973,6 +1052,8 @@
       <li><a href="dara.cif2str.html#dara.cif2str.make_peak_parameter_str">make_peak_parameter_str() (in module dara.cif2str)</a>
 </li>
       <li><a href="dara.cif2str.html#dara.cif2str.make_spacegroup_setting_str">make_spacegroup_setting_str() (in module dara.cif2str)</a>
+</li>
+      <li><a href="dara.server.worker.html#dara.server.worker.mark_running_jobs_as_fizzled">mark_running_jobs_as_fizzled() (in module dara.server.worker)</a>
 </li>
       <li><a href="dara.search.peak_matcher.html#dara.search.peak_matcher.PeakMatcher.matched">matched (PeakMatcher property)</a>
 </li>
@@ -1003,6 +1084,8 @@
         <li><a href="dara.cif.html#module-dara.cif">dara.cif</a>
 </li>
         <li><a href="dara.cif2str.html#module-dara.cif2str">dara.cif2str</a>
+</li>
+        <li><a href="dara.cli.html#module-dara.cli">dara.cli</a>
 </li>
         <li><a href="dara.data.html#module-dara.data">dara.data</a>
 </li>
@@ -1042,6 +1125,16 @@
 </li>
         <li><a href="dara.search.tree.html#module-dara.search.tree">dara.search.tree</a>
 </li>
+        <li><a href="dara.server.html#module-dara.server">dara.server</a>
+</li>
+        <li><a href="dara.server.api_router.html#module-dara.server.api_router">dara.server.api_router</a>
+</li>
+        <li><a href="dara.server.setting.html#module-dara.server.setting">dara.server.setting</a>
+</li>
+        <li><a href="dara.server.utils.html#module-dara.server.utils">dara.server.utils</a>
+</li>
+        <li><a href="dara.server.worker.html#module-dara.server.worker">dara.server.worker</a>
+</li>
         <li><a href="dara.settings.html#module-dara.settings">dara.settings</a>
 </li>
         <li><a href="dara.structure_db.html#module-dara.structure_db">dara.structure_db</a>
@@ -1051,6 +1144,20 @@
         <li><a href="dara.xrd.html#module-dara.xrd">dara.xrd</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="dara.server.setting.html#dara.server.setting.DaraServerSettings.mongodb_database">mongodb_database (DaraServerSettings attribute)</a>, <a href="dara.server.setting.html#id2">[1]</a>
+</li>
+      <li><a href="dara.server.setting.html#dara.server.setting.DaraServerSettings.mongodb_host">mongodb_host (DaraServerSettings attribute)</a>, <a href="dara.server.setting.html#id3">[1]</a>
+</li>
+      <li><a href="dara.server.setting.html#dara.server.setting.DaraServerSettings.mongodb_password">mongodb_password (DaraServerSettings attribute)</a>, <a href="dara.server.setting.html#id4">[1]</a>
+</li>
+      <li><a href="dara.server.setting.html#dara.server.setting.DaraServerSettings.mongodb_port">mongodb_port (DaraServerSettings attribute)</a>, <a href="dara.server.setting.html#id5">[1]</a>
+</li>
+      <li><a href="dara.server.setting.html#dara.server.setting.DaraServerSettings.mongodb_username">mongodb_username (DaraServerSettings attribute)</a>, <a href="dara.server.setting.html#id6">[1]</a>
+</li>
+      <li><a href="dara.server.setting.html#dara.server.setting.DaraServerSettings.montydb_path">montydb_path (DaraServerSettings attribute)</a>, <a href="dara.server.setting.html#id7">[1]</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -1119,14 +1226,14 @@
 </li>
       <li><a href="dara.schema.html#dara.schema.RefinementDocument.phase_params">phase_params (RefinementDocument attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dara.schema.html#dara.schema.PhaseSearchDocument.phase_predictor">phase_predictor (PhaseSearchDocument attribute)</a>
 
       <ul>
         <li><a href="dara.jobs.html#dara.jobs.PhaseSearchMaker.phase_predictor">(PhaseSearchMaker attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dara.prediction.core.html#dara.prediction.core.PhasePredictor">PhasePredictor (class in dara.prediction.core)</a>
 </li>
       <li><a href="dara.search.data_model.html#dara.search.data_model.SearchResult.phases">phases (SearchResult attribute)</a>
@@ -1135,9 +1242,15 @@
 </li>
       <li><a href="dara.jobs.html#dara.jobs.PhaseSearchMaker">PhaseSearchMaker (class in dara.jobs)</a>
 </li>
-      <li><a href="dara.xrd.html#dara.xrd.XRDData.plot">plot() (XRDData method)</a>
+      <li><a href="dara.server.api_router.html#dara.server.api_router.plot">plot() (in module dara.server.api_router)</a>
+
+      <ul>
+        <li><a href="dara.xrd.html#dara.xrd.XRDData.plot">(XRDData method)</a>
 </li>
+      </ul></li>
       <li><a href="dara.result.html#dara.result.RefinementResult.plot_data">plot_data (RefinementResult attribute)</a>
+</li>
+      <li><a href="dara.server.setting.html#dara.server.setting.DaraServerSettings.port">port (DaraServerSettings attribute)</a>, <a href="dara.server.setting.html#id8">[1]</a>
 </li>
       <li><a href="dara.schema.html#dara.schema.PhaseSearchDocument.precursors">precursors (PhaseSearchDocument attribute)</a>
 </li>
@@ -1199,6 +1312,8 @@
 </li>
       <li><a href="dara.schema.html#dara.schema.RefinementDocument.result">result (RefinementDocument attribute)</a>
 </li>
+      <li><a href="dara.server.api_router.html#dara.server.api_router.result">result() (in module dara.server.api_router)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dara.schema.html#dara.schema.PhaseSearchDocument.results">results (PhaseSearchDocument attribute)</a>
@@ -1223,6 +1338,8 @@
         <li><a href="dara.jobs.html#dara.jobs.PhaseSearchMaker.run_final_refinement">(PhaseSearchMaker attribute)</a>
 </li>
       </ul></li>
+      <li><a href="dara.server.worker.html#dara.server.worker.run_job">run_job() (in module dara.server.worker)</a>
+</li>
       <li><a href="dara.eflech_worker.html#dara.eflech_worker.EflechWorker.run_peak_detection">run_peak_detection() (EflechWorker method)</a>
 </li>
       <li><a href="dara.bgmn_worker.html#dara.bgmn_worker.BGMNWorker.run_refinement_cmd">run_refinement_cmd() (BGMNWorker method)</a>
@@ -1253,6 +1370,8 @@
 </li>
       <li><a href="dara.search.tree.html#dara.search.tree.SearchTree">SearchTree (class in dara.search.tree)</a>
 </li>
+      <li><a href="dara.cli.html#dara.cli.DaraCli.server">server (DaraCli attribute)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dara.search.tree.html#dara.search.tree.SearchTree.show">show() (SearchTree method)</a>
@@ -1268,6 +1387,8 @@
       <li><a href="dara.result.html#dara.result.DiaResult.structs">structs (DiaResult attribute)</a>
 </li>
       <li><a href="dara.structure_db.html#dara.structure_db.StructureDatabase">StructureDatabase (class in dara.structure_db)</a>
+</li>
+      <li><a href="dara.server.api_router.html#dara.server.api_router.submit">submit() (in module dara.server.api_router)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1331,10 +1452,12 @@
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dara.prediction.core.html#dara.prediction.core.PhasePredictor.write_cifs_from_formulas">write_cifs_from_formulas() (PhasePredictor method)</a>
+      <li><a href="dara.server.worker.html#dara.server.worker.worker_process">worker_process() (in module dara.server.worker)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="dara.prediction.core.html#dara.prediction.core.PhasePredictor.write_cifs_from_formulas">write_cifs_from_formulas() (PhasePredictor method)</a>
+</li>
       <li><a href="dara.search.peak_matcher.html#dara.search.peak_matcher.PeakMatcher.wrong_intensity">wrong_intensity (PeakMatcher property)</a>
 </li>
   </ul></td>

@@ -96,9 +96,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">Currently the document is still under construction.</div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -181,6 +178,7 @@
         </ul>
         <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="web_server.html">Web Server</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="tutorials.html">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/automated_refinement.html">1. Automated refinement with BGMN</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/phase_search.html">2. Phase analysis with tree search</a></li>
@@ -207,9 +205,18 @@
 <li class="toctree-l4"><a class="reference internal" href="dara.search.tree.html">dara.search.tree module</a></li>
 </ul>
 </details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="dara.server.html">dara.server package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="dara.server.api_router.html">dara.server.api_router module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dara.server.app.html">dara.server.app module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dara.server.setting.html">dara.server.setting module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dara.server.utils.html">dara.server.utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dara.server.worker.html">dara.server.worker module</a></li>
+</ul>
+</details></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.bgmn_worker.html">dara.bgmn_worker module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.cif.html">dara.cif module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.cif2str.html">dara.cif2str module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dara.cli.html">dara.cli module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.eflech_worker.html">dara.eflech_worker module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.generate_control_file.html">dara.generate_control_file module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.jobs.html">dara.jobs module</a></li>
@@ -418,7 +425,7 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tutorials">Tutorials</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wanna-have-a-quick-try">Wanna have a quick try?</a></li>
 </ul>
             </nav>
         </div>
@@ -467,8 +474,16 @@ crystallographic databases, as well as reaction energetics and predicted product
 <p><a class="reference internal" href="install.html"><span class="std std-doc">More installation options »</span></a></p>
 </div>
 <hr class="docutils" />
-<section id="tutorials">
-<h2>Tutorials<a class="headerlink" href="#tutorials" title="Link to this heading">#</a></h2>
+<section id="wanna-have-a-quick-try">
+<h2>Wanna have a quick try?<a class="headerlink" href="#wanna-have-a-quick-try" title="Link to this heading">#</a></h2>
+<div class="tip admonition">
+<p class="admonition-title">🚀 Try the Dara Web Server!</p>
+<p>For the fastest way to experience Dara, launch the <strong>web server</strong> and use the browser-based interface:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>dara<span class="w"> </span>server
+</pre></div>
+</div>
+<p>Then open your browser and navigate to <code class="docutils literal notranslate"><span class="pre">http://localhost:8898</span></code>. You will have a full application with all the features of Dara, including data management, phase analysis, and refinement.</p>
+<h2 class="rubric" id="tutorials">Tutorials</h2>
 <div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
 <div class="sd-row sd-row-cols-1 sd-row-cols-xs-1 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-2 sd-g-1 sd-g-xs-1 sd-g-sm-1 sd-g-md-1 sd-g-lg-2 docutils">
 <div class="sd-col sd-d-flex-row docutils">
@@ -510,6 +525,7 @@ project led by Nicola Dobelin. We are very grateful for their work.</p>
 </div>
 <div class="toctree-wrapper compound">
 </div>
+</div>
 </section>
 </section>
 
@@ -550,7 +566,7 @@ project led by Nicola Dobelin. We are very grateful for their work.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tutorials">Tutorials</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wanna-have-a-quick-try">Wanna have a quick try?</a></li>
 </ul>
   </nav></div>
 

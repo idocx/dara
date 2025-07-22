@@ -50,6 +50,18 @@ pip install dara
 
 ---
 
+## Wanna have a quick try?
+::::{admonition} 🚀 Try the Dara Web Server!
+:class: tip
+For the fastest way to experience Dara, launch the **web server** and use the browser-based interface:
+
+```bash
+dara server
+```
+
+Then open your browser and navigate to `http://localhost:8898`. You will have a full application with all the features of Dara, including data management, phase analysis, and refinement.
+
+
 ## Tutorials
 
 ```{include} tutorial_grid.md
@@ -65,6 +77,7 @@ project led by Nicola Dobelin. We are very grateful for their work.
 :maxdepth: 2
 :hidden:
 Installation<install>
+Web Server<web_server>
 Tutorials<tutorials>
 API Docs<modules>
 ```

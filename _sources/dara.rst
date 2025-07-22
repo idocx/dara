@@ -11,6 +11,7 @@ Subpackages
    dara.data
    dara.prediction
    dara.search
+   dara.server
 
 Submodules
 ----------
@@ -21,6 +22,7 @@ Submodules
    dara.bgmn_worker
    dara.cif
    dara.cif2str
+   dara.cli
    dara.eflech_worker
    dara.generate_control_file
    dara.jobs
