@@ -376,6 +376,7 @@ class BaseSearchTree(Tree):
         intensity_threshold: float,
         wavelength: Literal["Cu", "Co", "Cr", "Fe", "Mo"] | float,
         instrument_profile: str | Path,
+        express_mode: bool,
         maximum_grouping_distance: float,
         max_phases: float,
         rpb_threshold: float,
@@ -393,6 +394,7 @@ class BaseSearchTree(Tree):
         self.intensity_threshold = intensity_threshold
         self.wavelength = wavelength
         self.instrument_profile = instrument_profile
+        self.express_mode = express_mode
         self.maximum_grouping_distance = maximum_grouping_distance
         self.max_phases = max_phases
         self.pinned_phases = pinned_phases
@@ -867,6 +869,7 @@ class BaseSearchTree(Tree):
             instrument_profile=self.instrument_profile,
             maximum_grouping_distance=self.maximum_grouping_distance,
             pinned_phases=self.pinned_phases,
+            express_mode=self.express_mode,
         )
 
     @classmethod
@@ -899,6 +902,7 @@ class BaseSearchTree(Tree):
             intensity_threshold=search_tree.intensity_threshold,
             wavelength=search_tree.wavelength,
             instrument_profile=search_tree.instrument_profile,
+            express_mode=search_tree.express_mode,
             maximum_grouping_distance=search_tree.maximum_grouping_distance,
             pinned_phases=search_tree.pinned_phases,
             record_peak_matcher_scores=search_tree.record_peak_matcher_scores,
@@ -945,7 +949,7 @@ class SearchTree(BaseSearchTree):
         instrument_profile: the name/path of the instrument file, it will be passed to the refinement function.
         maximum_grouping_distance: the maximum grouping distance, default to 0.1
         max_phases: the maximum number of phases, note that the pinned phases are COUNTED as well
-        rpb_threshold: deprecated, will be removed in the future
+        rpb_threshold: the minimium Rpb improvement for the search tree to continue to expand one node.
     """
 
     def __init__(
@@ -957,6 +961,7 @@ class SearchTree(BaseSearchTree):
         phase_params: dict[str, ...] | None = None,
         wavelength: Literal["Cu", "Co", "Cr", "Fe", "Mo"] | float = "Cu",
         instrument_profile: str | Path = "Aeris-fds-Pixcel1d-Medipix3",
+        express_mode: bool = False,
         maximum_grouping_distance: float = 0.1,
         max_phases: float = 5,
         rpb_threshold: float = 4,
@@ -991,6 +996,7 @@ class SearchTree(BaseSearchTree):
             0.0,
             wavelength,
             instrument_profile,
+            express_mode,
             maximum_grouping_distance,
             max_phases,
             rpb_threshold,

@@ -74,7 +74,7 @@ def search_phases(
         return_search_tree: whether to return the search tree. This is mainly used for debugging purposes.
         record_peak_matcher_scores: whether to record the peak matcher scores. This is mainly used for
             debugging purposes.
-        rpb_threshold: the RPB threshold, which is deprecated, and will be removed in the future
+        rpb_threshold: the RPB threshold
     """
     if phase_params is None:
         phase_params = {}
