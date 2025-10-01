@@ -5,7 +5,7 @@
 The easiest way to install the latest release of Dara is via pip from PyPI:
 
 ```bash
-pip install dara
+pip install dara-xrd
 ```
 
 Note that this approach will only acquire the latest release. For the most recent
