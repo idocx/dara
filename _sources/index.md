@@ -41,7 +41,7 @@ Some features of Dara include:
 The easiest way to install the latest release of Dara is via pip from PyPI:
 
 ```
-pip install dara
+pip install dara-xrd
 ```
 
 +++
