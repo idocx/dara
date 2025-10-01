@@ -71,8 +71,17 @@ Then open your browser and navigate to `http://localhost:8898`. You will have a 
 ---
 :::{seealso}
 This project gets a lot of inspiration from the [Profex](https://www.profex-xrd.org/)
-project led by Nicola Dobelin. We are very grateful for their work.
+project led by Nicola Döbelin. We are very grateful for their work.
+
+The BGMN binary and supporting files are all extracted from Profex with
+kind permission from the Profex development team.
 :::
+
+:::{seealso}
+BGMN and related files are bundled with kind permission of the BGMN development team. 
+For source code and further information, please visit [http://www.bgmn.de]().
+:::
+
 
 ```{toctree}
 :maxdepth: 2
