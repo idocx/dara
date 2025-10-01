@@ -18,7 +18,7 @@ a good idea to install Dara in a dedicated virtual environment to avoid conflict
 Python packages.
 
 ```bash
-git clone https://github.com/idocx/dara
+git clone https://github.com/idocx/dara-xrd
 cd dara
 pip install -e .
 ```
