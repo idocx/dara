@@ -37,15 +37,15 @@ search_results = search_phases(
 ------------------
 
 ----- stdout -----
-2025-10-06 20:57:05,818 INFO dara.search.tree Detecting peaks in the pattern.
+2025-10-06 21:02:29,946 INFO dara.search.tree Detecting peaks in the pattern.
 ----- stdout -----
-2025-10-06 20:57:32,368 INFO dara.search.tree The wmax is automatically adjusted to 60.04.
+2025-10-06 21:02:56,131 INFO dara.search.tree The wmax is automatically adjusted to 60.04.
 ----- stdout -----
-2025-10-06 20:57:32,369 INFO dara.search.tree The intensity threshold is automatically set to 9.06 % of maximum peak intensity.
+2025-10-06 21:02:56,132 INFO dara.search.tree The intensity threshold is automatically set to 9.06 % of maximum peak intensity.
 ----- stdout -----
-2025-10-06 20:57:32,370 INFO dara.search.tree Creating the root node.
+2025-10-06 21:02:56,133 INFO dara.search.tree Creating the root node.
 ----- stdout -----
-2025-10-06 20:57:32,370 INFO dara.search.tree Refining all the phases in the dataset.
+2025-10-06 21:02:56,133 INFO dara.search.tree Refining all the phases in the dataset.
 ------------------
 
 [31m---------------------------------------------------------------------------[39m
