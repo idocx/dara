@@ -79,7 +79,7 @@ kind permission from the Profex development team.
 
 :::{seealso}
 BGMN and related files are bundled with kind permission of the BGMN development team. 
-For source code and further information, please visit [http://www.bgmn.de]().
+For source code and further information, please visit [http://www.bgmn.de](http://www.bgmn.de).
 :::
 
 
