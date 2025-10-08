@@ -37,19 +37,51 @@ search_results = search_phases(
 ------------------
 
 ----- stdout -----
-2025-10-08 21:34:41,712 INFO dara.search.tree Detecting peaks in the pattern.
+2025-10-08 22:11:25,635 INFO dara.search.tree Detecting peaks in the pattern.
 ----- stdout -----
-2025-10-08 21:35:07,965 INFO dara.search.tree The wmax is automatically adjusted to 60.04.
+2025-10-08 22:11:51,900 INFO dara.search.tree The wmax is automatically adjusted to 60.04.
 ----- stdout -----
-2025-10-08 21:35:07,967 INFO dara.search.tree The intensity threshold is automatically set to 9.06 % of maximum peak intensity.
+2025-10-08 22:11:51,902 INFO dara.search.tree The intensity threshold is automatically set to 9.06 % of maximum peak intensity.
 ----- stdout -----
-2025-10-08 21:35:07,967 INFO dara.search.tree Creating the root node.
+2025-10-08 22:11:51,903 INFO dara.search.tree Creating the root node.
 ----- stdout -----
-2025-10-08 21:35:07,968 INFO dara.search.tree Refining all the phases in the dataset.
+2025-10-08 22:11:51,903 INFO dara.search.tree Refining all the phases in the dataset.
+----- stderr -----
+2025-10-08 22:11:53,906	INFO worker.py:1927 -- Started a local Ray instance.
+----- stderr -----
+2025-10-08 22:11:53,938	INFO packaging.py:588 -- Creating a file package for local module '/home/runner/work/dara/dara/notebooks'.
+----- stderr -----
+2025-10-08 22:11:53,982	INFO packaging.py:380 -- Pushing file package 'gcs://_ray_pkg_6480ef3b2474dcf1.zip' (7.90MiB) to Ray cluster...
+----- stderr -----
+2025-10-08 22:11:54,002	INFO packaging.py:393 -- Successfully pushed file package 'gcs://_ray_pkg_6480ef3b2474dcf1.zip'.
+----- stderr -----
+[33m(raylet)[0m [1m[33mwarning[39m[0m[1m:[0m [1m`VIRTUAL_ENV=/home/runner/work/dara/dara/.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead[0m
+[33m(raylet)[0m Using CPython 3.12.3 interpreter at: [36m/usr/bin/python3[39m
+[33m(raylet)[0m Creating virtual environment at: [36m.venv[39m
+----- stderr -----
+[33m(raylet)[0m    [36m[1mBuilding[0m[39m dara-xrd[2m @ file:///tmp/ray/session_2025-10-08_22-11-51_932132_2694/runtime_resources/working_dir_files/_ray_pkg_6480ef3b2474dcf1[0m
+----- stderr -----
+[33m(raylet)[0m [2mInstalled [1m108 packages[0m [2min 335ms[0m[0m
+----- stderr -----
+[36m(remote_do_refinement_no_saving pid=3148)[0m No module named 'dara'
+[36m(remote_do_refinement_no_saving pid=3148)[0m Traceback (most recent call last):
+[36m(remote_do_refinement_no_saving pid=3148)[0m   File "/tmp/ray/session_2025-10-08_22-11-51_932132_2694/runtime_resources/working_dir_files/_ray_pkg_6480ef3b2474dcf1/.venv/lib/python3.12/site-packages/ray/_private/serialization.py", line 529, in deserialize_objects
+[36m(remote_do_refinement_no_saving pid=3148)[0m     obj = self._deserialize_object(
+[36m(remote_do_refinement_no_saving pid=3148)[0m           ^^^^^^^^^^^^^^^^^^^^^^^^^
+[36m(remote_do_refinement_no_saving pid=3148)[0m   File "/tmp/ray/session_2025-10-08_22-11-51_932132_2694/runtime_resources/working_dir_files/_ray_pkg_6480ef3b2474dcf1/.venv/lib/python3.12/site-packages/ray/_private/serialization.py", line 380, in _deserialize_object
+[36m(remote_do_refinement_no_saving pid=3148)[0m     return self._deserialize_msgpack_data(
+[36m(remote_do_refinement_no_saving pid=3148)[0m            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[36m(remote_do_refinement_no_saving pid=3148)[0m   File "/tmp/ray/session_2025-10-08_22-11-51_932132_2694/runtime_resources/working_dir_files/_ray_pkg_6480ef3b2474dcf1/.venv/lib/python3.12/site-packages/ray/_private/serialization.py", line 325, in _deserialize_msgpack_data
+[36m(remote_do_refinement_no_saving pid=3148)[0m     python_objects = self._deserialize_pickle5_data(
+[36m(remote_do_refinement_no_saving pid=3148)[0m                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[36m(remote_do_refinement_no_saving pid=3148)[0m   File "/tmp/ray/session_2025-10-08_22-11-51_932132_2694/runtime_resources/working_dir_files/_ray_pkg_6480ef3b2474dcf1/.venv/lib/python3.12/site-packages/ray/_private/serialization.py", line 304, in _deserialize_pickle5_data
+[36m(remote_do_refinement_no_saving pid=3148)[0m     obj = pickle.loads(in_band)
+[36m(remote_do_refinement_no_saving pid=3148)[0m           ^^^^^^^^^^^^^^^^^^^^^
+[36m(remote_do_refinement_no_saving pid=3148)[0m ModuleNotFoundError: No module named 'dara'
 ------------------
 
 [31m---------------------------------------------------------------------------[39m
-[31mRuntimeError[39m                              Traceback (most recent call last)
+[31mRayTaskError(RaySystemError)[39m              Traceback (most recent call last)
 [36mCell[39m[36m [39m[32mIn[5][39m[32m, line 4[39m
 [32m      1[39m [38;5;66;03m# gather all the phases in the "cifs" directory[39;00m
 [32m      2[39m all_cifs = [38;5;28mlist[39m(Path([33m"[39m[33mcifs[39m[33m"[39m).glob([33m"[39m[33m*.cif[39m[33m"[39m))
@@ -125,87 +157,54 @@ search_results = search_phases(
 [32m    823[39m [43m        [49m[43mrefinement_params[49m[43m=[49m[38;5;28;43mself[39;49m[43m.[49m[43mrefinement_params[49m[43m,[49m
 [32m    824[39m [43m    [49m[43m)[49m
 
-[36mFile [39m[32m~/work/dara/dara/src/dara/search/tree.py:128[39m, in [36mbatch_refinement[39m[34m(pattern_path, cif_paths, wavelength, instrument_profile, phase_params, refinement_params)[39m
+[36mFile [39m[32m~/work/dara/dara/src/dara/search/tree.py:138[39m, in [36mbatch_refinement[39m[34m(pattern_path, cif_paths, wavelength, instrument_profile, phase_params, refinement_params)[39m
 [32m    119[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34mbatch_refinement[39m(
 [32m    120[39m     pattern_path: Path,
 [32m    121[39m     cif_paths: [38;5;28mlist[39m[[38;5;28mlist[39m[RefinementPhase]],
 [32m   (...)[39m[32m    125[39m     refinement_params: [38;5;28mdict[39m[[38;5;28mstr[39m, [38;5;28mfloat[39m] | [38;5;28;01mNone[39;00m = [38;5;28;01mNone[39;00m,
 [32m    126[39m ) -> [38;5;28mlist[39m[RefinementResult]:
 [32m    127[39m     handles = [
-[32m--> [39m[32m128[39m         [43mremote_do_refinement_no_saving[49m[43m.[49m[43mremote[49m[43m([49m
-[32m    129[39m [43m            [49m[43mpattern_path[49m[43m,[49m
-[32m    130[39m [43m            [49m[43mcif_paths[49m[43m,[49m
-[32m    131[39m [43m            [49m[43mwavelength[49m[43m=[49m[43mwavelength[49m[43m,[49m
-[32m    132[39m [43m            [49m[43minstrument_profile[49m[43m=[49m[43minstrument_profile[49m[43m,[49m
-[32m    133[39m [43m            [49m[43mphase_params[49m[43m=[49m[43mphase_params[49m[43m,[49m
-[32m    134[39m [43m            [49m[43mrefinement_params[49m[43m=[49m[43mrefinement_params[49m[43m,[49m
-[32m    135[39m [43m        [49m[43m)[49m
-[32m    136[39m         [38;5;28;01mfor[39;00m cif_paths [38;5;129;01min[39;00m cif_paths
+[32m    128[39m         remote_do_refinement_no_saving.remote(
+[32m    129[39m             pattern_path,
+[32m   (...)[39m[32m    136[39m         [38;5;28;01mfor[39;00m cif_paths [38;5;129;01min[39;00m cif_paths
 [32m    137[39m     ]
-[32m    138[39m     [38;5;28;01mreturn[39;00m ray.get(handles)
+[32m--> [39m[32m138[39m     [38;5;28;01mreturn[39;00m [43mray[49m[43m.[49m[43mget[49m[43m([49m[43mhandles[49m[43m)[49m
 
-[36mFile [39m[32m~/work/dara/dara/.venv/lib/python3.12/site-packages/ray/remote_function.py:163[39m, in [36mRemoteFunction.__init__.<locals>._remote_proxy[39m[34m(*args, **kwargs)[39m
-[32m    161[39m [38;5;129m@wraps[39m(function)
-[32m    162[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34m_remote_proxy[39m(*args, **kwargs):
-[32m--> [39m[32m163[39m     [38;5;28;01mreturn[39;00m [38;5;28;43mself[39;49m[43m.[49m[43m_remote[49m[43m([49m
-[32m    164[39m [43m        [49m[43mserialized_runtime_env_info[49m[43m=[49m[38;5;28;43mself[39;49m[43m.[49m[43m_serialized_base_runtime_env_info[49m[43m,[49m
-[32m    165[39m [43m        [49m[43margs[49m[43m=[49m[43margs[49m[43m,[49m
-[32m    166[39m [43m        [49m[43mkwargs[49m[43m=[49m[43mkwargs[49m[43m,[49m
-[32m    167[39m [43m        [49m[43m*[49m[43m*[49m[38;5;28;43mself[39;49m[43m.[49m[43m_default_options[49m[43m,[49m
-[32m    168[39m [43m    [49m[43m)[49m
-
-[36mFile [39m[32m~/work/dara/dara/.venv/lib/python3.12/site-packages/ray/_private/auto_init_hook.py:21[39m, in [36mwrap_auto_init.<locals>.auto_init_wrapper[39m[34m(*args, **kwargs)[39m
+[36mFile [39m[32m~/work/dara/dara/.venv/lib/python3.12/site-packages/ray/_private/auto_init_hook.py:22[39m, in [36mwrap_auto_init.<locals>.auto_init_wrapper[39m[34m(*args, **kwargs)[39m
 [32m     19[39m [38;5;129m@wraps[39m(fn)
 [32m     20[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34mauto_init_wrapper[39m(*args, **kwargs):
-[32m---> [39m[32m21[39m     [43mauto_init_ray[49m[43m([49m[43m)[49m
-[32m     22[39m     [38;5;28;01mreturn[39;00m fn(*args, **kwargs)
-
-[36mFile [39m[32m~/work/dara/dara/.venv/lib/python3.12/site-packages/ray/_private/auto_init_hook.py:15[39m, in [36mauto_init_ray[39m[34m()[39m
-[32m     13[39m [38;5;28;01mwith[39;00m auto_init_lock:
-[32m     14[39m     [38;5;28;01mif[39;00m [38;5;129;01mnot[39;00m ray.is_initialized():
-[32m---> [39m[32m15[39m         [43mray[49m[43m.[49m[43minit[49m[43m([49m[43m)[49m
+[32m     21[39m     auto_init_ray()
+[32m---> [39m[32m22[39m     [38;5;28;01mreturn[39;00m [43mfn[49m[43m([49m[43m*[49m[43margs[49m[43m,[49m[43m [49m[43m*[49m[43m*[49m[43mkwargs[49m[43m)[49m
 
 [36mFile [39m[32m~/work/dara/dara/.venv/lib/python3.12/site-packages/ray/_private/client_mode_hook.py:104[39m, in [36mclient_mode_hook.<locals>.wrapper[39m[34m(*args, **kwargs)[39m
 [32m    102[39m     [38;5;28;01mif[39;00m func.[34m__name__[39m != [33m"[39m[33minit[39m[33m"[39m [38;5;129;01mor[39;00m is_client_mode_enabled_by_default:
 [32m    103[39m         [38;5;28;01mreturn[39;00m [38;5;28mgetattr[39m(ray, func.[34m__name__[39m)(*args, **kwargs)
 [32m--> [39m[32m104[39m [38;5;28;01mreturn[39;00m [43mfunc[49m[43m([49m[43m*[49m[43margs[49m[43m,[49m[43m [49m[43m*[49m[43m*[49m[43mkwargs[49m[43m)[49m
 
-[36mFile [39m[32m~/work/dara/dara/.venv/lib/python3.12/site-packages/ray/_private/worker.py:1732[39m, in [36minit[39m[34m(address, num_cpus, num_gpus, resources, labels, object_store_memory, local_mode, ignore_reinit_error, include_dashboard, dashboard_host, dashboard_port, job_config, configure_logging, logging_level, logging_format, logging_config, log_to_driver, namespace, runtime_env, enable_resource_isolation, system_reserved_cpu, system_reserved_memory, **kwargs)[39m
-[32m   1727[39m         job_config.set_metadata(key, value)
-[32m   1729[39m [38;5;66;03m# RAY_JOB_CONFIG_JSON_ENV_VAR is only set at ray job manager level and has[39;00m
-[32m   1730[39m [38;5;66;03m# higher priority in case user also provided runtime_env for ray.init()[39;00m
-[32m   1731[39m [38;5;28;01melse[39;00m:
-[32m-> [39m[32m1732[39m     runtime_env = [43m_maybe_modify_runtime_env[49m[43m([49m[43mruntime_env[49m[43m,[49m[43m [49m[43m_skip_env_hook[49m[43m)[49m
-[32m   1734[39m     [38;5;28;01mif[39;00m runtime_env:
-[32m   1735[39m         [38;5;66;03m# Set runtime_env in job_config if passed in as part of ray.init()[39;00m
-[32m   1736[39m         job_config.set_runtime_env(runtime_env)
+[36mFile [39m[32m~/work/dara/dara/.venv/lib/python3.12/site-packages/ray/_private/worker.py:2858[39m, in [36mget[39m[34m(object_refs, timeout)[39m
+[32m   2852[39m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m(
+[32m   2853[39m         [33mf[39m[33m"[39m[33mInvalid type of object refs, [39m[38;5;132;01m{[39;00m[38;5;28mtype[39m(object_refs)[38;5;132;01m}[39;00m[33m, is given. [39m[33m"[39m
+[32m   2854[39m         [33m"[39m[33m'[39m[33mobject_refs[39m[33m'[39m[33m must either be an ObjectRef or a list of ObjectRefs. [39m[33m"[39m
+[32m   2855[39m     )
+[32m   2857[39m [38;5;66;03m# TODO(ujvl): Consider how to allow user to retrieve the ready objects.[39;00m
+[32m-> [39m[32m2858[39m values, debugger_breakpoint = [43mworker[49m[43m.[49m[43mget_objects[49m[43m([49m[43mobject_refs[49m[43m,[49m[43m [49m[43mtimeout[49m[43m=[49m[43mtimeout[49m[43m)[49m
+[32m   2859[39m [38;5;28;01mfor[39;00m i, value [38;5;129;01min[39;00m [38;5;28menumerate[39m(values):
+[32m   2860[39m     [38;5;28;01mif[39;00m [38;5;28misinstance[39m(value, RayError):
 
-[36mFile [39m[32m~/work/dara/dara/.venv/lib/python3.12/site-packages/ray/_private/worker.py:1331[39m, in [36m_maybe_modify_runtime_env[39m[34m(runtime_env, _skip_env_hook)[39m
-[32m   1327[39m     cmdline = _get_uv_run_cmdline()
-[32m   1328[39m     [38;5;28;01mif[39;00m cmdline:
-[32m   1329[39m         [38;5;66;03m# This means the current driver is running in `uv run`, in which case we want[39;00m
-[32m   1330[39m         [38;5;66;03m# to propagate the uv environment to the workers.[39;00m
-[32m-> [39m[32m1331[39m         [38;5;28;01mreturn[39;00m [43mhook[49m[43m([49m[43mruntime_env[49m[43m)[49m
-[32m   1333[39m [38;5;28;01mif[39;00m ray_constants.RAY_RUNTIME_ENV_HOOK [38;5;129;01min[39;00m os.environ [38;5;129;01mand[39;00m [38;5;129;01mnot[39;00m _skip_env_hook:
-[32m   1334[39m     [38;5;28;01mreturn[39;00m load_class(os.environ[ray_constants.RAY_RUNTIME_ENV_HOOK])(runtime_env)
+[36mFile [39m[32m~/work/dara/dara/.venv/lib/python3.12/site-packages/ray/_private/worker.py:958[39m, in [36mWorker.get_objects[39m[34m(self, object_refs, timeout, return_exceptions, skip_deserialization)[39m
+[32m    956[39m     global_worker.core_worker.dump_object_store_memory_usage()
+[32m    957[39m [38;5;28;01mif[39;00m [38;5;28misinstance[39m(value, RayTaskError):
+[32m--> [39m[32m958[39m     [38;5;28;01mraise[39;00m value.as_instanceof_cause()
+[32m    959[39m [38;5;28;01melse[39;00m:
+[32m    960[39m     [38;5;28;01mraise[39;00m value
 
-[36mFile [39m[32m~/work/dara/dara/.venv/lib/python3.12/site-packages/ray/_private/runtime_env/uv_runtime_env_hook.py:343[39m, in [36mhook[39m[34m(runtime_env)[39m
-[32m    341[39m [38;5;28;01mif[39;00m [33m"[39m[33mworking_dir[39m[33m"[39m [38;5;129;01mnot[39;00m [38;5;129;01min[39;00m runtime_env:
-[32m    342[39m     runtime_env[[33m"[39m[33mworking_dir[39m[33m"[39m] = os.getcwd()
-[32m--> [39m[32m343[39m     [43m_check_working_dir_files[49m[43m([49m[43moptions[49m[43m,[49m[43m [49m[43mruntime_env[49m[43m)[49m
-[32m    345[39m [38;5;28;01mreturn[39;00m runtime_env
-
-[36mFile [39m[32m~/work/dara/dara/.venv/lib/python3.12/site-packages/ray/_private/runtime_env/uv_runtime_env_hook.py:262[39m, in [36m_check_working_dir_files[39m[34m(uv_run_args, runtime_env)[39m
-[32m    259[39m         current_path = current_path.parent
-[32m    261[39m [38;5;28;01mif[39;00m pyproject [38;5;129;01mand[39;00m [38;5;129;01mnot[39;00m pyproject.resolve().is_relative_to(working_dir):
-[32m--> [39m[32m262[39m     [38;5;28;01mraise[39;00m [38;5;167;01mRuntimeError[39;00m(
-[32m    263[39m         [33mf[39m[33m"[39m[33mYour [39m[38;5;132;01m{[39;00mpyproject.resolve()[38;5;132;01m}[39;00m[33m is not in the working_dir [39m[38;5;132;01m{[39;00mruntime_env[[33m'[39m[33mworking_dir[39m[33m'[39m][38;5;132;01m}[39;00m[33m, [39m[33m"[39m
-[32m    264[39m         [33m"[39m[33mso the workers will not have access to the file. Make sure [39m[33m"[39m
-[32m    265[39m         [33m"[39m[33mthe pyproject.toml file is in the working directory. [39m[33m"[39m
-[32m    266[39m         [33m"[39m[33mYou can do so by specifying --directory in [39m[33m'[39m[33muv run[39m[33m'[39m[33m, by changing the current [39m[33m"[39m
-[32m    267[39m         [33m"[39m[33mworking directory before running [39m[33m'[39m[33muv run[39m[33m'[39m[33m, or by using the [39m[33m'[39m[33mworking_dir[39m[33m'[39m[33m [39m[33m"[39m
-[32m    268[39m         [33m"[39m[33mparameter of the runtime_environment.[39m[33m"[39m
-[32m    269[39m     )
-
-[31mRuntimeError[39m: Your /home/runner/work/dara/dara/pyproject.toml is not in the working_dir /home/runner/work/dara/dara/notebooks, so the workers will not have access to the file. Make sure the pyproject.toml file is in the working directory. You can do so by specifying --directory in 'uv run', by changing the current working directory before running 'uv run', or by using the 'working_dir' parameter of the runtime_environment.
+[31mRayTaskError(RaySystemError)[39m: [36mray::remote_do_refinement_no_saving()[39m (pid=3150, ip=10.1.1.5)
+  At least one of the input arguments for this task could not be computed:
+ray.exceptions.RaySystemError: System error: No module named 'dara'
+traceback: Traceback (most recent call last):
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+          ^^^^^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'dara'
 
