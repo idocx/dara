@@ -37,15 +37,15 @@ search_results = search_phases(
 ------------------
 
 ----- stdout -----
-2025-10-07 18:44:37,538 INFO dara.search.tree Detecting peaks in the pattern.
+2025-10-08 21:07:28,210 INFO dara.search.tree Detecting peaks in the pattern.
 ----- stdout -----
-2025-10-07 18:45:03,750 INFO dara.search.tree The wmax is automatically adjusted to 60.04.
+2025-10-08 21:07:54,411 INFO dara.search.tree The wmax is automatically adjusted to 60.04.
 ----- stdout -----
-2025-10-07 18:45:03,752 INFO dara.search.tree The intensity threshold is automatically set to 9.06 % of maximum peak intensity.
+2025-10-08 21:07:54,413 INFO dara.search.tree The intensity threshold is automatically set to 9.06 % of maximum peak intensity.
 ----- stdout -----
-2025-10-07 18:45:03,752 INFO dara.search.tree Creating the root node.
+2025-10-08 21:07:54,414 INFO dara.search.tree Creating the root node.
 ----- stdout -----
-2025-10-07 18:45:03,753 INFO dara.search.tree Refining all the phases in the dataset.
+2025-10-08 21:07:54,414 INFO dara.search.tree Refining all the phases in the dataset.
 ------------------
 
 [31m---------------------------------------------------------------------------[39m
@@ -60,68 +60,70 @@ search_results = search_phases(
 [32m      8[39m [43m    [49m[43minstrument_profile[49m[43m=[49m[33;43m"[39;49m[33;43mAeris-fds-Pixcel1d-Medipix3[39;49m[33;43m"[39;49m[43m,[49m
 [32m      9[39m [43m)[49m
 
-[36mFile [39m[32m~/work/dara/dara/src/dara/search/core.py:89[39m, in [36msearch_phases[39m[34m(pattern_path, phases, pinned_phases, max_phases, wavelength, instrument_profile, phase_params, refinement_params, return_search_tree, record_peak_matcher_scores, rpb_threshold)[39m
-[32m     86[39m refinement_params = {**DEFAULT_REFINEMENT_PARAMS, **refinement_params}
-[32m     88[39m [38;5;66;03m# build the search tree[39;00m
-[32m---> [39m[32m89[39m search_tree = [43mSearchTree[49m[43m([49m
-[32m     90[39m [43m    [49m[43mpattern_path[49m[43m=[49m[43mpattern_path[49m[43m,[49m
-[32m     91[39m [43m    [49m[43mcif_paths[49m[43m=[49m[43mphases[49m[43m,[49m
-[32m     92[39m [43m    [49m[43mpinned_phases[49m[43m=[49m[43mpinned_phases[49m[43m,[49m
-[32m     93[39m [43m    [49m[43mrefine_params[49m[43m=[49m[43mrefinement_params[49m[43m,[49m
-[32m     94[39m [43m    [49m[43mphase_params[49m[43m=[49m[43mphase_params[49m[43m,[49m
-[32m     95[39m [43m    [49m[43mwavelength[49m[43m=[49m[43mwavelength[49m[43m,[49m
-[32m     96[39m [43m    [49m[43minstrument_profile[49m[43m=[49m[43minstrument_profile[49m[43m,[49m
-[32m     97[39m [43m    [49m[43mmax_phases[49m[43m=[49m[43mmax_phases[49m[43m,[49m
-[32m     98[39m [43m    [49m[43mrpb_threshold[49m[43m=[49m[43mrpb_threshold[49m[43m,[49m
-[32m     99[39m [43m    [49m[43mrecord_peak_matcher_scores[49m[43m=[49m[43mrecord_peak_matcher_scores[49m[43m,[49m
-[32m    100[39m [43m[49m[43m)[49m
-[32m    102[39m max_worker = ray.cluster_resources()[[33m"[39m[33mCPU[39m[33m"[39m]
-[32m    103[39m pending = [remote_expand_node(search_tree, search_tree.root)]
+[36mFile [39m[32m~/work/dara/dara/src/dara/search/core.py:92[39m, in [36msearch_phases[39m[34m(pattern_path, phases, pinned_phases, max_phases, wavelength, instrument_profile, express_mode, phase_params, refinement_params, return_search_tree, record_peak_matcher_scores, rpb_threshold)[39m
+[32m     89[39m refinement_params = {**DEFAULT_REFINEMENT_PARAMS, **refinement_params}
+[32m     91[39m [38;5;66;03m# build the search tree[39;00m
+[32m---> [39m[32m92[39m search_tree = [43mSearchTree[49m[43m([49m
+[32m     93[39m [43m    [49m[43mpattern_path[49m[43m=[49m[43mpattern_path[49m[43m,[49m
+[32m     94[39m [43m    [49m[43mcif_paths[49m[43m=[49m[43mphases[49m[43m,[49m
+[32m     95[39m [43m    [49m[43mpinned_phases[49m[43m=[49m[43mpinned_phases[49m[43m,[49m
+[32m     96[39m [43m    [49m[43mrefine_params[49m[43m=[49m[43mrefinement_params[49m[43m,[49m
+[32m     97[39m [43m    [49m[43mphase_params[49m[43m=[49m[43mphase_params[49m[43m,[49m
+[32m     98[39m [43m    [49m[43mwavelength[49m[43m=[49m[43mwavelength[49m[43m,[49m
+[32m     99[39m [43m    [49m[43minstrument_profile[49m[43m=[49m[43minstrument_profile[49m[43m,[49m
+[32m    100[39m [43m    [49m[43mexpress_mode[49m[43m=[49m[43mexpress_mode[49m[43m,[49m
+[32m    101[39m [43m    [49m[43mmax_phases[49m[43m=[49m[43mmax_phases[49m[43m,[49m
+[32m    102[39m [43m    [49m[43mrpb_threshold[49m[43m=[49m[43mrpb_threshold[49m[43m,[49m
+[32m    103[39m [43m    [49m[43mrecord_peak_matcher_scores[49m[43m=[49m[43mrecord_peak_matcher_scores[49m[43m,[49m
+[32m    104[39m [43m[49m[43m)[49m
+[32m    106[39m max_worker = ray.cluster_resources()[[33m"[39m[33mCPU[39m[33m"[39m]
+[32m    107[39m pending = [remote_expand_node(search_tree, search_tree.root)]
 
-[36mFile [39m[32m~/work/dara/dara/src/dara/search/tree.py:1019[39m, in [36mSearchTree.__init__[39m[34m(self, pattern_path, cif_paths, pinned_phases, refine_params, phase_params, wavelength, instrument_profile, maximum_grouping_distance, max_phases, rpb_threshold, record_peak_matcher_scores, *args, **kwargs)[39m
-[32m   1016[39m root_node = [38;5;28mself[39m._create_root_node()
-[32m   1017[39m [38;5;28mself[39m.add_node(root_node)
-[32m-> [39m[32m1019[39m all_phases_result = [38;5;28;43mself[39;49m[43m.[49m[43m_get_all_cleaned_phases_result[49m[43m([49m[43m)[49m
-[32m   1020[39m [38;5;28mself[39m.all_phases_result = all_phases_result
+[36mFile [39m[32m~/work/dara/dara/src/dara/search/tree.py:996[39m, in [36mSearchTree.__init__[39m[34m(self, pattern_path, cif_paths, pinned_phases, refine_params, phase_params, wavelength, instrument_profile, express_mode, maximum_grouping_distance, max_phases, rpb_threshold, record_peak_matcher_scores, *args, **kwargs)[39m
+[32m    993[39m root_node = [38;5;28mself[39m._create_root_node()
+[32m    994[39m [38;5;28mself[39m.add_node(root_node)
+[32m--> [39m[32m996[39m all_phases_result = [38;5;28;43mself[39;49m[43m.[49m[43m_get_all_cleaned_phases_result[49m[43m([49m[43m)[49m
+[32m    998[39m [38;5;28;01mif[39;00m [38;5;28mself[39m.express_mode:
+[32m    999[39m     logger.info([33m"[39m[33mExpress mode is enabled. Grouping phases before starting.[39m[33m"[39m)
 
-[36mFile [39m[32m~/work/dara/dara/src/dara/search/tree.py:1086[39m, in [36mSearchTree._get_all_cleaned_phases_result[39m[34m(self)[39m
-[32m   1082[39m pinned_phases_set = [38;5;28mset[39m([38;5;28mself[39m.pinned_phases)
-[32m   1083[39m cif_paths = [
-[32m   1084[39m     cif_path [38;5;28;01mfor[39;00m cif_path [38;5;129;01min[39;00m [38;5;28mself[39m.cif_paths [38;5;28;01mif[39;00m cif_path [38;5;129;01mnot[39;00m [38;5;129;01min[39;00m pinned_phases_set
-[32m   1085[39m ]
-[32m-> [39m[32m1086[39m all_phases_result = [38;5;28;43mself[39;49m[43m.[49m[43mrefine_phases[49m[43m([49m
-[32m   1087[39m [43m    [49m[43mcif_paths[49m[43m,[49m
-[32m   1088[39m [43m    [49m[43mpinned_phases[49m[43m=[49m[38;5;28;43mself[39;49m[43m.[49m[43mpinned_phases[49m[43m,[49m
-[32m   1089[39m [43m[49m[43m)[49m
-[32m   1091[39m [38;5;66;03m# adjust the initial value of eps1 based on the weighted average of all the phases[39;00m
-[32m   1092[39m [38;5;28;01mif[39;00m [38;5;129;01mnot[39;00m [38;5;28misinstance[39m([38;5;28mself[39m.refinement_params.get([33m"[39m[33meps1[39m[33m"[39m, [32m0[39m), Number):
+[36mFile [39m[32m~/work/dara/dara/src/dara/search/tree.py:1101[39m, in [36mSearchTree._get_all_cleaned_phases_result[39m[34m(self)[39m
+[32m   1097[39m pinned_phases_set = [38;5;28mset[39m([38;5;28mself[39m.pinned_phases)
+[32m   1098[39m cif_paths = [
+[32m   1099[39m     cif_path [38;5;28;01mfor[39;00m cif_path [38;5;129;01min[39;00m [38;5;28mself[39m.cif_paths [38;5;28;01mif[39;00m cif_path [38;5;129;01mnot[39;00m [38;5;129;01min[39;00m pinned_phases_set
+[32m   1100[39m ]
+[32m-> [39m[32m1101[39m all_phases_result = [38;5;28;43mself[39;49m[43m.[49m[43mrefine_phases[49m[43m([49m
+[32m   1102[39m [43m    [49m[43mcif_paths[49m[43m,[49m
+[32m   1103[39m [43m    [49m[43mpinned_phases[49m[43m=[49m[38;5;28;43mself[39;49m[43m.[49m[43mpinned_phases[49m[43m,[49m
+[32m   1104[39m [43m[49m[43m)[49m
+[32m   1106[39m [38;5;66;03m# adjust the initial value of eps1 based on the weighted average of all the phases[39;00m
+[32m   1107[39m [38;5;28;01mif[39;00m [38;5;129;01mnot[39;00m [38;5;28misinstance[39m([38;5;28mself[39m.refinement_params.get([33m"[39m[33meps1[39m[33m"[39m, [32m0[39m), Number):
 
-[36mFile [39m[32m~/work/dara/dara/src/dara/search/tree.py:833[39m, in [36mBaseSearchTree.refine_phases[39m[34m(self, phases, pinned_phases)[39m
-[32m    827[39m [38;5;28;01mif[39;00m pinned_phases [38;5;129;01mis[39;00m [38;5;28;01mNone[39;00m:
-[32m    828[39m     pinned_phases = []
-[32m    830[39m [38;5;28;01mreturn[39;00m [38;5;28mdict[39m(
-[32m    831[39m     zip_longest(
-[32m    832[39m         phases,
-[32m--> [39m[32m833[39m         [38;5;28;43mself[39;49m[43m.[49m[43m_batch_refine[49m[43m([49m
-[32m    834[39m [43m            [49m[43mall_references[49m[43m=[49m[43m[[49m[43m[[49m[43m*[49m[43mpinned_phases[49m[43m,[49m[43m [49m[43mphase[49m[43m][49m[43m [49m[38;5;28;43;01mfor[39;49;00m[43m [49m[43mphase[49m[43m [49m[38;5;129;43;01min[39;49;00m[43m [49m[43mphases[49m[43m][49m[43m,[49m
-[32m    835[39m [43m        [49m[43m)[49m,
-[32m    836[39m         fillvalue=[38;5;28;01mNone[39;00m,
-[32m    837[39m     )
-[32m    838[39m )
+[36mFile [39m[32m~/work/dara/dara/src/dara/search/tree.py:806[39m, in [36mBaseSearchTree.refine_phases[39m[34m(self, phases, pinned_phases)[39m
+[32m    800[39m [38;5;28;01mif[39;00m pinned_phases [38;5;129;01mis[39;00m [38;5;28;01mNone[39;00m:
+[32m    801[39m     pinned_phases = []
+[32m    803[39m [38;5;28;01mreturn[39;00m [38;5;28mdict[39m(
+[32m    804[39m     zip_longest(
+[32m    805[39m         phases,
+[32m--> [39m[32m806[39m         [38;5;28;43mself[39;49m[43m.[49m[43m_batch_refine[49m[43m([49m
+[32m    807[39m [43m            [49m[43mall_references[49m[43m=[49m[43m[[49m[43m[[49m[43m*[49m[43mpinned_phases[49m[43m,[49m[43m [49m[43mphase[49m[43m][49m[43m [49m[38;5;28;43;01mfor[39;49;00m[43m [49m[43mphase[49m[43m [49m[38;5;129;43;01min[39;49;00m[43m [49m[43mphases[49m[43m][49m[43m,[49m
+[32m    808[39m [43m        [49m[43m)[49m,
+[32m    809[39m         fillvalue=[38;5;28;01mNone[39;00m,
+[32m    810[39m     )
+[32m    811[39m )
 
-[36mFile [39m[32m~/work/dara/dara/src/dara/search/tree.py:844[39m, in [36mBaseSearchTree._batch_refine[39m[34m(self, all_references)[39m
-[32m    840[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34m_batch_refine[39m(
-[32m    841[39m     [38;5;28mself[39m,
-[32m    842[39m     all_references: [38;5;28mlist[39m[[38;5;28mlist[39m[RefinementPhase]],
-[32m    843[39m ) -> [38;5;28mlist[39m[RefinementResult]:
-[32m--> [39m[32m844[39m     [38;5;28;01mreturn[39;00m [43mbatch_refinement[49m[43m([49m
-[32m    845[39m [43m        [49m[38;5;28;43mself[39;49m[43m.[49m[43mpattern_path[49m[43m,[49m
-[32m    846[39m [43m        [49m[43mall_references[49m[43m,[49m
-[32m    847[39m [43m        [49m[43mwavelength[49m[43m=[49m[38;5;28;43mself[39;49m[43m.[49m[43mwavelength[49m[43m,[49m
-[32m    848[39m [43m        [49m[43minstrument_profile[49m[43m=[49m[38;5;28;43mself[39;49m[43m.[49m[43minstrument_profile[49m[43m,[49m
-[32m    849[39m [43m        [49m[43mphase_params[49m[43m=[49m[38;5;28;43mself[39;49m[43m.[49m[43mphase_params[49m[43m,[49m
-[32m    850[39m [43m        [49m[43mrefinement_params[49m[43m=[49m[38;5;28;43mself[39;49m[43m.[49m[43mrefinement_params[49m[43m,[49m
-[32m    851[39m [43m    [49m[43m)[49m
+[36mFile [39m[32m~/work/dara/dara/src/dara/search/tree.py:817[39m, in [36mBaseSearchTree._batch_refine[39m[34m(self, all_references)[39m
+[32m    813[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34m_batch_refine[39m(
+[32m    814[39m     [38;5;28mself[39m,
+[32m    815[39m     all_references: [38;5;28mlist[39m[[38;5;28mlist[39m[RefinementPhase]],
+[32m    816[39m ) -> [38;5;28mlist[39m[RefinementResult]:
+[32m--> [39m[32m817[39m     [38;5;28;01mreturn[39;00m [43mbatch_refinement[49m[43m([49m
+[32m    818[39m [43m        [49m[38;5;28;43mself[39;49m[43m.[49m[43mpattern_path[49m[43m,[49m
+[32m    819[39m [43m        [49m[43mall_references[49m[43m,[49m
+[32m    820[39m [43m        [49m[43mwavelength[49m[43m=[49m[38;5;28;43mself[39;49m[43m.[49m[43mwavelength[49m[43m,[49m
+[32m    821[39m [43m        [49m[43minstrument_profile[49m[43m=[49m[38;5;28;43mself[39;49m[43m.[49m[43minstrument_profile[49m[43m,[49m
+[32m    822[39m [43m        [49m[43mphase_params[49m[43m=[49m[38;5;28;43mself[39;49m[43m.[49m[43mphase_params[49m[43m,[49m
+[32m    823[39m [43m        [49m[43mrefinement_params[49m[43m=[49m[38;5;28;43mself[39;49m[43m.[49m[43mrefinement_params[49m[43m,[49m
+[32m    824[39m [43m    [49m[43m)[49m
 
 [36mFile [39m[32m~/work/dara/dara/src/dara/search/tree.py:128[39m, in [36mbatch_refinement[39m[34m(pattern_path, cif_paths, wavelength, instrument_profile, phase_params, refinement_params)[39m
 [32m    119[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34mbatch_refinement[39m(
