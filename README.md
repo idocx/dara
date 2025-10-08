@@ -5,12 +5,8 @@
 Automated phase search with BGMN.
 
 ## Installation
-First, git clone the repository. Then navigate to the directory and pip install:
-
 ```bash
-git clone https://github.com/idocx/dara
-cd dara
-pip install -e .
+pip install dara-xrd
 ```
 
 For more details about installation, please refer to [installation guide](https://idocx.github.io/dara/install.html).

@@ -448,7 +448,7 @@ class PeakMatcher:
             [wrong_intensity_calc, wrong_intensity_obs]
         )
 
-        fig, ax = plt.subplots()
+        _, ax = plt.subplots()
 
         ax.vlines(
             missing_peaks[:, 0],

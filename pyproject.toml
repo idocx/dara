@@ -3,10 +3,10 @@ requires = ["setuptools>=42", "wheel", "setuptools-git-versioning"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "dara"
+name = "dara-xrd"
 description = "Data-driven automated Rietveld analysis using BGMN."
 readme = "README.md"
-version = "0.9.1"
+version = "1.0.0"
 keywords = [
     "rietveld",
     "search-match",
@@ -22,10 +22,10 @@ authors = [
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Intended Audience :: Science/Research",
     "Operating System :: OS Independent",
     "Topic :: Scientific/Engineering :: Information Analysis",
@@ -98,6 +98,7 @@ docs = [
 
 [project.urls]
 homepage = "https://github.com/idocx/dara"
+documentation = "https://idocx.github.io/dara/"
 
 [project.scripts]
 dara = "dara.cli:main"

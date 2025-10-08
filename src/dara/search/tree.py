@@ -376,7 +376,6 @@ class BaseSearchTree(Tree):
         intensity_threshold: float,
         wavelength: Literal["Cu", "Co", "Cr", "Fe", "Mo"] | float,
         instrument_profile: str | Path,
-        express_mode: bool,
         maximum_grouping_distance: float,
         max_phases: float,
         rpb_threshold: float,
@@ -1108,7 +1107,7 @@ class SearchTree(BaseSearchTree):
                     )
                     rwp_sum += result.lst_data.rwp
             weighted_eps1 /= rwp_sum
-            eps1_initial, eps1_lower, eps1_upper = parse_refinement_param(
+            _, eps1_lower, eps1_upper = parse_refinement_param(
                 self.refinement_params["eps1"]
             )
             self.refinement_params["eps1"] = (
@@ -1134,7 +1133,7 @@ class SearchTree(BaseSearchTree):
                     )
                     rwp_sum += result.lst_data.rwp
             weighted_eps2 /= rwp_sum
-            eps2_initial, eps2_lower, eps2_upper = parse_refinement_param(
+            _, eps2_lower, eps2_upper = parse_refinement_param(
                 self.refinement_params["eps2"]
             )
             self.refinement_params["eps2"] = (
