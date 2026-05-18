@@ -394,9 +394,12 @@ def cif2str(
 
         # First, check if there is a specific match for this element
         for element_key, custom_dict in custom_params_map.items():
-            if element_key != "*" and element_key in element_name:
-                assigned_dict = custom_dict
-                break
+            if element_key != "*":
+                # Use regex with word boundaries to prevent partial matches
+                # e.g., ensures "O" doesn't match the "O" in "CO" (Cobalt)
+                if re.search(rf"\b{element_key}\b", element_name, re.IGNORECASE):
+                    assigned_dict = custom_dict
+                    break
 
         # If no specific match was found, check if a wildcard was provided
         if assigned_dict is None and "*" in custom_params_map:
