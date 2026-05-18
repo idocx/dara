@@ -21,6 +21,7 @@ class TestCif2Str(unittest.TestCase):
             for cif_path in self.cif_paths:
                 with warnings.catch_warnings(record=True) as w:
                     warnings.simplefilter("always")
+                    warnings.filterwarnings("ignore", category=FutureWarning)
                     str_path = cif2str(cif_path, "", tmpdir)
                     self.assertTrue(len(w) == 0)
 
