@@ -221,9 +221,21 @@ def make_spacegroup_setting_str(spacegroup_setting: dict[str, Any]) -> str:
 def make_lattice_parameters_str(
     spacegroup_setting: dict[str, Any],
     structure: SymmetrizedStructure,
-    lattice_range: float | Literal["fixed"],
+    lattice_range: float | tuple[float, float] | Literal["fixed"],
 ) -> str:
-    """Make the lattice parameters string."""
+    """Make the lattice parameters string.
+
+    Args:
+        spacegroup_setting: the spacegroup setting dict.
+        structure: the symmetrized structure.
+        lattice_range: controls the refinement bounds for lattice parameters:
+            - "fixed": parameters are not refined.
+            - float `r`: symmetric fractional range, i.e. bounds are
+              `[v * (1 - r), v * (1 + r)]`.
+            - tuple `(lo, hi)`: explicit fractional deltas, bounds are
+              `[v * (1 + lo), v * (1 + hi)]`. Use e.g. `(0.0, 0.1)` to allow
+              only positive deviation, or `(-0.1, 0.0)` for only negative.
+    """
     crystal_system = spacegroup_setting["setting"]["Lattice"]
     lattice_parameters = get_lattice_parameters_from_lattice(
         structure.lattice, crystal_system
@@ -234,9 +246,18 @@ def make_lattice_parameters_str(
             [f"{k}={v:.5f}" for k, v in lattice_parameters.items()]
         )
     else:
+        if isinstance(lattice_range, (int, float)):
+            lo, hi = -float(lattice_range), float(lattice_range)
+        else:
+            lo, hi = float(lattice_range[0]), float(lattice_range[1])
+            if lo > hi:
+                raise ValueError(
+                    f"lattice_range lower bound ({lo}) must be <= upper bound ({hi})"
+                )
+
         lattice_parameters_str = " ".join(
             [
-                f"PARAM={k}={v:.5f}_{v * (1 - lattice_range):.5f}^{v * (1 + lattice_range):.5f}"
+                f"PARAM={k}={v:.5f}_{v * (1 + lo):.5f}^{v * (1 + hi):.5f}"
                 for k, v in lattice_parameters.items()
             ]
         )
@@ -260,7 +281,7 @@ def cif2str(
     phase_name_suffix: str = "",
     working_dir: Path | None = None,
     *,
-    lattice_range: float = 0.1,
+    lattice_range: float | tuple[float, float] = 0.1,
     gewicht: str = "0_0",
     rp: int = 4,
     k1: str = "0_0^0.01",
@@ -277,7 +298,14 @@ def cif2str(
         cif_path: the path to the CIF file
         phase_name_suffix: the suffix of the phase name
         working_dir: the folder to hold the processed str file
-        lattice_range: the range of the lattice parameters to be refined
+        lattice_range: the range of the lattice parameters to be refined. Can be:
+            - a single float `r` (default behavior): symmetric range `[a - r*a, a + r*a]`
+            - a tuple `(lo, hi)`: explicit fractional deltas, allowing asymmetric or
+              one-sided ranges. For example:
+                * `(-0.1, 0.1)` is equivalent to `0.1` (symmetric)
+                * `(0.0, 0.1)` confines refinement to only positive deviations
+                * `(-0.1, 0.0)` confines refinement to only negative deviations
+                * `(-0.05, 0.2)` allows asymmetric refinement
         gewicht: the weight fraction of the phase to be refined. Options: 0_0, SPHAR0, and SPHAR2. If 0_0, then no
             preferred orientation. Read more in the BGMN manual.
         rp: the peak function to be used in the refinement. Read more in the BGMN manual.
@@ -359,10 +387,22 @@ def cif2str(
     # add spacegroup setting
     str_text += make_spacegroup_setting_str(spacegroup_setting) + "\n"
 
+    # normalize lattice_range to a (lo, hi) tuple of fractional deltas
+    if isinstance(lattice_range, (int, float)):
+        lattice_bounds = (-float(lattice_range), float(lattice_range))
+    else:
+        lo, hi = lattice_range
+        lo, hi = float(lo), float(hi)
+        if lo > hi:
+            raise ValueError(
+                f"lattice_range lower bound ({lo}) must be <= upper bound ({hi})"
+            )
+        lattice_bounds = (lo, hi)
+
     # add lattice
     str_text += (
         make_lattice_parameters_str(
-            spacegroup_setting, structure, lattice_range=lattice_range
+            spacegroup_setting, structure, lattice_range=lattice_bounds
         )
         + "\n"
     )
