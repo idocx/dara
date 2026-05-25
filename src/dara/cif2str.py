@@ -235,6 +235,10 @@ def make_lattice_parameters_str(
             - tuple `(lo, hi)`: explicit fractional deltas, bounds are
               `[v * (1 + lo), v * (1 + hi)]`. Use e.g. `(0.0, 0.1)` to allow
               only positive deviation, or `(-0.1, 0.0)` for only negative.
+              If the unmodified value `v` falls outside the resulting window
+              (e.g. both deltas positive or both negative), the starting value
+              is clamped to the boundary closest to `v` (i.e. nearest 0%
+              deviation), so BGMN always receives a valid `lo <= start <= hi`.
     """
     crystal_system = spacegroup_setting["setting"]["Lattice"]
     lattice_parameters = get_lattice_parameters_from_lattice(
@@ -255,12 +259,18 @@ def make_lattice_parameters_str(
                     f"lattice_range lower bound ({lo}) must be <= upper bound ({hi})"
                 )
 
-        lattice_parameters_str = " ".join(
-            [
-                f"PARAM={k}={v:.5f}_{v * (1 + lo):.5f}^{v * (1 + hi):.5f}"
-                for k, v in lattice_parameters.items()
-            ]
-        )
+        parts = []
+        for k, v in lattice_parameters.items():
+            lo_bound = v * (1 + lo)
+            hi_bound = v * (1 + hi)
+            # clamp the starting value into [lo_bound, hi_bound]; this picks
+            # the endpoint closest to the unmodified v (i.e. nearest 0% deviation)
+            start = min(max(v, lo_bound), hi_bound)
+            parts.append(
+                f"PARAM={k}={start:.5f}_{lo_bound:.5f}^{hi_bound:.5f}"
+            )
+        lattice_parameters_str = " ".join(parts)
+
     lattice_parameters_str += " //"
     return lattice_parameters_str
 
