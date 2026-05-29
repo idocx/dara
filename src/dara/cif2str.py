@@ -275,14 +275,26 @@ def make_lattice_parameters_str(
     return lattice_parameters_str
 
 
+
+_NUMERIC_GEWICHT_RE = re.compile(
+    r"^-?\d+(?:\.\d+)?_-?\d+(?:\.\d+)?(?:\^-?\d+(?:\.\d+)?)?$"
+)
+
 def make_peak_parameter_str(k1: str, k2: str, b1: str, gewicht: str, rp: int) -> str:
     """Make the peak parameter string."""
+    if _NUMERIC_GEWICHT_RE.match(gewicht):
+        # numeric refinable spec, e.g. "0_0", "0.01_0.001^0.1"
+        gewicht_part = f"PARAM=GEWICHT={gewicht} //"
+    else:
+        # symbolic, e.g. "SPHAR0", "SPHAR2", "SPHAR4", "fixed"
+        gewicht_part = f"GEWICHT={gewicht} //"
+
     return (
         f"RP={rp} "
         + (f"PARAM=k1={k1} " if k1 != "fixed" else "k1=0 ")
         + (f"PARAM=k2={k2} " if k2 != "fixed" else "k2=0 ")
         + (f"PARAM=B1={b1} " if b1 != "fixed" else "B1=0 ")
-        + (f"GEWICHT={gewicht} //" if gewicht != "0_0" else "PARAM=GEWICHT=0_0 //")
+        + gewicht_part
     )
 
 
