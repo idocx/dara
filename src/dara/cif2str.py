@@ -410,7 +410,9 @@ def cif2str(
     str_text += make_spacegroup_setting_str(spacegroup_setting) + "\n"
 
     # normalize lattice_range to a (lo, hi) tuple of fractional deltas
-    if isinstance(lattice_range, (int, float)):
+    if lattice_range == "fixed":
+        lattice_bounds = "fixed"
+    elif isinstance(lattice_range, (int, float)):
         lattice_bounds = (-float(lattice_range), float(lattice_range))
     else:
         lo, hi = lattice_range
