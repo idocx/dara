@@ -318,12 +318,12 @@ _NUMERIC_GEWICHT_RE = re.compile(
 
 def make_peak_parameter_str(k1: str, k2: str, b1: str, gewicht: str, rp: int) -> str:
     """Make the peak parameter string."""
-    if _NUMERIC_GEWICHT_RE.match(gewicht):
-        # numeric refinable spec, e.g. "0_0", "0.01_0.001^0.1"
-        gewicht_part = f"PARAM=GEWICHT={gewicht} //"
-    else:
-        # symbolic, e.g. "SPHAR0", "SPHAR2", "SPHAR4", "fixed"
-        gewicht_part = f"GEWICHT={gewicht} //"
+    # Numeric specs are refinable; symbolic specs are emitted as fixed names.
+    gewicht_part = (
+        f"PARAM=GEWICHT={gewicht} //"
+        if _NUMERIC_GEWICHT_RE.match(gewicht)
+        else f"GEWICHT={gewicht} //"
+    )
 
     return (
         f"RP={rp} "
