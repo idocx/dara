@@ -215,6 +215,22 @@ class ParseError(Exception):
     """Error when parsing the result."""
 
 
+def _dedupe_phase_names(phase_names: list[str]) -> list[str]:
+    """Return phase names with deterministic suffixes for duplicates.
+
+    Refinement outputs are stored in dict-backed containers in several places
+    (lst/dia/par). Duplicate phase names would overwrite earlier entries, so
+    we disambiguate repeated names as ``name__dupN`` where N starts at 2.
+    """
+    counts: dict[str, int] = {}
+    out: list[str] = []
+    for name in phase_names:
+        counts[name] = counts.get(name, 0) + 1
+        n = counts[name]
+        out.append(name if n == 1 else f"{name}__dup{n}")
+    return out
+
+
 def get_result(control_file: Path) -> RefinementResult:
     """
     Get the result from the refinement.
@@ -229,6 +245,7 @@ def get_result(control_file: Path) -> RefinementResult:
     try:
         sav_text = control_file.read_text()
         phase_names = re.findall(r"STRUC\[\d+]=(.+?)\.str", sav_text)
+        phase_names = _dedupe_phase_names(phase_names)
 
         lst_path = control_file.parent / f"{control_file.stem}.lst"
         dia_path = control_file.parent / f"{control_file.stem}.dia"
@@ -311,7 +328,8 @@ def parse_lst(lst_path: Path, phase_names: list[str]) -> LstResult:
 
     Returns
     -------
-        phase_results: a dictionary of the results for each phase
+        phase_results: a dictionary of the results for each phase.
+            Duplicate input names should be disambiguated by the caller.
 
     """
 
