@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
@@ -37,10 +37,10 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=87e54e7c" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
     <script src="../../_static/documentation_options.js?v=db04a367"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
@@ -50,6 +50,7 @@
     <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/dara/cif2str';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="icon" href="../../_static/logo.svg"/>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -57,20 +58,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.2.0" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -96,7 +103,47 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
     </header>
   
 
@@ -374,6 +421,8 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
 
+<span class="n">LatticeSpec</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;fixed&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span>
+<span class="n">LatticeRange</span> <span class="o">=</span> <span class="n">LatticeSpec</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">LatticeSpec</span><span class="p">]</span>
 
 <div class="viewcode-block" id="CIF2StrError">
 <a class="viewcode-back" href="../../dara.cif2str.html#dara.cif2str.CIF2StrError">[docs]</a>
@@ -381,6 +430,25 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;CIF2Str error.&quot;&quot;&quot;</span></div>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_normalize_lattice_spec</span><span class="p">(</span><span class="n">spec</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;fixed&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Normalize a single lattice spec into &#39;fixed&#39; or (lo, hi) fractional deltas.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">spec</span> <span class="o">==</span> <span class="s2">&quot;fixed&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;fixed&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="o">-</span><span class="nb">float</span><span class="p">(</span><span class="n">spec</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">spec</span><span class="p">))</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">spec</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Invalid lattice spec for </span><span class="si">{</span><span class="n">label</span><span class="si">!r}</span><span class="s2">: </span><span class="si">{</span><span class="n">spec</span><span class="si">!r}</span><span class="s2">. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Expected &#39;fixed&#39;, a number, or a (lo, hi) tuple.&quot;</span>
+        <span class="p">)</span>
+    <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">lo</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">hi</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">lo</span> <span class="o">&gt;</span> <span class="n">hi</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;lattice_range lower bound (</span><span class="si">{</span><span class="n">lo</span><span class="si">}</span><span class="s2">) must be &lt;= upper bound (</span><span class="si">{</span><span class="n">hi</span><span class="si">}</span><span class="s2">) for </span><span class="si">{</span><span class="n">label</span><span class="si">!r}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">)</span>
 
 <div class="viewcode-block" id="process_specie_string">
 <a class="viewcode-back" href="../../dara.cif2str.html#dara.cif2str.process_specie_string">[docs]</a>
@@ -589,40 +657,98 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">make_lattice_parameters_str</span><span class="p">(</span>
     <span class="n">spacegroup_setting</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
     <span class="n">structure</span><span class="p">:</span> <span class="n">SymmetrizedStructure</span><span class="p">,</span>
-    <span class="n">lattice_range</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;fixed&quot;</span><span class="p">],</span>
+    <span class="n">lattice_range</span><span class="p">:</span> <span class="n">LatticeRange</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Make the lattice parameters string.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Make the lattice parameters string.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        spacegroup_setting: the spacegroup setting dict.</span>
+<span class="sd">        structure: the symmetrized structure.</span>
+<span class="sd">        lattice_range: controls the refinement bounds for lattice parameters. Can be:</span>
+<span class="sd">            - &quot;fixed&quot;: all parameters are held fixed (not refined).</span>
+<span class="sd">            - float `r`: symmetric fractional range for all params, i.e. bounds</span>
+<span class="sd">              are `[v * (1 - r), v * (1 + r)]`.</span>
+<span class="sd">            - tuple `(lo, hi)`: explicit fractional deltas for all params, bounds</span>
+<span class="sd">              are `[v * (1 + lo), v * (1 + hi)]`.</span>
+<span class="sd">            - dict mapping parameter name (e.g. &quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;ALPHA&quot;, &quot;BETA&quot;,</span>
+<span class="sd">              &quot;GAMMA&quot;, case-insensitive) to any of the above per-parameter specs.</span>
+<span class="sd">              Parameters not present in the dict fall back to the value under the</span>
+<span class="sd">              &quot;*&quot; key, or to symmetric 0.1 if no &quot;*&quot; key is given.</span>
+
+<span class="sd">        For tuple specs, if the unmodified value `v` falls outside the resulting</span>
+<span class="sd">        window, the starting value is clamped to the boundary closest to `v`, so</span>
+<span class="sd">        BGMN always receives a valid `lo &lt;= start &lt;= hi`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">crystal_system</span> <span class="o">=</span> <span class="n">spacegroup_setting</span><span class="p">[</span><span class="s2">&quot;setting&quot;</span><span class="p">][</span><span class="s2">&quot;Lattice&quot;</span><span class="p">]</span>
     <span class="n">lattice_parameters</span> <span class="o">=</span> <span class="n">get_lattice_parameters_from_lattice</span><span class="p">(</span>
         <span class="n">structure</span><span class="o">.</span><span class="n">lattice</span><span class="p">,</span> <span class="n">crystal_system</span>
     <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">lattice_range</span> <span class="o">==</span> <span class="s2">&quot;fixed&quot;</span><span class="p">:</span>
-        <span class="n">lattice_parameters_str</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">lattice_parameters</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
-        <span class="p">)</span>
+    <span class="c1"># build a per-parameter resolver</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lattice_range</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="c1"># normalize keys to uppercase so users can pass &quot;a&quot;, &quot;alpha&quot;, etc.</span>
+        <span class="n">norm_range</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">spec</span> <span class="ow">in</span> <span class="n">lattice_range</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">norm_key</span> <span class="o">=</span> <span class="n">key</span> <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;*&quot;</span> <span class="k">else</span> <span class="n">key</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">norm_key</span> <span class="ow">in</span> <span class="n">norm_range</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Duplicate lattice parameter key after normalization: </span><span class="si">{</span><span class="n">norm_key</span><span class="si">!r}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="n">norm_range</span><span class="p">[</span><span class="n">norm_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">spec</span>
+
+        <span class="n">default_spec</span> <span class="o">=</span> <span class="n">norm_range</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">resolve</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;fixed&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+            <span class="n">spec</span> <span class="o">=</span> <span class="n">norm_range</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default_spec</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">_normalize_lattice_spec</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">lattice_parameters_str</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="p">[</span>
-                <span class="sa">f</span><span class="s2">&quot;PARAM=</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">v</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">lattice_range</span><span class="p">)</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">^</span><span class="si">{</span><span class="n">v</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">lattice_range</span><span class="p">)</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">lattice_parameters</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-            <span class="p">]</span>
-        <span class="p">)</span>
-    <span class="n">lattice_parameters_str</span> <span class="o">+=</span> <span class="s2">&quot; //&quot;</span>
-    <span class="k">return</span> <span class="n">lattice_parameters_str</span></div>
+        <span class="n">normalized</span> <span class="o">=</span> <span class="n">_normalize_lattice_spec</span><span class="p">(</span><span class="n">lattice_range</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;lattice_range&quot;</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">resolve</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;fixed&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">normalized</span>
+
+    <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">lattice_parameters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">bounds</span> <span class="o">=</span> <span class="n">resolve</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">bounds</span> <span class="o">==</span> <span class="s2">&quot;fixed&quot;</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">bounds</span>
+            <span class="k">if</span> <span class="n">lo</span> <span class="o">==</span> <span class="n">hi</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">v</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">lo</span><span class="p">)</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">lo_bound</span> <span class="o">=</span> <span class="n">v</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">lo</span><span class="p">)</span>
+                <span class="n">hi_bound</span> <span class="o">=</span> <span class="n">v</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">hi</span><span class="p">)</span>
+                <span class="c1"># clamp the starting value into [lo_bound, hi_bound]</span>
+                <span class="n">start</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">lo_bound</span><span class="p">),</span> <span class="n">hi_bound</span><span class="p">)</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PARAM=</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">start</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">lo_bound</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">^</span><span class="si">{</span><span class="n">hi_bound</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; //&quot;</span></div>
 
 
+
+
+<span class="n">_NUMERIC_GEWICHT_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="sa">r</span><span class="s2">&quot;^-?\d+(?:\.\d+)?_-?\d+(?:\.\d+)?(?:\^-?\d+(?:\.\d+)?)?$&quot;</span>
+<span class="p">)</span>
 
 <div class="viewcode-block" id="make_peak_parameter_str">
 <a class="viewcode-back" href="../../dara.cif2str.html#dara.cif2str.make_peak_parameter_str">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">make_peak_parameter_str</span><span class="p">(</span><span class="n">k1</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">k2</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">b1</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">gewicht</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rp</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Make the peak parameter string.&quot;&quot;&quot;</span>
+    <span class="c1"># Numeric specs are refinable; symbolic specs are emitted as fixed names.</span>
+    <span class="n">gewicht_part</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;PARAM=GEWICHT=</span><span class="si">{</span><span class="n">gewicht</span><span class="si">}</span><span class="s2"> //&quot;</span>
+        <span class="k">if</span> <span class="n">_NUMERIC_GEWICHT_RE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">gewicht</span><span class="p">)</span>
+        <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;GEWICHT=</span><span class="si">{</span><span class="n">gewicht</span><span class="si">}</span><span class="s2"> //&quot;</span>
+    <span class="p">)</span>
+
     <span class="k">return</span> <span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;RP=</span><span class="si">{</span><span class="n">rp</span><span class="si">}</span><span class="s2"> &quot;</span>
         <span class="o">+</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PARAM=k1=</span><span class="si">{</span><span class="n">k1</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="k">if</span> <span class="n">k1</span> <span class="o">!=</span> <span class="s2">&quot;fixed&quot;</span> <span class="k">else</span> <span class="s2">&quot;k1=0 &quot;</span><span class="p">)</span>
         <span class="o">+</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PARAM=k2=</span><span class="si">{</span><span class="n">k2</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="k">if</span> <span class="n">k2</span> <span class="o">!=</span> <span class="s2">&quot;fixed&quot;</span> <span class="k">else</span> <span class="s2">&quot;k2=0 &quot;</span><span class="p">)</span>
         <span class="o">+</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PARAM=B1=</span><span class="si">{</span><span class="n">b1</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="k">if</span> <span class="n">b1</span> <span class="o">!=</span> <span class="s2">&quot;fixed&quot;</span> <span class="k">else</span> <span class="s2">&quot;B1=0 &quot;</span><span class="p">)</span>
-        <span class="o">+</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;GEWICHT=</span><span class="si">{</span><span class="n">gewicht</span><span class="si">}</span><span class="s2"> //&quot;</span> <span class="k">if</span> <span class="n">gewicht</span> <span class="o">!=</span> <span class="s2">&quot;0_0&quot;</span> <span class="k">else</span> <span class="s2">&quot;PARAM=GEWICHT=0_0 //&quot;</span><span class="p">)</span>
+        <span class="o">+</span> <span class="n">gewicht_part</span>
     <span class="p">)</span></div>
 
 
@@ -634,13 +760,15 @@
     <span class="n">phase_name_suffix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
     <span class="n">working_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
-    <span class="n">lattice_range</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">lattice_range</span><span class="p">:</span> <span class="n">LatticeRange</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
     <span class="n">gewicht</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;0_0&quot;</span><span class="p">,</span>
     <span class="n">rp</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
     <span class="n">k1</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;0_0^0.01&quot;</span><span class="p">,</span>
     <span class="n">k2</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;0_0^0.01&quot;</span><span class="p">,</span>
     <span class="n">b1</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;0_0^0.01&quot;</span><span class="p">,</span>
     <span class="n">lebail</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">custom_params</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">custom_params_map</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert CIF to Str format.</span>
@@ -649,7 +777,23 @@
 <span class="sd">        cif_path: the path to the CIF file</span>
 <span class="sd">        phase_name_suffix: the suffix of the phase name</span>
 <span class="sd">        working_dir: the folder to hold the processed str file</span>
-<span class="sd">        lattice_range: the range of the lattice parameters to be refined</span>
+<span class="sd">        lattice_range: controls the refinement bounds for the lattice parameters. Can be:</span>
+<span class="sd">            - a single float `r` (default behavior): symmetric range `[a - r*a, a + r*a]`</span>
+<span class="sd">            - the string &quot;fixed&quot;: all lattice parameters are held fixed (not refined)</span>
+<span class="sd">            - a tuple `(lo, hi)`: explicit fractional deltas, allowing asymmetric or</span>
+<span class="sd">              one-sided ranges. For example:</span>
+<span class="sd">                * `(-0.1, 0.1)` is equivalent to `0.1` (symmetric)</span>
+<span class="sd">                * `(0.0, 0.1)` confines refinement to only positive deviations</span>
+<span class="sd">                * `(-0.1, 0.0)` confines refinement to only negative deviations</span>
+<span class="sd">                * `(-0.05, 0.2)` allows asymmetric refinement</span>
+<span class="sd">            - a dict mapping a lattice parameter name to any of the above per-parameter</span>
+<span class="sd">              specs, for fine-grained per-parameter control. Valid keys are &quot;A&quot;, &quot;B&quot;,</span>
+<span class="sd">              &quot;C&quot;, &quot;ALPHA&quot;, &quot;BETA&quot;, &quot;GAMMA&quot; (case-insensitive). Use the wildcard key &quot;*&quot;</span>
+<span class="sd">              to set a fallback for any parameter not explicitly listed; if no &quot;*&quot; key is</span>
+<span class="sd">              given, unlisted parameters default to a symmetric 0.1. For example:</span>
+<span class="sd">                * `{&quot;C&quot;: &quot;fixed&quot;, &quot;A&quot;: (-0.05, 0.2), &quot;*&quot;: 0.1}` fixes C, refines A</span>
+<span class="sd">                  asymmetrically, and refines the rest symmetrically at 0.1</span>
+<span class="sd">                * `{&quot;A&quot;: 0.1, &quot;*&quot;: &quot;fixed&quot;}` refines only A and fixes everything else</span>
 <span class="sd">        gewicht: the weight fraction of the phase to be refined. Options: 0_0, SPHAR0, and SPHAR2. If 0_0, then no</span>
 <span class="sd">            preferred orientation. Read more in the BGMN manual.</span>
 <span class="sd">        rp: the peak function to be used in the refinement. Read more in the BGMN manual.</span>
@@ -657,8 +801,16 @@
 <span class="sd">        k2: the second peak parameter to be refined. Read more in the BGMN manual.</span>
 <span class="sd">        b1: the third peak parameter to be refined. Read more in the BGMN manual.</span>
 <span class="sd">        lebail: whether to use the Le Bail method</span>
+<span class="sd">        custom_params: optional list of custom BGMN string parameters to inject. This allows for defining complex</span>
+<span class="sd">            mathematical equations, global parameters, or fractional occupancies</span>
+<span class="sd">            (e.g., [&quot;PARAM=Bglobal=0.05_0.01^0.20 //&quot;, &quot;PARAM=BO=0.1_0.02^0.3 //&quot;]).</span>
+<span class="sd">        custom_params_map: optional dictionary mapping element symbols to dictionaries of parameters to add</span>
+<span class="sd">            or overwrite. You can use the wildcard key &quot;*&quot; to apply parameters to all elements that are not</span>
+<span class="sd">            specifically matched in the dictionary (e.g., {&quot;*&quot;: {&quot;TDS&quot;: &quot;Bglobal&quot;}, &quot;O&quot;: {&quot;TDS&quot;: &quot;BO&quot;, &quot;Occ&quot;: &quot;OccO&quot;}}).</span>
 
-<span class="sd">    An example of the output .str file:</span>
+<span class="sd">    An example of the output .str file when using</span>
+<span class="sd">    custom_params=[&quot;PARAM=Bglobal=0.05_0.01^0.20 //&quot;, &quot;PARAM=BO=0.1_0.02^0.3 //&quot;]</span>
+<span class="sd">    and custom_params_map={&quot;*&quot;: {&quot;TDS&quot;: &quot;Bglobal&quot;}, &quot;O&quot;: {&quot;TDS&quot;: &quot;BO&quot;, &quot;Occ&quot;: &quot;OccO&quot;}}:</span>
 
 <span class="sd">    PHASE=BariumzirconiumtinIVoxide105053 // ICSD_43137</span>
 <span class="sd">    Reference=ICSD_43137 //</span>
@@ -667,9 +819,11 @@
 <span class="sd">    PARAM=A=0.416280_0.412117^0.420443 //</span>
 <span class="sd">    RP=4 k1=0 k2=0 PARAM=B1=0_0^0.01 GEWICHT=SPHAR4 //</span>
 <span class="sd">    GOAL:BariumzirconiumtinIVoxide105053=GEWICHT*ifthenelse(ifdef(d),exp(my*d*3/4),1) //</span>
-<span class="sd">    E=BA+2 Wyckoff=b x=0.500000 y=0.500000 z=0.500000 TDS=0.010000</span>
-<span class="sd">    E=(ZR+4(0.5000),SN+4(0.5000)) Wyckoff=a x=0.000000 y=0.000000 z=0.000000 TDS=0.010000</span>
-<span class="sd">    E=O-2 Wyckoff=d x=0.500000 y=0.000000 z=0.000000 TDS=0.010000</span>
+<span class="sd">    PARAM=Bglobal=0.05_0.01^0.20 //</span>
+<span class="sd">    PARAM=BO=0.1_0.02^0.3 //</span>
+<span class="sd">    E=BA+2 Wyckoff=b x=0.500000 y=0.500000 z=0.500000 TDS=Bglobal</span>
+<span class="sd">    E=(ZR+4(0.5000),SN+4(0.5000)) Wyckoff=a x=0.000000 y=0.000000 z=0.000000 TDS=Bglobal</span>
+<span class="sd">    E=O-2 Wyckoff=d x=0.500000 y=0.000000 z=0.000000 TDS=BO Occ=OccO</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">str_path</span> <span class="o">=</span> <span class="p">(</span>
@@ -739,11 +893,40 @@
     <span class="c1"># add goals</span>
     <span class="n">str_text</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;GOAL:</span><span class="si">{</span><span class="n">phase_name</span><span class="si">}</span><span class="s2">=GEWICHT*ifthenelse(ifdef(d),exp(my*d*3/4),1) //</span><span class="se">\n</span><span class="s2">GOAL=GrainSize(1,1,1) //</span><span class="se">\n</span><span class="s2">&quot;</span>
 
-    <span class="c1"># add wyckoff positions</span>
-    <span class="n">element_settings_str</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">element_setting</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
-        <span class="k">for</span> <span class="n">element_setting</span> <span class="ow">in</span> <span class="n">element_settings</span>
-    <span class="p">]</span>
+    <span class="c1"># add custom params injected from python dict</span>
+    <span class="k">if</span> <span class="n">custom_params</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">custom_params</span><span class="p">:</span>
+            <span class="n">str_text</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+    <span class="k">if</span> <span class="n">custom_params_map</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">custom_params_map</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># add wyckoff positions and overwrite parameters if mapped</span>
+    <span class="n">element_settings_str</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">element_setting</span> <span class="ow">in</span> <span class="n">element_settings</span><span class="p">:</span>
+        <span class="n">element_name</span> <span class="o">=</span> <span class="n">element_setting</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="n">assigned_dict</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># First, check if there is a specific match for this element</span>
+        <span class="k">for</span> <span class="n">element_key</span><span class="p">,</span> <span class="n">custom_dict</span> <span class="ow">in</span> <span class="n">custom_params_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># Use regex with word boundaries to prevent partial matches</span>
+            <span class="c1"># e.g., ensures &quot;O&quot; doesn&#39;t match the &quot;O&quot; in &quot;CO&quot; (Cobalt)</span>
+            <span class="k">if</span> <span class="n">element_key</span> <span class="o">!=</span> <span class="s2">&quot;*&quot;</span> <span class="ow">and</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">rf</span><span class="s2">&quot;\b</span><span class="si">{</span><span class="n">element_key</span><span class="si">}</span><span class="s2">\b&quot;</span><span class="p">,</span> <span class="n">element_name</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">):</span>
+                <span class="n">assigned_dict</span> <span class="o">=</span> <span class="n">custom_dict</span>
+                <span class="k">break</span>
+
+        <span class="c1"># If no specific match was found, check if a wildcard was provided</span>
+        <span class="k">if</span> <span class="n">assigned_dict</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s2">&quot;*&quot;</span> <span class="ow">in</span> <span class="n">custom_params_map</span><span class="p">:</span>
+            <span class="n">assigned_dict</span> <span class="o">=</span> <span class="n">custom_params_map</span><span class="p">[</span><span class="s2">&quot;*&quot;</span><span class="p">]</span>
+
+        <span class="c1"># If we found either a specific match or a wildcard, update the dictionary</span>
+        <span class="k">if</span> <span class="n">assigned_dict</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">element_setting</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">assigned_dict</span><span class="p">)</span>
+
+        <span class="n">line_str</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">element_setting</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+        <span class="n">element_settings_str</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line_str</span><span class="p">)</span>
+
     <span class="n">str_text</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">element_settings_str</span><span class="p">)</span>
 
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">str_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -813,8 +996,8 @@ By Yuxing Fei, Matthew J. McDermott
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb"></script>
 
   <footer class="bd-footer">
   </footer>
