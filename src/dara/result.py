@@ -168,6 +168,9 @@ class RefinementResult(BaseModel):
     lst_data: LstResult
     plot_data: DiaResult = Field(repr=False)
     peak_data: pd.DataFrame = Field(repr=False)
+    missing_peaks: np.ndarray | None = Field(default=None, repr=False)
+    extra_peaks: np.ndarray | None = Field(default=None, repr=False)
+    intensity_mismatch_peaks: np.ndarray | None = Field(default=None, repr=False)
 
     @field_validator("peak_data", mode="before")
     @classmethod
@@ -176,7 +179,10 @@ class RefinementResult(BaseModel):
         return pd.DataFrame(data)
 
     def visualize(self, diff_offset=False):
-        return visualize(self, diff_offset=diff_offset)
+        return visualize(self, diff_offset=diff_offset,
+                         missing_peaks=self.missing_peaks,
+                         extra_peaks=self.extra_peaks,
+                         intensity_mismatch_peaks=self.intensity_mismatch_peaks)
 
     def get_phase_weights(self, normalize=True) -> dict[str, float]:
         """Return the weights for each phase. Default is to normalize and return weight fractions.
