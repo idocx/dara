@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any, Literal
 
 import numpy as np
@@ -19,8 +21,10 @@ INTENSITY_MISMATCH_WINDOW: float = 0.15             # degrees either side of pea
 RESIDUAL_WINDOW_WIDTH: float = 0.5    # degrees 2θ; sliding window width for integrated residual scan
 RESIDUAL_WINDOW_STEP: float = 0.1    # degrees 2θ; step size between window centres
 RESIDUAL_WINDOW_DETECT_FRACTION: float = 0.003  # per-window detection floor for forming/merging candidate regions
-RESIDUAL_INTEGRAL_FRACTION: float = 0.010       # merged-region threshold: flag only if total >= this fraction of total integrated obs
-RESIDUAL_CALC_COVERAGE_RATIO: float = 0.35      # suppress merged region if integrated(calc-bkg)/integrated(obs-bkg) >= this
+# merged-region threshold: flag only if total >= this fraction of total integrated obs
+RESIDUAL_INTEGRAL_FRACTION: float = 0.010
+# suppress merged region if integrated(calc-bkg)/integrated(obs-bkg) >= this
+RESIDUAL_CALC_COVERAGE_RATIO: float = 0.35
 
 
 def absolute_log_error(x: np.ndarray, y: np.ndarray) -> np.ndarray:
@@ -739,7 +743,6 @@ def find_residual_regions(
     for s, e in merged:
         mask = (profile_x >= s) & (profile_x <= e)
         seg_res      = positive_residual[mask]
-        seg_x        = profile_x[mask]
         merged_integ = float(np.sum(seg_res)) * dx
         if merged_integ < region_threshold:
             continue
@@ -781,10 +784,7 @@ def find_intensity_mismatch_peaks(
     profile_x      = np.asarray(profile_x,      dtype=float)
     profile_y_obs  = np.asarray(profile_y_obs,  dtype=float)
     profile_y_calc = np.asarray(profile_y_calc, dtype=float)
-    if profile_y_bkg is None:
-        profile_y_bkg = np.zeros_like(profile_y_obs)
-    else:
-        profile_y_bkg = np.asarray(profile_y_bkg, dtype=float)
+    profile_y_bkg = np.zeros_like(profile_y_obs) if profile_y_bkg is None else np.asarray(profile_y_bkg, dtype=float)
 
     dx   = float(profile_x[1] - profile_x[0]) if len(profile_x) > 1 else 0.01
     h_lo = 1.0 - height_tolerance
@@ -795,7 +795,7 @@ def find_intensity_mismatch_peaks(
     seen_obs: set[int] = set()
     flagged: list[list[float]] = []
 
-    for c_idx, o_idx in matched_pairs:
+    for _c_idx, o_idx in matched_pairs:
         if o_idx in seen_obs:
             continue
         seen_obs.add(o_idx)

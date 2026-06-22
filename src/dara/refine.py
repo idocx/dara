@@ -83,8 +83,10 @@ def _attach_peak_markers(
     """Run the full peak-matching pipeline and store results on *result* in-place."""
     from dara.peak_detection import detect_peaks
     from dara.search.peak_matcher import (
-        PeakMatcher, find_intensity_mismatch_peaks,
-        find_residual_regions, suppress_coincident_marker_pairs,
+        PeakMatcher,
+        find_intensity_mismatch_peaks,
+        find_residual_regions,
+        suppress_coincident_marker_pairs,
     )
 
     edf      = detect_peaks(str(pattern_path), wavelength=wavelength,
