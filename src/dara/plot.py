@@ -16,7 +16,14 @@ def visualize(
     extra_peaks: list[list[float]] | np.ndarray | None = None,
     intensity_mismatch_peaks: list[list[float]] | np.ndarray | None = None,
 ):
-    """Visualize the result from the refinement. It uses plotly as the backend engine."""
+    """Visualize the result from the refinement. It uses plotly as the backend engine.
+
+    Args:
+        intensity_mismatch_peaks: optional (N, 2) array of [2theta, 0.0] markers
+            for matched peaks whose calculated height/area deviates from
+            observed; drawn the same way as ``missing_peaks``/``extra_peaks``
+            when provided.
+    """
     colormap = [
         "#1f77b4",
         "#ff7f0e",
@@ -161,6 +168,7 @@ def visualize(
                 mode="markers",
                 marker=dict(color="#f9726a", symbol=53, size=10, opacity=0.8),
                 name="Missing peaks",
+                showlegend=True,
                 visible="legendonly",
                 text=[f"{x:.2f}, {y:.2f}" for x, y in missing_peaks],
             )
@@ -175,6 +183,7 @@ def visualize(
                 mode="markers",
                 marker=dict(color="#335da0", symbol=53, size=10, opacity=0.8),
                 name="Extra peaks",
+                showlegend=True,
                 visible="legendonly",
                 text=[f"{x:.2f}, {y:.2f}" for x, y in extra_peaks],
                 hovertemplate="%{text}",
@@ -190,6 +199,7 @@ def visualize(
                 mode="markers",
                 marker=dict(color="#FFD700", symbol=53, size=10, opacity=0.8),
                 name="Intensity mismatch",
+                showlegend=True,
                 visible="legendonly",
                 text=[f"{x:.2f}, {y:.2f}" for x, y in intensity_mismatch_peaks],
                 hovertemplate="%{text}",

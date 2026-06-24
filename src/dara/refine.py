@@ -13,7 +13,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from dara.bgmn_worker import BGMNWorker
 from dara.cif2str import cif2str
 from dara.generate_control_file import generate_control_file
-from dara.result import RefinementResult, get_result
+from dara.result import RefinementMetrics, RefinementResult, get_result
 from dara.xrd import convert_pattern_to_xy
 
 
@@ -80,7 +80,30 @@ def _attach_peak_markers(
     intensity_mismatch_height_tolerance: float = 0.40,
     intensity_mismatch_area_tolerance: float = 0.60,
 ) -> None:
-    """Run the full peak-matching pipeline and store results on *result* in-place."""
+    """Run the full peak-matching pipeline and store results on *result* in-place.
+
+    Detects observed peaks, matches them against the refined calc pattern, and
+    stores the resulting missing/extra/intensity-mismatch markers (plus rwp) on
+    ``result.refinement_metrics``.
+
+    Args:
+        use_residual: whether to additionally flag broad unfit regions via the
+            integrated-residual scan (see ``find_residual_regions``).
+        residual_integral_fraction: passed through to ``find_residual_regions``
+            as ``integral_fraction``.
+        residual_calc_coverage_ratio: passed through to ``find_residual_regions``
+            as ``calc_coverage_ratio``.
+        residual_window_detect_fraction: passed through to
+            ``find_residual_regions`` as ``window_detect_fraction``.
+        missing_intensity_ratio: minimum intensity ratio for isolated missing
+            peaks (see ``PeakMatcher.get_isolated_peaks``).
+        extra_intensity_ratio: minimum intensity ratio for isolated extra peaks
+            (see ``PeakMatcher.get_isolated_peaks``).
+        intensity_mismatch_height_tolerance: passed through to
+            ``find_intensity_mismatch_peaks`` as ``height_tolerance``.
+        intensity_mismatch_area_tolerance: passed through to
+            ``find_intensity_mismatch_peaks`` as ``area_tolerance``.
+    """
     from dara.peak_detection import detect_peaks
     from dara.search.peak_matcher import (
         PeakMatcher,
@@ -130,9 +153,12 @@ def _attach_peak_markers(
         area_tolerance=intensity_mismatch_area_tolerance,
     )
 
-    result.missing_peaks            = miss_combined if len(miss_combined) else None
-    result.extra_peaks              = extra_f if len(extra_f) else None
-    result.intensity_mismatch_peaks = mismatch if len(mismatch) else None
+    result.refinement_metrics = RefinementMetrics(
+        missing_peaks=miss_combined if len(miss_combined) else None,
+        extra_peaks=extra_f if len(extra_f) else None,
+        intensity_mismatch_peaks=mismatch if len(mismatch) else None,
+        rwp=result.lst_data.rwp,
+    )
 
 
 def do_refinement(
@@ -153,7 +179,18 @@ def do_refinement(
     intensity_mismatch_height_tolerance: float = 0.40,
     intensity_mismatch_area_tolerance: float = 0.60,
 ) -> RefinementResult:
-    """Refine the structure using BGMN."""
+    """Refine the structure using BGMN.
+
+    Args:
+        use_residual: see ``_attach_peak_markers``.
+        residual_integral_fraction: see ``_attach_peak_markers``.
+        residual_calc_coverage_ratio: see ``_attach_peak_markers``.
+        residual_window_detect_fraction: see ``_attach_peak_markers``.
+        missing_intensity_ratio: see ``_attach_peak_markers``.
+        extra_intensity_ratio: see ``_attach_peak_markers``.
+        intensity_mismatch_height_tolerance: see ``_attach_peak_markers``.
+        intensity_mismatch_area_tolerance: see ``_attach_peak_markers``.
+    """
     pattern_path = Path(pattern_path)
     working_dir = (
         Path(working_dir)
@@ -230,7 +267,18 @@ def do_refinement_no_saving(
     intensity_mismatch_height_tolerance: float = 0.40,
     intensity_mismatch_area_tolerance: float = 0.60,
 ) -> RefinementResult:
-    """Refine the structure using BGMN in a temporary directory without saving."""
+    """Refine the structure using BGMN in a temporary directory without saving.
+
+    Args:
+        use_residual: see ``_attach_peak_markers``.
+        residual_integral_fraction: see ``_attach_peak_markers``.
+        residual_calc_coverage_ratio: see ``_attach_peak_markers``.
+        residual_window_detect_fraction: see ``_attach_peak_markers``.
+        missing_intensity_ratio: see ``_attach_peak_markers``.
+        extra_intensity_ratio: see ``_attach_peak_markers``.
+        intensity_mismatch_height_tolerance: see ``_attach_peak_markers``.
+        intensity_mismatch_area_tolerance: see ``_attach_peak_markers``.
+    """
     with tempfile.TemporaryDirectory() as tmpdir:
         return do_refinement(
             pattern_path=pattern_path,

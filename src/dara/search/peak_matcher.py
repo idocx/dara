@@ -234,6 +234,16 @@ class PeakMatcher:
         intensity_tolerance: the maximum ratio of the intensities, default to 2
         max_intensity_tolerance: the maximum ratio of the intensities to be considered as missing or extra,
             default to 10
+        profile_x: 2θ grid (degrees) for the full diffraction profile. When this and
+            the three profile_y_* args are all given, matched peaks are re-examined
+            against the profile (see ``_reclassify_wrong_intensity_by_height`` and
+            ``_relocate_extra_to_apex``); omit all four to skip this step.
+        profile_y_calc: calculated profile on ``profile_x``.
+        profile_y_obs: observed profile on ``profile_x``.
+        profile_y_bkg: background profile on ``profile_x``.
+        height_ratio_threshold: passed to ``_reclassify_wrong_intensity_by_height``;
+            wrong_intensity pairs whose calc/obs profile-height ratio falls below
+            this are reclassified as missing+extra instead.
     """
 
     def __init__(
@@ -600,6 +610,10 @@ def suppress_coincident_marker_pairs(
     Near-coincident missing+extra pairs indicate refinement position wobble: the
     model placed a reflection slightly off-angle rather than genuinely missing it.
     Both markers are dropped.
+
+    Returns
+    -------
+        (missing_peaks, extra_peaks) with coincident pairs removed, same shapes
     """
     missing_peaks = np.asarray(missing_peaks).reshape(-1, 2)
     extra_peaks   = np.asarray(extra_peaks).reshape(-1, 2)
@@ -775,7 +789,20 @@ def find_intensity_mismatch_peaks(
     area band:   [1 - area_tolerance,   1 + area_tolerance]
     Flags if either band is violated.
 
-    Returns (N, 2) with [obs_2theta, 0.0], same shape as missing_peaks.
+    Args:
+        pm: the PeakMatcher holding the matched calc/obs peak pairs.
+        profile_x: 2θ grid (degrees), uniformly spaced.
+        profile_y_obs: observed counts on that grid.
+        profile_y_calc: calculated profile on that grid.
+        profile_y_bkg: background on that grid. When None, zeros are used.
+        height_tolerance: half-width of the height band (default 0.40).
+        area_tolerance: half-width of the area band (default 0.60).
+        window: degrees either side of the peak apex used for height/area
+            integration (default 0.15).
+
+    Returns
+    -------
+        (N, 2) array of [obs_2theta, 0.0], same shape as missing_peaks
     """
     matched_pairs = pm._result["matched"]
     if not matched_pairs:
