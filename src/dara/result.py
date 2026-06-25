@@ -160,14 +160,34 @@ class DiaResult(BaseModel):
     structs: dict[str, list[float]]
 
 
+class RefinementMetrics(BaseModel):
+    """Derived peak-matching diagnostics and refinement quality metrics.
+
+    Holds the missing/extra/intensity-mismatch peak markers produced by peak
+    matching after a refinement, plus the refinement's Rwp.
+    """
+
+    model_config = ConfigDict(arbitrary_types_allowed=True, populate_by_name=True)
+
+    missing_peaks: np.ndarray | None = Field(default=None, repr=False)
+    extra_peaks: np.ndarray | None = Field(default=None, repr=False)
+    intensity_mismatch_peaks: np.ndarray | None = Field(default=None, repr=False)
+    rwp: float
+
+
 class RefinementResult(BaseModel):
-    """The result from the refinement, which is parsed from the .lst and .dia files."""
+    """The result from the refinement, which is parsed from the .lst and .dia files.
+
+    ``refinement_metrics`` holds the peak-matching diagnostics attached after
+    refinement (see ``RefinementMetrics``).
+    """
 
     model_config = ConfigDict(arbitrary_types_allowed=True, populate_by_name=True)
 
     lst_data: LstResult
     plot_data: DiaResult = Field(repr=False)
     peak_data: pd.DataFrame = Field(repr=False)
+    refinement_metrics: RefinementMetrics
 
     @field_validator("peak_data", mode="before")
     @classmethod
@@ -175,7 +195,31 @@ class RefinementResult(BaseModel):
         """Create pandas dataframe from peak data dict."""
         return pd.DataFrame(data)
 
-    def visualize(self, diff_offset=False):
+    def visualize(self, diff_offset=False, plot_refinement_metrics: bool = True):
+        """Visualize the refinement result with plotly.
+
+        Args:
+            diff_offset: passed through to ``dara.plot.visualize``.
+            plot_refinement_metrics: when True (default) and ``refinement_metrics``
+                is present, draw its missing/extra/intensity-mismatch peak markers.
+                When False, or when ``refinement_metrics`` is unavailable, no peak
+                markers are drawn.
+
+        Returns
+        -------
+            the plotly ``Figure`` for the refinement plot
+        """
+        metrics = getattr(self, "refinement_metrics", None)
+        if metrics is not None and plot_refinement_metrics:
+            # A trace with zero points never appears in the legend even with
+            # showlegend=True, so an empty category gets a single non-rendering
+            # NaN point instead, just to keep its legend entry toggleable.
+            placeholder = np.array([[np.nan, np.nan]])
+            return visualize(self, diff_offset=diff_offset,
+                             missing_peaks=metrics.missing_peaks if metrics.missing_peaks is not None else placeholder,
+                             extra_peaks=metrics.extra_peaks if metrics.extra_peaks is not None else placeholder,
+                             intensity_mismatch_peaks=metrics.intensity_mismatch_peaks
+                             if metrics.intensity_mismatch_peaks is not None else placeholder)
         return visualize(self, diff_offset=diff_offset)
 
     def get_phase_weights(self, normalize=True) -> dict[str, float]:
@@ -251,10 +295,12 @@ def get_result(control_file: Path) -> RefinementResult:
         dia_path = control_file.parent / f"{control_file.stem}.dia"
         par_path = control_file.parent / f"{control_file.stem}.par"
 
+        lst_data = parse_lst(lst_path, phase_names=phase_names)
         result = {
-            "lst_data": parse_lst(lst_path, phase_names=phase_names),
+            "lst_data": lst_data,
             "plot_data": parse_dia(dia_path, phase_names=phase_names),
             "peak_data": parse_par(par_path, phase_names=phase_names),
+            "refinement_metrics": RefinementMetrics(rwp=lst_data.rwp),
         }
 
         return RefinementResult(**result)
