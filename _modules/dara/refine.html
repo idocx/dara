@@ -402,12 +402,13 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">field_validator</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">dara.bgmn_worker</span><span class="w"> </span><span class="kn">import</span> <span class="n">BGMNWorker</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dara.cif2str</span><span class="w"> </span><span class="kn">import</span> <span class="n">cif2str</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dara.generate_control_file</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_control_file</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dara.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">RefinementResult</span><span class="p">,</span> <span class="n">get_result</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dara.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">RefinementMetrics</span><span class="p">,</span> <span class="n">RefinementResult</span><span class="p">,</span> <span class="n">get_result</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dara.xrd</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert_pattern_to_xy</span>
 
 
@@ -466,6 +467,101 @@
 
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_attach_peak_markers</span><span class="p">(</span>
+    <span class="n">result</span><span class="p">:</span> <span class="n">RefinementResult</span><span class="p">,</span>
+    <span class="n">pattern_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+    <span class="n">wavelength</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;Cu&quot;</span><span class="p">,</span> <span class="s2">&quot;Co&quot;</span><span class="p">,</span> <span class="s2">&quot;Cr&quot;</span><span class="p">,</span> <span class="s2">&quot;Fe&quot;</span><span class="p">,</span> <span class="s2">&quot;Mo&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">instrument_profile</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span>
+    <span class="n">use_residual</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">residual_integral_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.010</span><span class="p">,</span>
+    <span class="n">residual_calc_coverage_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.35</span><span class="p">,</span>
+    <span class="n">residual_window_detect_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.003</span><span class="p">,</span>
+    <span class="n">missing_intensity_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.005</span><span class="p">,</span>
+    <span class="n">extra_intensity_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.03</span><span class="p">,</span>
+    <span class="n">intensity_mismatch_height_tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.40</span><span class="p">,</span>
+    <span class="n">intensity_mismatch_area_tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.60</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run the full peak-matching pipeline and store results on *result* in-place.</span>
+
+<span class="sd">    Detects observed peaks, matches them against the refined calc pattern, and</span>
+<span class="sd">    stores the resulting missing/extra/intensity-mismatch markers (plus rwp) on</span>
+<span class="sd">    ``result.refinement_metrics``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        use_residual: whether to additionally flag broad unfit regions via the</span>
+<span class="sd">            integrated-residual scan (see ``find_residual_regions``).</span>
+<span class="sd">        residual_integral_fraction: passed through to ``find_residual_regions``</span>
+<span class="sd">            as ``integral_fraction``.</span>
+<span class="sd">        residual_calc_coverage_ratio: passed through to ``find_residual_regions``</span>
+<span class="sd">            as ``calc_coverage_ratio``.</span>
+<span class="sd">        residual_window_detect_fraction: passed through to</span>
+<span class="sd">            ``find_residual_regions`` as ``window_detect_fraction``.</span>
+<span class="sd">        missing_intensity_ratio: minimum intensity ratio for isolated missing</span>
+<span class="sd">            peaks (see ``PeakMatcher.get_isolated_peaks``).</span>
+<span class="sd">        extra_intensity_ratio: minimum intensity ratio for isolated extra peaks</span>
+<span class="sd">            (see ``PeakMatcher.get_isolated_peaks``).</span>
+<span class="sd">        intensity_mismatch_height_tolerance: passed through to</span>
+<span class="sd">            ``find_intensity_mismatch_peaks`` as ``height_tolerance``.</span>
+<span class="sd">        intensity_mismatch_area_tolerance: passed through to</span>
+<span class="sd">            ``find_intensity_mismatch_peaks`` as ``area_tolerance``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">dara.peak_detection</span><span class="w"> </span><span class="kn">import</span> <span class="n">detect_peaks</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">dara.search.peak_matcher</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+        <span class="n">PeakMatcher</span><span class="p">,</span>
+        <span class="n">find_intensity_mismatch_peaks</span><span class="p">,</span>
+        <span class="n">find_residual_regions</span><span class="p">,</span>
+        <span class="n">suppress_coincident_marker_pairs</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">edf</span>      <span class="o">=</span> <span class="n">detect_peaks</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">pattern_path</span><span class="p">),</span> <span class="n">wavelength</span><span class="o">=</span><span class="n">wavelength</span><span class="p">,</span>
+                            <span class="n">instrument_profile</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">instrument_profile</span><span class="p">))</span>
+    <span class="n">obs_raw</span>  <span class="o">=</span> <span class="n">edf</span><span class="p">[[</span><span class="s2">&quot;2theta&quot;</span><span class="p">,</span> <span class="s2">&quot;intensity&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">calc_raw</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">peak_data</span><span class="p">[[</span><span class="s2">&quot;2theta&quot;</span><span class="p">,</span> <span class="s2">&quot;intensity&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+
+    <span class="n">px</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">plot_data</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">yobs</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">plot_data</span><span class="o">.</span><span class="n">y_obs</span><span class="p">)</span>
+    <span class="n">ycalc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">plot_data</span><span class="o">.</span><span class="n">y_calc</span><span class="p">)</span>
+    <span class="n">ybkg</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">plot_data</span><span class="o">.</span><span class="n">y_bkg</span><span class="p">)</span>
+
+    <span class="n">pm</span> <span class="o">=</span> <span class="n">PeakMatcher</span><span class="p">(</span><span class="n">calc_raw</span><span class="p">,</span> <span class="n">obs_raw</span><span class="p">,</span> <span class="n">intensity_resolution</span><span class="o">=</span><span class="mf">0.005</span><span class="p">,</span>
+                     <span class="n">profile_x</span><span class="o">=</span><span class="n">px</span><span class="p">,</span> <span class="n">profile_y_calc</span><span class="o">=</span><span class="n">ycalc</span><span class="p">,</span>
+                     <span class="n">profile_y_obs</span><span class="o">=</span><span class="n">yobs</span><span class="p">,</span> <span class="n">profile_y_bkg</span><span class="o">=</span><span class="n">ybkg</span><span class="p">)</span>
+    <span class="n">miss_f</span><span class="p">,</span> <span class="n">extra_f</span> <span class="o">=</span> <span class="n">suppress_coincident_marker_pairs</span><span class="p">(</span>
+        <span class="n">pm</span><span class="o">.</span><span class="n">get_isolated_peaks</span><span class="p">(</span><span class="s2">&quot;missing&quot;</span><span class="p">,</span> <span class="n">min_intensity_ratio</span><span class="o">=</span><span class="n">missing_intensity_ratio</span><span class="p">),</span>
+        <span class="n">pm</span><span class="o">.</span><span class="n">get_isolated_peaks</span><span class="p">(</span><span class="s2">&quot;extra&quot;</span><span class="p">,</span>   <span class="n">min_intensity_ratio</span><span class="o">=</span><span class="n">extra_intensity_ratio</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="p">(</span><span class="n">miss_f</span><span class="p">,</span> <span class="n">extra_f</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)]</span>
+    <span class="n">known</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="k">if</span> <span class="n">parts</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="n">residual</span> <span class="o">=</span> <span class="n">find_residual_regions</span><span class="p">(</span>
+        <span class="n">px</span><span class="p">,</span> <span class="n">yobs</span><span class="p">,</span> <span class="n">ycalc</span><span class="p">,</span>
+        <span class="n">profile_y_bkg</span><span class="o">=</span><span class="n">ybkg</span><span class="p">,</span>
+        <span class="n">matched_peak_positions</span><span class="o">=</span><span class="n">known</span><span class="p">,</span>
+        <span class="n">enabled</span><span class="o">=</span><span class="n">use_residual</span><span class="p">,</span>
+        <span class="n">window_detect_fraction</span><span class="o">=</span><span class="n">residual_window_detect_fraction</span><span class="p">,</span>
+        <span class="n">integral_fraction</span><span class="o">=</span><span class="n">residual_integral_fraction</span><span class="p">,</span>
+        <span class="n">calc_coverage_ratio</span><span class="o">=</span><span class="n">residual_calc_coverage_ratio</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">miss_combined</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">miss_f</span><span class="p">,</span> <span class="n">residual</span><span class="p">])</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">residual</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">miss_f</span><span class="p">)</span> <span class="k">else</span> <span class="p">(</span>
+        <span class="n">residual</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">residual</span><span class="p">)</span> <span class="k">else</span> <span class="n">miss_f</span>
+    <span class="p">)</span>
+
+    <span class="n">mismatch</span> <span class="o">=</span> <span class="n">find_intensity_mismatch_peaks</span><span class="p">(</span>
+        <span class="n">pm</span><span class="p">,</span> <span class="n">px</span><span class="p">,</span> <span class="n">yobs</span><span class="p">,</span> <span class="n">ycalc</span><span class="p">,</span> <span class="n">profile_y_bkg</span><span class="o">=</span><span class="n">ybkg</span><span class="p">,</span>
+        <span class="n">height_tolerance</span><span class="o">=</span><span class="n">intensity_mismatch_height_tolerance</span><span class="p">,</span>
+        <span class="n">area_tolerance</span><span class="o">=</span><span class="n">intensity_mismatch_area_tolerance</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="n">refinement_metrics</span> <span class="o">=</span> <span class="n">RefinementMetrics</span><span class="p">(</span>
+        <span class="n">missing_peaks</span><span class="o">=</span><span class="n">miss_combined</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">miss_combined</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">extra_peaks</span><span class="o">=</span><span class="n">extra_f</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">extra_f</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">intensity_mismatch_peaks</span><span class="o">=</span><span class="n">mismatch</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mismatch</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">rwp</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">lst_data</span><span class="o">.</span><span class="n">rwp</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
 <div class="viewcode-block" id="do_refinement">
 <a class="viewcode-back" href="../../dara.refine.html#dara.refine.do_refinement">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">do_refinement</span><span class="p">(</span>
@@ -477,8 +573,27 @@
     <span class="n">phase_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">refinement_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">show_progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">use_residual</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">residual_integral_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.010</span><span class="p">,</span>
+    <span class="n">residual_calc_coverage_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.35</span><span class="p">,</span>
+    <span class="n">residual_window_detect_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.003</span><span class="p">,</span>
+    <span class="n">missing_intensity_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.005</span><span class="p">,</span>
+    <span class="n">extra_intensity_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.03</span><span class="p">,</span>
+    <span class="n">intensity_mismatch_height_tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.40</span><span class="p">,</span>
+    <span class="n">intensity_mismatch_area_tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.60</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RefinementResult</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Refine the structure using BGMN.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Refine the structure using BGMN.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        use_residual: see ``_attach_peak_markers``.</span>
+<span class="sd">        residual_integral_fraction: see ``_attach_peak_markers``.</span>
+<span class="sd">        residual_calc_coverage_ratio: see ``_attach_peak_markers``.</span>
+<span class="sd">        residual_window_detect_fraction: see ``_attach_peak_markers``.</span>
+<span class="sd">        missing_intensity_ratio: see ``_attach_peak_markers``.</span>
+<span class="sd">        extra_intensity_ratio: see ``_attach_peak_markers``.</span>
+<span class="sd">        intensity_mismatch_height_tolerance: see ``_attach_peak_markers``.</span>
+<span class="sd">        intensity_mismatch_area_tolerance: see ``_attach_peak_markers``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">pattern_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pattern_path</span><span class="p">)</span>
     <span class="n">working_dir</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">Path</span><span class="p">(</span><span class="n">working_dir</span><span class="p">)</span>
@@ -503,7 +618,6 @@
         <span class="n">phase</span> <span class="o">=</span> <span class="n">RefinementPhase</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="n">phase_path</span><span class="p">)</span>
         <span class="n">phase_path_</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">path</span>
         <span class="n">phase_params_</span> <span class="o">=</span> <span class="n">phase_params</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="c1"># Update the default phase parameters with the specific parameters for the phase</span>
         <span class="n">phase_params_</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">phase</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">phase_path_</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.cif&quot;</span><span class="p">:</span>
             <span class="n">str_path</span> <span class="o">=</span> <span class="n">cif2str</span><span class="p">(</span><span class="n">phase_path_</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">working_dir</span><span class="p">,</span> <span class="o">**</span><span class="n">phase_params_</span><span class="p">)</span>
@@ -524,7 +638,19 @@
 
     <span class="n">bgmn_worker</span> <span class="o">=</span> <span class="n">BGMNWorker</span><span class="p">()</span>
     <span class="n">bgmn_worker</span><span class="o">.</span><span class="n">run_refinement_cmd</span><span class="p">(</span><span class="n">control_file_path</span><span class="p">,</span> <span class="n">show_progress</span><span class="o">=</span><span class="n">show_progress</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">get_result</span><span class="p">(</span><span class="n">control_file_path</span><span class="p">)</span></div>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">get_result</span><span class="p">(</span><span class="n">control_file_path</span><span class="p">)</span>
+    <span class="n">_attach_peak_markers</span><span class="p">(</span>
+        <span class="n">result</span><span class="p">,</span> <span class="n">pattern_path</span><span class="p">,</span> <span class="n">wavelength</span><span class="p">,</span> <span class="n">instrument_profile</span><span class="p">,</span>
+        <span class="n">use_residual</span><span class="o">=</span><span class="n">use_residual</span><span class="p">,</span>
+        <span class="n">residual_integral_fraction</span><span class="o">=</span><span class="n">residual_integral_fraction</span><span class="p">,</span>
+        <span class="n">residual_calc_coverage_ratio</span><span class="o">=</span><span class="n">residual_calc_coverage_ratio</span><span class="p">,</span>
+        <span class="n">residual_window_detect_fraction</span><span class="o">=</span><span class="n">residual_window_detect_fraction</span><span class="p">,</span>
+        <span class="n">missing_intensity_ratio</span><span class="o">=</span><span class="n">missing_intensity_ratio</span><span class="p">,</span>
+        <span class="n">extra_intensity_ratio</span><span class="o">=</span><span class="n">extra_intensity_ratio</span><span class="p">,</span>
+        <span class="n">intensity_mismatch_height_tolerance</span><span class="o">=</span><span class="n">intensity_mismatch_height_tolerance</span><span class="p">,</span>
+        <span class="n">intensity_mismatch_area_tolerance</span><span class="o">=</span><span class="n">intensity_mismatch_area_tolerance</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span></div>
 
 
 
@@ -538,20 +664,45 @@
     <span class="n">phase_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">refinement_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">show_progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">use_residual</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">residual_integral_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.010</span><span class="p">,</span>
+    <span class="n">residual_calc_coverage_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.35</span><span class="p">,</span>
+    <span class="n">residual_window_detect_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.003</span><span class="p">,</span>
+    <span class="n">missing_intensity_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.005</span><span class="p">,</span>
+    <span class="n">extra_intensity_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.03</span><span class="p">,</span>
+    <span class="n">intensity_mismatch_height_tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.40</span><span class="p">,</span>
+    <span class="n">intensity_mismatch_area_tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.60</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RefinementResult</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Refine the structure using BGMN in a temporary directory without saving.&quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdir</span><span class="p">:</span>
-        <span class="n">working_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Refine the structure using BGMN in a temporary directory without saving.</span>
 
+<span class="sd">    Args:</span>
+<span class="sd">        use_residual: see ``_attach_peak_markers``.</span>
+<span class="sd">        residual_integral_fraction: see ``_attach_peak_markers``.</span>
+<span class="sd">        residual_calc_coverage_ratio: see ``_attach_peak_markers``.</span>
+<span class="sd">        residual_window_detect_fraction: see ``_attach_peak_markers``.</span>
+<span class="sd">        missing_intensity_ratio: see ``_attach_peak_markers``.</span>
+<span class="sd">        extra_intensity_ratio: see ``_attach_peak_markers``.</span>
+<span class="sd">        intensity_mismatch_height_tolerance: see ``_attach_peak_markers``.</span>
+<span class="sd">        intensity_mismatch_area_tolerance: see ``_attach_peak_markers``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdir</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">do_refinement</span><span class="p">(</span>
             <span class="n">pattern_path</span><span class="o">=</span><span class="n">pattern_path</span><span class="p">,</span>
             <span class="n">phases</span><span class="o">=</span><span class="n">phases</span><span class="p">,</span>
             <span class="n">wavelength</span><span class="o">=</span><span class="n">wavelength</span><span class="p">,</span>
             <span class="n">instrument_profile</span><span class="o">=</span><span class="n">instrument_profile</span><span class="p">,</span>
-            <span class="n">working_dir</span><span class="o">=</span><span class="n">working_dir</span><span class="p">,</span>
+            <span class="n">working_dir</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">),</span>
             <span class="n">phase_params</span><span class="o">=</span><span class="n">phase_params</span><span class="p">,</span>
             <span class="n">refinement_params</span><span class="o">=</span><span class="n">refinement_params</span><span class="p">,</span>
             <span class="n">show_progress</span><span class="o">=</span><span class="n">show_progress</span><span class="p">,</span>
+            <span class="n">use_residual</span><span class="o">=</span><span class="n">use_residual</span><span class="p">,</span>
+            <span class="n">residual_integral_fraction</span><span class="o">=</span><span class="n">residual_integral_fraction</span><span class="p">,</span>
+            <span class="n">residual_calc_coverage_ratio</span><span class="o">=</span><span class="n">residual_calc_coverage_ratio</span><span class="p">,</span>
+            <span class="n">residual_window_detect_fraction</span><span class="o">=</span><span class="n">residual_window_detect_fraction</span><span class="p">,</span>
+            <span class="n">missing_intensity_ratio</span><span class="o">=</span><span class="n">missing_intensity_ratio</span><span class="p">,</span>
+            <span class="n">extra_intensity_ratio</span><span class="o">=</span><span class="n">extra_intensity_ratio</span><span class="p">,</span>
+            <span class="n">intensity_mismatch_height_tolerance</span><span class="o">=</span><span class="n">intensity_mismatch_height_tolerance</span><span class="p">,</span>
+            <span class="n">intensity_mismatch_area_tolerance</span><span class="o">=</span><span class="n">intensity_mismatch_area_tolerance</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 </pre></div>

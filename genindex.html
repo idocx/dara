@@ -843,10 +843,10 @@
 </li>
       <li><a href="dara.search.tree.html#dara.search.tree.BaseSearchTree.expand_node">expand_node() (BaseSearchTree method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dara.search.tree.html#dara.search.tree.BaseSearchTree.expand_root">expand_root() (BaseSearchTree method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dara.result.html#dara.result.RefinementResult.export_structure">export_structure() (RefinementResult method)</a>
 </li>
       <li><a href="dara.search.peak_matcher.html#dara.search.peak_matcher.PeakMatcher.extra">extra (PeakMatcher property)</a>
@@ -856,6 +856,8 @@
       <li><a href="dara.schema.html#dara.schema.PhaseSearchDocument.extra_peaks">extra_peaks (PhaseSearchDocument attribute)</a>
 
       <ul>
+        <li><a href="dara.result.html#dara.result.RefinementMetrics.extra_peaks">(RefinementMetrics attribute)</a>
+</li>
         <li><a href="dara.search.data_model.html#dara.search.data_model.SearchResult.extra_peaks">(SearchResult attribute)</a>
 </li>
       </ul></li>
@@ -871,9 +873,13 @@
 </li>
       <li><a href="dara.search.peak_matcher.html#dara.search.peak_matcher.find_best_match">find_best_match() (in module dara.search.peak_matcher)</a>
 </li>
+      <li><a href="dara.search.peak_matcher.html#dara.search.peak_matcher.find_intensity_mismatch_peaks">find_intensity_mismatch_peaks() (in module dara.search.peak_matcher)</a>
+</li>
       <li><a href="dara.utils.html#dara.utils.find_optimal_intensity_threshold">find_optimal_intensity_threshold() (in module dara.utils)</a>
 </li>
       <li><a href="dara.utils.html#dara.utils.find_optimal_score_threshold">find_optimal_score_threshold() (in module dara.utils)</a>
+</li>
+      <li><a href="dara.search.peak_matcher.html#dara.search.peak_matcher.find_residual_regions">find_residual_regions() (in module dara.search.peak_matcher)</a>
 </li>
       <li><a href="dara.search.data_model.html#dara.search.data_model.SearchNodeData.fom">fom (SearchNodeData attribute)</a>
 </li>
@@ -883,6 +889,8 @@
         <li><a href="dara.search.data_model.html#dara.search.data_model.SearchResult.foms">(SearchResult attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dara.cif.html#dara.cif.Cif.from_file">from_file() (Cif class method)</a>
 
       <ul>
@@ -897,8 +905,6 @@
         <li><a href="dara.xrd.html#dara.xrd.XYFile.from_file">(XYFile class method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dara.search.tree.html#dara.search.tree.BaseSearchTree.from_search_tree">from_search_tree() (BaseSearchTree class method)</a>
 </li>
       <li><a href="dara.cif.html#dara.cif.Cif.from_str">from_str() (Cif class method)</a>
@@ -1055,11 +1061,13 @@
 </li>
       <li><a href="dara.schema.html#dara.schema.RefinementDocument.instrument_name">instrument_name (RefinementDocument attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dara.xrd.html#dara.xrd.XRDData.intensities">intensities (XRDData property)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dara.utils.html#dara.utils.intensity_correction">intensity_correction() (in module dara.utils)</a>
+</li>
+      <li><a href="dara.result.html#dara.result.RefinementMetrics.intensity_mismatch_peaks">intensity_mismatch_peaks (RefinementMetrics attribute)</a>
 </li>
       <li><a href="dara.search.data_model.html#dara.search.data_model.SearchNodeData.isolated_extra_peaks">isolated_extra_peaks (SearchNodeData attribute)</a>
 </li>
@@ -1154,6 +1162,8 @@
       <li><a href="dara.schema.html#dara.schema.PhaseSearchDocument.missing_peaks">missing_peaks (PhaseSearchDocument attribute)</a>
 
       <ul>
+        <li><a href="dara.result.html#dara.result.RefinementMetrics.missing_peaks">(RefinementMetrics attribute)</a>
+</li>
         <li><a href="dara.search.data_model.html#dara.search.data_model.SearchResult.missing_peaks">(SearchResult attribute)</a>
 </li>
       </ul></li>
@@ -1392,6 +1402,8 @@
 </li>
       <li><a href="dara.search.tree.html#dara.search.tree.BaseSearchTree.refine_phases">refine_phases() (BaseSearchTree method)</a>
 </li>
+      <li><a href="dara.result.html#dara.result.RefinementResult.refinement_metrics">refinement_metrics (RefinementResult attribute)</a>
+</li>
       <li><a href="dara.schema.html#dara.schema.RefinementDocument.refinement_params">refinement_params (RefinementDocument attribute)</a>
 
       <ul>
@@ -1445,6 +1457,8 @@
       <ul>
         <li><a href="dara.schema.html#dara.schema.RefinementDocument.rwp">(RefinementDocument attribute)</a>
 </li>
+        <li><a href="dara.result.html#dara.result.RefinementMetrics.rwp">(RefinementMetrics attribute)</a>
+</li>
       </ul></li>
       <li><a href="dara.utils.html#dara.utils.rwp">rwp() (in module dara.utils)</a>
 </li>
@@ -1468,10 +1482,10 @@
 </li>
       <li><a href="dara.cli.html#dara.cli.DaraCli.server">server (DaraCli attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dara.search.tree.html#dara.search.tree.SearchTree.show">show() (SearchTree method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dara.jobs.html#dara.jobs.RefinementMaker.show_progress">show_progress (RefinementMaker attribute)</a>
 </li>
       <li><a href="dara.result.html#dara.result.PhaseResult.spacegroup_no">spacegroup_no (PhaseResult attribute)</a>
@@ -1485,6 +1499,8 @@
       <li><a href="dara.structure_db.html#dara.structure_db.StructureDatabase">StructureDatabase (class in dara.structure_db)</a>
 </li>
       <li><a href="dara.server.api_router.html#dara.server.api_router.submit">submit() (in module dara.server.api_router)</a>
+</li>
+      <li><a href="dara.search.peak_matcher.html#dara.search.peak_matcher.suppress_coincident_marker_pairs">suppress_coincident_marker_pairs() (in module dara.search.peak_matcher)</a>
 </li>
   </ul></td>
 </tr></table>

@@ -570,16 +570,39 @@
 
 
 
+<div class="viewcode-block" id="RefinementMetrics">
+<a class="viewcode-back" href="../../dara.result.html#dara.result.RefinementMetrics">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RefinementMetrics</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Derived peak-matching diagnostics and refinement quality metrics.</span>
+
+<span class="sd">    Holds the missing/extra/intensity-mismatch peak markers produced by peak</span>
+<span class="sd">    matching after a refinement, plus the refinement&#39;s Rwp.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">populate_by_name</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">missing_peaks</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">extra_peaks</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">intensity_mismatch_peaks</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">rwp</span><span class="p">:</span> <span class="nb">float</span></div>
+
+
+
 <div class="viewcode-block" id="RefinementResult">
 <a class="viewcode-back" href="../../dara.result.html#dara.result.RefinementResult">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RefinementResult</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The result from the refinement, which is parsed from the .lst and .dia files.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The result from the refinement, which is parsed from the .lst and .dia files.</span>
+
+<span class="sd">    ``refinement_metrics`` holds the peak-matching diagnostics attached after</span>
+<span class="sd">    refinement (see ``RefinementMetrics``).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">populate_by_name</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="n">lst_data</span><span class="p">:</span> <span class="n">LstResult</span>
     <span class="n">plot_data</span><span class="p">:</span> <span class="n">DiaResult</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">peak_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">refinement_metrics</span><span class="p">:</span> <span class="n">RefinementMetrics</span>
 
 <div class="viewcode-block" id="RefinementResult.transform">
 <a class="viewcode-back" href="../../dara.result.html#dara.result.RefinementResult.transform">[docs]</a>
@@ -592,7 +615,31 @@
 
 <div class="viewcode-block" id="RefinementResult.visualize">
 <a class="viewcode-back" href="../../dara.result.html#dara.result.RefinementResult.visualize">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">visualize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">diff_offset</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">visualize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">diff_offset</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">plot_refinement_metrics</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Visualize the refinement result with plotly.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            diff_offset: passed through to ``dara.plot.visualize``.</span>
+<span class="sd">            plot_refinement_metrics: when True (default) and ``refinement_metrics``</span>
+<span class="sd">                is present, draw its missing/extra/intensity-mismatch peak markers.</span>
+<span class="sd">                When False, or when ``refinement_metrics`` is unavailable, no peak</span>
+<span class="sd">                markers are drawn.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">            the plotly ``Figure`` for the refinement plot</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">metrics</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;refinement_metrics&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">metrics</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">plot_refinement_metrics</span><span class="p">:</span>
+            <span class="c1"># A trace with zero points never appears in the legend even with</span>
+            <span class="c1"># showlegend=True, so an empty category gets a single non-rendering</span>
+            <span class="c1"># NaN point instead, just to keep its legend entry toggleable.</span>
+            <span class="n">placeholder</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]])</span>
+            <span class="k">return</span> <span class="n">visualize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">diff_offset</span><span class="o">=</span><span class="n">diff_offset</span><span class="p">,</span>
+                             <span class="n">missing_peaks</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">missing_peaks</span> <span class="k">if</span> <span class="n">metrics</span><span class="o">.</span><span class="n">missing_peaks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">placeholder</span><span class="p">,</span>
+                             <span class="n">extra_peaks</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">extra_peaks</span> <span class="k">if</span> <span class="n">metrics</span><span class="o">.</span><span class="n">extra_peaks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">placeholder</span><span class="p">,</span>
+                             <span class="n">intensity_mismatch_peaks</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">intensity_mismatch_peaks</span>
+                             <span class="k">if</span> <span class="n">metrics</span><span class="o">.</span><span class="n">intensity_mismatch_peaks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">placeholder</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">visualize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">diff_offset</span><span class="o">=</span><span class="n">diff_offset</span><span class="p">)</span></div>
 
 
@@ -681,10 +728,12 @@
         <span class="n">dia_path</span> <span class="o">=</span> <span class="n">control_file</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">control_file</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">.dia&quot;</span>
         <span class="n">par_path</span> <span class="o">=</span> <span class="n">control_file</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">control_file</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">.par&quot;</span>
 
+        <span class="n">lst_data</span> <span class="o">=</span> <span class="n">parse_lst</span><span class="p">(</span><span class="n">lst_path</span><span class="p">,</span> <span class="n">phase_names</span><span class="o">=</span><span class="n">phase_names</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;lst_data&quot;</span><span class="p">:</span> <span class="n">parse_lst</span><span class="p">(</span><span class="n">lst_path</span><span class="p">,</span> <span class="n">phase_names</span><span class="o">=</span><span class="n">phase_names</span><span class="p">),</span>
+            <span class="s2">&quot;lst_data&quot;</span><span class="p">:</span> <span class="n">lst_data</span><span class="p">,</span>
             <span class="s2">&quot;plot_data&quot;</span><span class="p">:</span> <span class="n">parse_dia</span><span class="p">(</span><span class="n">dia_path</span><span class="p">,</span> <span class="n">phase_names</span><span class="o">=</span><span class="n">phase_names</span><span class="p">),</span>
             <span class="s2">&quot;peak_data&quot;</span><span class="p">:</span> <span class="n">parse_par</span><span class="p">(</span><span class="n">par_path</span><span class="p">,</span> <span class="n">phase_names</span><span class="o">=</span><span class="n">phase_names</span><span class="p">),</span>
+            <span class="s2">&quot;refinement_metrics&quot;</span><span class="p">:</span> <span class="n">RefinementMetrics</span><span class="p">(</span><span class="n">rwp</span><span class="o">=</span><span class="n">lst_data</span><span class="o">.</span><span class="n">rwp</span><span class="p">),</span>
         <span class="p">}</span>
 
         <span class="k">return</span> <span class="n">RefinementResult</span><span class="p">(</span><span class="o">**</span><span class="n">result</span><span class="p">)</span>

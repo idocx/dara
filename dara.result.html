@@ -517,10 +517,18 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.PhaseResult.get_structure"><code class="docutils literal notranslate"><span class="pre">PhaseResult.get_structure()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.RefinementMetrics"><code class="docutils literal notranslate"><span class="pre">RefinementMetrics</span></code></a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.RefinementMetrics.extra_peaks"><code class="docutils literal notranslate"><span class="pre">RefinementMetrics.extra_peaks</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.RefinementMetrics.intensity_mismatch_peaks"><code class="docutils literal notranslate"><span class="pre">RefinementMetrics.intensity_mismatch_peaks</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.RefinementMetrics.missing_peaks"><code class="docutils literal notranslate"><span class="pre">RefinementMetrics.missing_peaks</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.RefinementMetrics.rwp"><code class="docutils literal notranslate"><span class="pre">RefinementMetrics.rwp</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.RefinementResult"><code class="docutils literal notranslate"><span class="pre">RefinementResult</span></code></a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.RefinementResult.lst_data"><code class="docutils literal notranslate"><span class="pre">RefinementResult.lst_data</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.RefinementResult.peak_data"><code class="docutils literal notranslate"><span class="pre">RefinementResult.peak_data</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.RefinementResult.plot_data"><code class="docutils literal notranslate"><span class="pre">RefinementResult.plot_data</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.RefinementResult.refinement_metrics"><code class="docutils literal notranslate"><span class="pre">RefinementResult.refinement_metrics</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.RefinementResult.export_structure"><code class="docutils literal notranslate"><span class="pre">RefinementResult.export_structure()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.RefinementResult.get_phase_weights"><code class="docutils literal notranslate"><span class="pre">RefinementResult.get_phase_weights()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.RefinementResult.transform"><code class="docutils literal notranslate"><span class="pre">RefinementResult.transform</span></code></a></li>
@@ -1549,10 +1557,79 @@
 </dd></dl>
 
 <dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="dara.result.RefinementMetrics">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RefinementMetrics</span></span><a class="reference internal" href="_modules/dara/result.html#RefinementMetrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.result.RefinementMetrics" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Derived peak-matching diagnostics and refinement quality metrics.</p>
+<p>Holds the missing/extra/intensity-mismatch peak markers produced by peak
+matching after a refinement, plus the refinement’s Rwp.</p>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RefinementMetrics&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;missing_peaks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Missing Peaks&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;extra_peaks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Extra Peaks&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;intensity_mismatch_peaks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Intensity Mismatch Peaks&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;rwp&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Rwp&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;rwp&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Fields<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#dara.result.RefinementMetrics.extra_peaks" title="dara.result.RefinementMetrics.extra_peaks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extra_peaks</span> <span class="pre">(numpy.ndarray</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#dara.result.RefinementMetrics.intensity_mismatch_peaks" title="dara.result.RefinementMetrics.intensity_mismatch_peaks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">intensity_mismatch_peaks</span> <span class="pre">(numpy.ndarray</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#dara.result.RefinementMetrics.missing_peaks" title="dara.result.RefinementMetrics.missing_peaks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">missing_peaks</span> <span class="pre">(numpy.ndarray</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#dara.result.RefinementMetrics.rwp" title="dara.result.RefinementMetrics.rwp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rwp</span> <span class="pre">(float)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="dara.result.RefinementMetrics.extra_peaks">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extra_peaks</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">np.ndarray</span> <span class="pre">|</span> <span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#dara.result.RefinementMetrics.extra_peaks" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="dara.result.RefinementMetrics.intensity_mismatch_peaks">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">intensity_mismatch_peaks</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">np.ndarray</span> <span class="pre">|</span> <span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#dara.result.RefinementMetrics.intensity_mismatch_peaks" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="dara.result.RefinementMetrics.missing_peaks">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">missing_peaks</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">np.ndarray</span> <span class="pre">|</span> <span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#dara.result.RefinementMetrics.missing_peaks" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="dara.result.RefinementMetrics.rwp">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rwp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#dara.result.RefinementMetrics.rwp" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="dara.result.RefinementResult">
 <em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RefinementResult</span></span><a class="reference internal" href="_modules/dara/result.html#RefinementResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.result.RefinementResult" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
 <p>The result from the refinement, which is parsed from the .lst and .dia files.</p>
+<p><code class="docutils literal notranslate"><span class="pre">refinement_metrics</span></code> holds the peak-matching diagnostics attached after
+refinement (see <code class="docutils literal notranslate"><span class="pre">RefinementMetrics</span></code>).</p>
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RefinementResult&quot;</span><span class="p">,</span>
@@ -1567,6 +1644,10 @@
 <span class="w">      </span><span class="nt">&quot;peak_data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Peak Data&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;refinement_metrics&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Refinement Metrics&quot;</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">   </span><span class="p">},</span>
 <span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -1966,6 +2047,7 @@
 <li><p><a class="reference internal" href="#dara.result.RefinementResult.lst_data" title="dara.result.RefinementResult.lst_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lst_data</span> <span class="pre">(dara.result.LstResult)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#dara.result.RefinementResult.peak_data" title="dara.result.RefinementResult.peak_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">peak_data</span> <span class="pre">(pandas.DataFrame)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#dara.result.RefinementResult.plot_data" title="dara.result.RefinementResult.plot_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_data</span> <span class="pre">(dara.result.DiaResult)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#dara.result.RefinementResult.refinement_metrics" title="dara.result.RefinementResult.refinement_metrics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">refinement_metrics</span> <span class="pre">(dara.result.RefinementMetrics)</span></code></a></p></li>
 </ul>
 </dd>
 <dt class="field-even">Validators<span class="colon">:</span></dt>
@@ -1994,6 +2076,11 @@
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="dara.result.RefinementResult.plot_data">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plot_data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DiaResult</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#dara.result.RefinementResult.plot_data" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="dara.result.RefinementResult.refinement_metrics">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">refinement_metrics</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">RefinementMetrics</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#dara.result.RefinementResult.refinement_metrics" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -2043,8 +2130,23 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dara.result.RefinementResult.visualize">
-<span class="sig-name descname"><span class="pre">visualize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">diff_offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/result.html#RefinementResult.visualize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.result.RefinementResult.visualize" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">visualize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">diff_offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_refinement_metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/result.html#RefinementResult.visualize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.result.RefinementResult.visualize" title="Link to this definition">#</a></dt>
+<dd><p>Visualize the refinement result with plotly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>diff_offset</strong> – passed through to <code class="docutils literal notranslate"><span class="pre">dara.plot.visualize</span></code>.</p></li>
+<li><p><strong>plot_refinement_metrics</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – when True (default) and <code class="docutils literal notranslate"><span class="pre">refinement_metrics</span></code>
+is present, draw its missing/extra/intensity-mismatch peak markers.
+When False, or when <code class="docutils literal notranslate"><span class="pre">refinement_metrics</span></code> is unavailable, no peak
+markers are drawn.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the plotly <code class="docutils literal notranslate"><span class="pre">Figure</span></code> for the refinement plot</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -2257,10 +2359,18 @@ Atomic positions for phase NiO
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.PhaseResult.get_structure"><code class="docutils literal notranslate"><span class="pre">PhaseResult.get_structure()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.RefinementMetrics"><code class="docutils literal notranslate"><span class="pre">RefinementMetrics</span></code></a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.RefinementMetrics.extra_peaks"><code class="docutils literal notranslate"><span class="pre">RefinementMetrics.extra_peaks</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.RefinementMetrics.intensity_mismatch_peaks"><code class="docutils literal notranslate"><span class="pre">RefinementMetrics.intensity_mismatch_peaks</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.RefinementMetrics.missing_peaks"><code class="docutils literal notranslate"><span class="pre">RefinementMetrics.missing_peaks</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.RefinementMetrics.rwp"><code class="docutils literal notranslate"><span class="pre">RefinementMetrics.rwp</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.RefinementResult"><code class="docutils literal notranslate"><span class="pre">RefinementResult</span></code></a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.RefinementResult.lst_data"><code class="docutils literal notranslate"><span class="pre">RefinementResult.lst_data</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.RefinementResult.peak_data"><code class="docutils literal notranslate"><span class="pre">RefinementResult.peak_data</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.RefinementResult.plot_data"><code class="docutils literal notranslate"><span class="pre">RefinementResult.plot_data</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.RefinementResult.refinement_metrics"><code class="docutils literal notranslate"><span class="pre">RefinementResult.refinement_metrics</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.RefinementResult.export_structure"><code class="docutils literal notranslate"><span class="pre">RefinementResult.export_structure()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.RefinementResult.get_phase_weights"><code class="docutils literal notranslate"><span class="pre">RefinementResult.get_phase_weights()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.result.RefinementResult.transform"><code class="docutils literal notranslate"><span class="pre">RefinementResult.transform</span></code></a></li>

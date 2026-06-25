@@ -393,15 +393,33 @@
                 <article class="bd-article">
                   
   <h1>Source code for dara.search.peak_matcher</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">find_peaks</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.spatial.distance</span><span class="w"> </span><span class="kn">import</span> <span class="n">cdist</span>
 
 <span class="n">DEFAULT_ANGLE_TOLERANCE</span> <span class="o">=</span> <span class="mf">0.2</span>  <span class="c1"># maximum difference in angle</span>
 <span class="n">DEFAULT_INTENSITY_TOLERANCE</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># maximum ratio of the intensities</span>
 <span class="c1"># maximum ratio of the intensities to be considered as missing instead of wrong intensity</span>
 <span class="n">DEFAULT_MAX_INTENSITY_TOLERANCE</span> <span class="o">=</span> <span class="mi">5</span>
+
+<span class="n">WRONG_INTENSITY_HEIGHT_RATIO_THRESHOLD</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span>
+<span class="n">COINCIDENCE_SUPPRESSION_TOLERANCE</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.06</span>
+<span class="n">DEFAULT_MISSING_MIN_INTENSITY_RATIO</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.005</span>
+<span class="n">DEFAULT_EXTRA_MIN_INTENSITY_RATIO</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.03</span>
+<span class="n">INTENSITY_MISMATCH_HEIGHT_TOLERANCE</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.40</span>  <span class="c1"># height band [0.60, 1.40]; catches ~2x height mismatches</span>
+<span class="n">INTENSITY_MISMATCH_AREA_TOLERANCE</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.60</span>    <span class="c1"># area band [0.40, 1.60]</span>
+<span class="n">INTENSITY_MISMATCH_WINDOW</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.15</span>             <span class="c1"># degrees either side of peak apex for profile integration</span>
+<span class="n">RESIDUAL_WINDOW_WIDTH</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>    <span class="c1"># degrees 2θ; sliding window width for integrated residual scan</span>
+<span class="n">RESIDUAL_WINDOW_STEP</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>    <span class="c1"># degrees 2θ; step size between window centres</span>
+<span class="n">RESIDUAL_WINDOW_DETECT_FRACTION</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.003</span>  <span class="c1"># per-window detection floor for forming/merging candidate regions</span>
+<span class="c1"># merged-region threshold: flag only if total &gt;= this fraction of total integrated obs</span>
+<span class="n">RESIDUAL_INTEGRAL_FRACTION</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.010</span>
+<span class="c1"># suppress merged region if integrated(calc-bkg)/integrated(obs-bkg) &gt;= this</span>
+<span class="n">RESIDUAL_CALC_COVERAGE_RATIO</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.35</span>
 
 
 <div class="viewcode-block" id="absolute_log_error">
@@ -536,7 +554,6 @@
     <span class="n">all_assigned</span> <span class="o">=</span> <span class="p">{</span><span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">matched</span><span class="p">}</span>
     <span class="n">missing</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">peak_obs</span><span class="p">))</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_assigned</span><span class="p">]</span>
 
-    <span class="c1"># tell if a peak has wrong intensity by the sum of the intensities of the matched peaks</span>
     <span class="n">to_be_deleted</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">matched</span><span class="p">)):</span>
         <span class="n">peak_idx</span> <span class="o">=</span> <span class="n">matched</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
@@ -581,7 +598,6 @@
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">peaks</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">resolution</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">peaks</span>
 
-    <span class="c1"># sorted by 0th column</span>
     <span class="n">peaks</span> <span class="o">=</span> <span class="n">peaks</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">peaks</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])]</span>
 
     <span class="n">merge_to</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">peaks</span><span class="p">))</span>
@@ -627,6 +643,16 @@
 <span class="sd">        intensity_tolerance: the maximum ratio of the intensities, default to 2</span>
 <span class="sd">        max_intensity_tolerance: the maximum ratio of the intensities to be considered as missing or extra,</span>
 <span class="sd">            default to 10</span>
+<span class="sd">        profile_x: 2θ grid (degrees) for the full diffraction profile. When this and</span>
+<span class="sd">            the three profile_y_* args are all given, matched peaks are re-examined</span>
+<span class="sd">            against the profile (see ``_reclassify_wrong_intensity_by_height`` and</span>
+<span class="sd">            ``_relocate_extra_to_apex``); omit all four to skip this step.</span>
+<span class="sd">        profile_y_calc: calculated profile on ``profile_x``.</span>
+<span class="sd">        profile_y_obs: observed profile on ``profile_x``.</span>
+<span class="sd">        profile_y_bkg: background profile on ``profile_x``.</span>
+<span class="sd">        height_ratio_threshold: passed to ``_reclassify_wrong_intensity_by_height``;</span>
+<span class="sd">            wrong_intensity pairs whose calc/obs profile-height ratio falls below</span>
+<span class="sd">            this are reclassified as missing+extra instead.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -638,6 +664,11 @@
         <span class="n">angle_tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_ANGLE_TOLERANCE</span><span class="p">,</span>
         <span class="n">intensity_tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_INTENSITY_TOLERANCE</span><span class="p">,</span>
         <span class="n">max_intensity_tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_MAX_INTENSITY_TOLERANCE</span><span class="p">,</span>
+        <span class="n">profile_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">profile_y_calc</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">profile_y_obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">profile_y_bkg</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">height_ratio_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">WRONG_INTENSITY_HEIGHT_RATIO_THRESHOLD</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">intensity_resolution</span> <span class="o">=</span> <span class="n">intensity_resolution</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">angle_resolution</span> <span class="o">=</span> <span class="n">angle_resolution</span>
@@ -666,6 +697,77 @@
             <span class="n">intensity_tolerance</span><span class="o">=</span><span class="n">intensity_tolerance</span><span class="p">,</span>
             <span class="n">max_intensity_tolerance</span><span class="o">=</span><span class="n">max_intensity_tolerance</span><span class="p">,</span>
         <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span>
+               <span class="p">[</span><span class="n">profile_x</span><span class="p">,</span> <span class="n">profile_y_calc</span><span class="p">,</span> <span class="n">profile_y_obs</span><span class="p">,</span> <span class="n">profile_y_bkg</span><span class="p">]):</span>
+            <span class="n">px</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">profile_x</span><span class="p">)</span>
+            <span class="n">py_calc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">profile_y_calc</span><span class="p">)</span>
+            <span class="n">py_obs</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">profile_y_obs</span><span class="p">)</span>
+            <span class="n">py_bkg</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">profile_y_bkg</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reclassify_wrong_intensity_by_height</span><span class="p">(</span>
+                <span class="n">px</span><span class="p">,</span> <span class="n">py_calc</span><span class="p">,</span> <span class="n">py_obs</span><span class="p">,</span> <span class="n">py_bkg</span><span class="p">,</span> <span class="n">height_ratio_threshold</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_relocate_extra_to_apex</span><span class="p">(</span><span class="n">px</span><span class="p">,</span> <span class="n">py_calc</span><span class="p">,</span> <span class="n">py_bkg</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_reclassify_wrong_intensity_by_height</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">profile_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">profile_y_calc</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">profile_y_obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">profile_y_bkg</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">height_ratio_threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Re-examine wrong_intensity pairs using background-subtracted profile heights.</span>
+
+<span class="sd">        When the ratio calc_height / obs_height is below *height_ratio_threshold*</span>
+<span class="sd">        the calc peak is too weak relative to the observed feature to count as</span>
+<span class="sd">        an explanation.  The pair is reclassified: obs peak -&gt; missing,</span>
+<span class="sd">        calc peak -&gt; extra.  Pairs that pass the height check remain wrong_intensity.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">keep_wi</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">c_idx</span><span class="p">,</span> <span class="n">o_idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="p">[</span><span class="s2">&quot;wrong_intensity&quot;</span><span class="p">]:</span>
+            <span class="n">tt_c</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">peak_calc</span><span class="p">[</span><span class="n">c_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+            <span class="n">tt_o</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">peak_obs</span><span class="p">[</span><span class="n">o_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+            <span class="n">calc_h</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">tt_c</span><span class="p">,</span> <span class="n">profile_x</span><span class="p">,</span> <span class="n">profile_y_calc</span> <span class="o">-</span> <span class="n">profile_y_bkg</span><span class="p">))</span>
+            <span class="n">obs_h</span>  <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">tt_o</span><span class="p">,</span> <span class="n">profile_x</span><span class="p">,</span> <span class="n">profile_y_obs</span>  <span class="o">-</span> <span class="n">profile_y_bkg</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">obs_h</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">calc_h</span> <span class="o">/</span> <span class="n">obs_h</span> <span class="o">&lt;</span> <span class="n">height_ratio_threshold</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">o_idx</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="p">[</span><span class="s2">&quot;missing&quot;</span><span class="p">]:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="p">[</span><span class="s2">&quot;missing&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">o_idx</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">c_idx</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="p">[</span><span class="s2">&quot;extra&quot;</span><span class="p">]:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="p">[</span><span class="s2">&quot;extra&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c_idx</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">keep_wi</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">c_idx</span><span class="p">,</span> <span class="n">o_idx</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="p">[</span><span class="s2">&quot;wrong_intensity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">keep_wi</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_relocate_extra_to_apex</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">profile_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">profile_y_calc</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">profile_y_bkg</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">apex_window</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Replace centroid 2θ of extra-calc peaks with the nearest profile-apex 2θ.</span>
+
+<span class="sd">        merge_peaks() uses an intensity-weighted centroid for merged sub-peaks, which</span>
+<span class="sd">        can land between two profile maxima and corrupt coincidence-suppression distances.</span>
+<span class="sd">        Each extra peak is reassigned to the nearest local maximum of the</span>
+<span class="sd">        background-subtracted calc profile within *apex_window* degrees.</span>
+<span class="sd">        Peaks with no local maximum in their window keep their centroid position.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">net</span> <span class="o">=</span> <span class="n">profile_y_calc</span> <span class="o">-</span> <span class="n">profile_y_bkg</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">profile_x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">profile_x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">profile_x</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mf">0.01</span>
+        <span class="n">min_dist_pts</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="mf">0.05</span> <span class="o">/</span> <span class="n">dx</span><span class="p">))</span>
+        <span class="n">local_max_pts</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">find_peaks</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="n">min_dist_pts</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">local_max_pts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">local_max_x</span> <span class="o">=</span> <span class="n">profile_x</span><span class="p">[</span><span class="n">local_max_pts</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">c_idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="p">[</span><span class="s2">&quot;extra&quot;</span><span class="p">]:</span>
+            <span class="n">tt_old</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">peak_calc</span><span class="p">[</span><span class="n">c_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+            <span class="n">in_window</span> <span class="o">=</span> <span class="p">(</span><span class="n">local_max_x</span> <span class="o">&gt;=</span> <span class="n">tt_old</span> <span class="o">-</span> <span class="n">apex_window</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">local_max_x</span> <span class="o">&lt;=</span> <span class="n">tt_old</span> <span class="o">+</span> <span class="n">apex_window</span><span class="p">)</span>
+            <span class="n">candidates</span> <span class="o">=</span> <span class="n">local_max_x</span><span class="p">[</span><span class="n">in_window</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">peak_calc</span><span class="p">[</span><span class="n">c_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">candidates</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">candidates</span> <span class="o">-</span> <span class="n">tt_old</span><span class="p">))])</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">missing</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
@@ -800,7 +902,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">peak_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;missing&quot;</span><span class="p">,</span> <span class="s2">&quot;extra&quot;</span><span class="p">],</span>
         <span class="n">min_angle_difference</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span>
-        <span class="n">min_intensity_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.03</span><span class="p">,</span>
+        <span class="n">min_intensity_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the isolated missing peaks in the `observed peaks`.</span>
@@ -811,12 +913,21 @@
 <span class="sd">        Args:</span>
 <span class="sd">            peak_type: the type of the peaks to consider, either &quot;missing&quot; or &quot;extra&quot;</span>
 <span class="sd">            min_angle_difference: the tolerance to consider a peak as close to another peak, default to 0.3 degree</span>
-<span class="sd">            min_intensity_ratio: the minimum ratio of the intensity to be considered as a peak, default to 0.01</span>
+<span class="sd">            min_intensity_ratio: minimum intensity relative to the observed maximum.</span>
+<span class="sd">                Defaults to DEFAULT_MISSING_MIN_INTENSITY_RATIO for missing peaks and</span>
+<span class="sd">                DEFAULT_EXTRA_MIN_INTENSITY_RATIO for extra peaks when None.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">            the isolated missing peaks with [position, intensity]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">min_intensity_ratio</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">min_intensity_ratio</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">DEFAULT_MISSING_MIN_INTENSITY_RATIO</span>
+                <span class="k">if</span> <span class="n">peak_type</span> <span class="o">==</span> <span class="s2">&quot;missing&quot;</span>
+                <span class="k">else</span> <span class="n">DEFAULT_EXTRA_MIN_INTENSITY_RATIO</span>
+            <span class="p">)</span>
+
         <span class="k">if</span> <span class="n">peak_type</span> <span class="o">==</span> <span class="s2">&quot;missing&quot;</span><span class="p">:</span>
             <span class="n">peaks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">missing</span>
             <span class="n">matched</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">matched</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
@@ -903,12 +1014,273 @@
             <span class="n">label</span><span class="o">=</span><span class="s2">&quot;wrong intens&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="c1"># add a line y=0</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;2theta&quot;</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Intensity&quot;</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span></div>
 </div>
+
+
+
+<div class="viewcode-block" id="suppress_coincident_marker_pairs">
+<a class="viewcode-back" href="../../../dara.search.peak_matcher.html#dara.search.peak_matcher.suppress_coincident_marker_pairs">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">suppress_coincident_marker_pairs</span><span class="p">(</span>
+    <span class="n">missing_peaks</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">extra_peaks</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">COINCIDENCE_SUPPRESSION_TOLERANCE</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Suppress missing/extra marker pairs within *tolerance* degrees of each other.</span>
+
+<span class="sd">    Near-coincident missing+extra pairs indicate refinement position wobble: the</span>
+<span class="sd">    model placed a reflection slightly off-angle rather than genuinely missing it.</span>
+<span class="sd">    Both markers are dropped.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        (missing_peaks, extra_peaks) with coincident pairs removed, same shapes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">missing_peaks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">missing_peaks</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">extra_peaks</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">extra_peaks</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">missing_peaks</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">extra_peaks</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">missing_peaks</span><span class="p">,</span> <span class="n">extra_peaks</span>
+
+    <span class="n">miss_suppress</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">extra_suppress</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">m_i</span><span class="p">,</span> <span class="p">(</span><span class="n">mt</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">missing_peaks</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">e_i</span><span class="p">,</span> <span class="p">(</span><span class="n">et</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">extra_peaks</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">mt</span><span class="p">)</span> <span class="o">-</span> <span class="nb">float</span><span class="p">(</span><span class="n">et</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="n">tolerance</span><span class="p">:</span>
+                <span class="n">miss_suppress</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">m_i</span><span class="p">)</span>
+                <span class="n">extra_suppress</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">e_i</span><span class="p">)</span>
+
+    <span class="n">keep_m</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">missing_peaks</span><span class="p">))</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">miss_suppress</span><span class="p">]</span>
+    <span class="n">keep_e</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">extra_peaks</span><span class="p">))</span>   <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">extra_suppress</span><span class="p">]</span>
+
+    <span class="n">out_m</span> <span class="o">=</span> <span class="n">missing_peaks</span><span class="p">[</span><span class="n">keep_m</span><span class="p">]</span> <span class="k">if</span> <span class="n">keep_m</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="n">out_e</span> <span class="o">=</span> <span class="n">extra_peaks</span><span class="p">[</span><span class="n">keep_e</span><span class="p">]</span>   <span class="k">if</span> <span class="n">keep_e</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">out_m</span><span class="p">,</span> <span class="n">out_e</span></div>
+
+
+
+<div class="viewcode-block" id="find_residual_regions">
+<a class="viewcode-back" href="../../../dara.search.peak_matcher.html#dara.search.peak_matcher.find_residual_regions">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_residual_regions</span><span class="p">(</span>
+    <span class="n">profile_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">profile_y_obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">profile_y_calc</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">profile_y_bkg</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">window_width</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">RESIDUAL_WINDOW_WIDTH</span><span class="p">,</span>
+    <span class="n">window_step</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">RESIDUAL_WINDOW_STEP</span><span class="p">,</span>
+    <span class="n">window_detect_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">RESIDUAL_WINDOW_DETECT_FRACTION</span><span class="p">,</span>
+    <span class="n">integral_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">RESIDUAL_INTEGRAL_FRACTION</span><span class="p">,</span>
+    <span class="n">calc_profile_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_EXTRA_MIN_INTENSITY_RATIO</span><span class="p">,</span>
+    <span class="n">calc_coverage_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">RESIDUAL_CALC_COVERAGE_RATIO</span><span class="p">,</span>
+    <span class="n">matched_peak_positions</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find regions where the integrated positive residual indicates an unfit feature.</span>
+
+<span class="sd">    Scans the pattern with a fixed-width sliding window.  Each window&#39;s integrated</span>
+<span class="sd">    positive residual (sum of max(y_obs - y_calc, 0) * dx) is compared against a</span>
+<span class="sd">    fraction of the total integrated observed intensity.  Overlapping flagged windows</span>
+<span class="sd">    are merged into contiguous regions.</span>
+
+<span class="sd">    Bragg-peak filter (corrected form): a merged region is suppressed only if the</span>
+<span class="sd">    calc *profile* is already adequate inside it — i.e. max(y_calc - y_bkg) within</span>
+<span class="sd">    the region exceeds ``calc_profile_ratio * max(y_obs)``.  A tabulated Bragg peak</span>
+<span class="sd">    whose calc profile stays near background does NOT suppress the region.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        profile_x: 2θ grid (degrees), uniformly spaced.</span>
+<span class="sd">        profile_y_obs: observed counts on that grid.</span>
+<span class="sd">        profile_y_calc: calculated profile on that grid.</span>
+<span class="sd">        profile_y_bkg: background on that grid.  When None, zeros are used (filter</span>
+<span class="sd">            compares calc profile directly against obs max).</span>
+<span class="sd">        window_width: sliding window width in degrees (default 0.5°).</span>
+<span class="sd">        window_step: step between window centres in degrees (default 0.1°).</span>
+<span class="sd">        window_detect_fraction: per-window detection floor for forming candidate</span>
+<span class="sd">            windows and merging them into regions (default 0.003 = 0.3%).  This</span>
+<span class="sd">            is intentionally lower than ``integral_fraction`` so that broad</span>
+<span class="sd">            features are not penalised for being diffuse.</span>
+<span class="sd">        integral_fraction: merged-region threshold — a region is flagged only if</span>
+<span class="sd">            its total integrated positive residual exceeds this fraction of the</span>
+<span class="sd">            total integrated observed intensity (default 0.010 = 1.0%).</span>
+<span class="sd">        calc_profile_ratio: suppress a window if max(y_calc - y_bkg) inside it</span>
+<span class="sd">            exceeds this fraction of max(y_obs) (default 0.03 = 3%).</span>
+<span class="sd">        calc_coverage_ratio: suppress a merged region when</span>
+<span class="sd">            integrated(y_calc - y_bkg) / integrated(y_obs - y_bkg) over the</span>
+<span class="sd">            merged span exceeds this fraction — the calc already accounts for</span>
+<span class="sd">            this much of the observed area in that region (default 0.35).</span>
+<span class="sd">        matched_peak_positions: 1-D array of 2θ positions of already-identified</span>
+<span class="sd">            missing or extra peaks (after all normal suppression).  Any merged</span>
+<span class="sd">            region whose [start, end] span contains one of these positions is</span>
+<span class="sd">            dropped — the feature has already been flagged by the matcher.</span>
+<span class="sd">        enabled: when False, skip all computation and return an empty (0, 4)</span>
+<span class="sd">            array.  Default True reproduces normal behavior.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        Array of shape (N, 2) with [center_2theta, 0.0] for each flagged region,</span>
+<span class="sd">        formatted identically to missing-peak arrays for direct concatenation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">enabled</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+
+    <span class="n">profile_x</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">profile_x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">profile_y_obs</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">profile_y_obs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">profile_y_calc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">profile_y_calc</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">profile_y_bkg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">profile_y_bkg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">profile_y_bkg</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">profile_y_bkg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">profile_y_obs</span><span class="p">)</span>
+
+    <span class="n">dx</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">profile_x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">profile_x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">profile_x</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mf">0.01</span>
+    <span class="n">obs_max</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">profile_y_obs</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+    <span class="n">half_w</span>  <span class="o">=</span> <span class="n">window_width</span> <span class="o">/</span> <span class="mf">2.0</span>
+
+    <span class="n">total_obs_integral</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">profile_y_obs</span> <span class="o">-</span> <span class="n">profile_y_bkg</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)))</span> <span class="o">*</span> <span class="n">dx</span>
+    <span class="n">detect_threshold</span> <span class="o">=</span> <span class="n">window_detect_fraction</span> <span class="o">*</span> <span class="n">total_obs_integral</span>  <span class="c1"># per-window floor</span>
+    <span class="n">region_threshold</span> <span class="o">=</span> <span class="n">integral_fraction</span> <span class="o">*</span> <span class="n">total_obs_integral</span>        <span class="c1"># merged-region gate</span>
+
+    <span class="n">positive_residual</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">profile_y_obs</span> <span class="o">-</span> <span class="n">profile_y_calc</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+
+    <span class="c1"># Integrated-residual scan: flag broad features the matcher never detected.</span>
+    <span class="n">calc_profile_threshold</span> <span class="o">=</span> <span class="n">calc_profile_ratio</span> <span class="o">*</span> <span class="n">obs_max</span>
+    <span class="n">calc_net</span> <span class="o">=</span> <span class="n">profile_y_calc</span> <span class="o">-</span> <span class="n">profile_y_bkg</span>
+    <span class="n">obs_net</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">profile_y_obs</span> <span class="o">-</span> <span class="n">profile_y_bkg</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+
+    <span class="n">flagged_centres</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">centre</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">profile_x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">half_w</span>
+    <span class="k">while</span> <span class="n">centre</span> <span class="o">&lt;=</span> <span class="nb">float</span><span class="p">(</span><span class="n">profile_x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="n">half_w</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">profile_x</span> <span class="o">&gt;=</span> <span class="n">centre</span> <span class="o">-</span> <span class="n">half_w</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">profile_x</span> <span class="o">&lt;=</span> <span class="n">centre</span> <span class="o">+</span> <span class="n">half_w</span><span class="p">)</span>
+        <span class="n">win_integral</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">positive_residual</span><span class="p">[</span><span class="n">mask</span><span class="p">]))</span> <span class="o">*</span> <span class="n">dx</span>
+        <span class="n">calc_net_max</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">calc_net</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">win_integral</span> <span class="o">&gt;=</span> <span class="n">detect_threshold</span> <span class="ow">and</span> <span class="n">calc_net_max</span> <span class="o">&lt;</span> <span class="n">calc_profile_threshold</span><span class="p">:</span>
+            <span class="n">flagged_centres</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">centre</span><span class="p">)</span>
+        <span class="n">centre</span> <span class="o">+=</span> <span class="n">window_step</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">flagged_centres</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+
+    <span class="n">merged</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">span_start</span> <span class="o">=</span> <span class="n">flagged_centres</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">half_w</span>
+    <span class="n">span_end</span>   <span class="o">=</span> <span class="n">flagged_centres</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">half_w</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">flagged_centres</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="n">win_start</span> <span class="o">=</span> <span class="n">c</span> <span class="o">-</span> <span class="n">half_w</span>
+        <span class="n">win_end</span>   <span class="o">=</span> <span class="n">c</span> <span class="o">+</span> <span class="n">half_w</span>
+        <span class="k">if</span> <span class="n">win_start</span> <span class="o">&lt;=</span> <span class="n">span_end</span> <span class="o">+</span> <span class="n">window_step</span> <span class="o">/</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">span_end</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">span_end</span><span class="p">,</span> <span class="n">win_end</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">merged</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">span_start</span><span class="p">,</span> <span class="n">span_end</span><span class="p">))</span>
+            <span class="n">span_start</span> <span class="o">=</span> <span class="n">win_start</span>
+            <span class="n">span_end</span>   <span class="o">=</span> <span class="n">win_end</span>
+    <span class="n">merged</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">span_start</span><span class="p">,</span> <span class="n">span_end</span><span class="p">))</span>
+
+    <span class="n">known_positions</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">matched_peak_positions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">known_positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">matched_peak_positions</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">regions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">merged</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">profile_x</span> <span class="o">&gt;=</span> <span class="n">s</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">profile_x</span> <span class="o">&lt;=</span> <span class="n">e</span><span class="p">)</span>
+        <span class="n">seg_res</span>      <span class="o">=</span> <span class="n">positive_residual</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+        <span class="n">merged_integ</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">seg_res</span><span class="p">))</span> <span class="o">*</span> <span class="n">dx</span>
+        <span class="k">if</span> <span class="n">merged_integ</span> <span class="o">&lt;</span> <span class="n">region_threshold</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">region_obs_int</span>  <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">obs_net</span><span class="p">[</span><span class="n">mask</span><span class="p">]))</span> <span class="o">*</span> <span class="n">dx</span>
+        <span class="n">region_calc_int</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">calc_net</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">)))</span> <span class="o">*</span> <span class="n">dx</span>
+        <span class="k">if</span> <span class="n">region_obs_int</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">region_calc_int</span> <span class="o">/</span> <span class="n">region_obs_int</span> <span class="o">&gt;=</span> <span class="n">calc_coverage_ratio</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">known_positions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">((</span><span class="n">known_positions</span> <span class="o">&gt;=</span> <span class="n">s</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">known_positions</span> <span class="o">&lt;=</span> <span class="n">e</span><span class="p">)):</span>
+            <span class="k">continue</span>
+        <span class="n">midpoint</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> <span class="o">/</span> <span class="mf">2.0</span>
+        <span class="n">regions</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">midpoint</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">regions</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="k">if</span> <span class="n">regions</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="find_intensity_mismatch_peaks">
+<a class="viewcode-back" href="../../../dara.search.peak_matcher.html#dara.search.peak_matcher.find_intensity_mismatch_peaks">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_intensity_mismatch_peaks</span><span class="p">(</span>
+    <span class="n">pm</span><span class="p">:</span> <span class="n">PeakMatcher</span><span class="p">,</span>
+    <span class="n">profile_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">profile_y_obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">profile_y_calc</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">profile_y_bkg</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">height_tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">INTENSITY_MISMATCH_HEIGHT_TOLERANCE</span><span class="p">,</span>
+    <span class="n">area_tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">INTENSITY_MISMATCH_AREA_TOLERANCE</span><span class="p">,</span>
+    <span class="n">window</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">INTENSITY_MISMATCH_WINDOW</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Flag matched peaks whose profile height or area deviates beyond the respective band.</span>
+
+<span class="sd">    Operates only on matched pairs — missing and extra take precedence.</span>
+<span class="sd">    height band: [1 - height_tolerance, 1 + height_tolerance]</span>
+<span class="sd">    area band:   [1 - area_tolerance,   1 + area_tolerance]</span>
+<span class="sd">    Flags if either band is violated.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pm: the PeakMatcher holding the matched calc/obs peak pairs.</span>
+<span class="sd">        profile_x: 2θ grid (degrees), uniformly spaced.</span>
+<span class="sd">        profile_y_obs: observed counts on that grid.</span>
+<span class="sd">        profile_y_calc: calculated profile on that grid.</span>
+<span class="sd">        profile_y_bkg: background on that grid. When None, zeros are used.</span>
+<span class="sd">        height_tolerance: half-width of the height band (default 0.40).</span>
+<span class="sd">        area_tolerance: half-width of the area band (default 0.60).</span>
+<span class="sd">        window: degrees either side of the peak apex used for height/area</span>
+<span class="sd">            integration (default 0.15).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        (N, 2) array of [obs_2theta, 0.0], same shape as missing_peaks</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">matched_pairs</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">_result</span><span class="p">[</span><span class="s2">&quot;matched&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">matched_pairs</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+
+    <span class="n">profile_x</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">profile_x</span><span class="p">,</span>      <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">profile_y_obs</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">profile_y_obs</span><span class="p">,</span>  <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">profile_y_calc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">profile_y_calc</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">profile_y_bkg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">profile_y_obs</span><span class="p">)</span> <span class="k">if</span> <span class="n">profile_y_bkg</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">profile_y_bkg</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="n">dx</span>   <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">profile_x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">profile_x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">profile_x</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mf">0.01</span>
+    <span class="n">h_lo</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">height_tolerance</span>
+    <span class="n">h_hi</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="n">height_tolerance</span>
+    <span class="n">a_lo</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">area_tolerance</span>
+    <span class="n">a_hi</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="n">area_tolerance</span>
+
+    <span class="n">seen_obs</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">flagged</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">_c_idx</span><span class="p">,</span> <span class="n">o_idx</span> <span class="ow">in</span> <span class="n">matched_pairs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">o_idx</span> <span class="ow">in</span> <span class="n">seen_obs</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">seen_obs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">o_idx</span><span class="p">)</span>
+
+        <span class="n">tt_o</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">pm</span><span class="o">.</span><span class="n">peak_obs</span><span class="p">[</span><span class="n">o_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">mask</span>     <span class="o">=</span> <span class="p">(</span><span class="n">profile_x</span> <span class="o">&gt;=</span> <span class="n">tt_o</span> <span class="o">-</span> <span class="n">window</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">profile_x</span> <span class="o">&lt;=</span> <span class="n">tt_o</span> <span class="o">+</span> <span class="n">window</span><span class="p">)</span>
+        <span class="n">obs_net</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">profile_y_obs</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>  <span class="o">-</span> <span class="n">profile_y_bkg</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">calc_net</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">profile_y_calc</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">-</span> <span class="n">profile_y_bkg</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">obs_area</span>  <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">obs_net</span><span class="p">))</span>  <span class="o">*</span> <span class="n">dx</span>
+        <span class="n">calc_area</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">calc_net</span><span class="p">))</span> <span class="o">*</span> <span class="n">dx</span>
+
+        <span class="k">if</span> <span class="n">obs_area</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">obs_h</span>  <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">tt_o</span><span class="p">,</span> <span class="n">profile_x</span><span class="p">,</span> <span class="n">profile_y_obs</span>  <span class="o">-</span> <span class="n">profile_y_bkg</span><span class="p">))</span>
+        <span class="n">calc_h</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">tt_o</span><span class="p">,</span> <span class="n">profile_x</span><span class="p">,</span> <span class="n">profile_y_calc</span> <span class="o">-</span> <span class="n">profile_y_bkg</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">obs_h</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">area_ratio</span>   <span class="o">=</span> <span class="n">calc_area</span> <span class="o">/</span> <span class="n">obs_area</span>
+        <span class="n">height_ratio</span> <span class="o">=</span> <span class="n">calc_h</span>   <span class="o">/</span> <span class="n">obs_h</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">h_lo</span> <span class="o">&lt;=</span> <span class="n">height_ratio</span> <span class="o">&lt;=</span> <span class="n">h_hi</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="n">a_lo</span> <span class="o">&lt;=</span> <span class="n">area_ratio</span> <span class="o">&lt;=</span> <span class="n">a_hi</span><span class="p">):</span>
+            <span class="n">flagged</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">tt_o</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">flagged</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="k">if</span> <span class="n">flagged</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span></div>
 
 </pre></div>
 

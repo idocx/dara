@@ -411,8 +411,16 @@
     <span class="n">diff_offset</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">missing_peaks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">extra_peaks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">intensity_mismatch_peaks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Visualize the result from the refinement. It uses plotly as the backend engine.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Visualize the result from the refinement. It uses plotly as the backend engine.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        intensity_mismatch_peaks: optional (N, 2) array of [2theta, 0.0] markers</span>
+<span class="sd">            for matched peaks whose calculated height/area deviates from</span>
+<span class="sd">            observed; drawn the same way as ``missing_peaks``/``extra_peaks``</span>
+<span class="sd">            when provided.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">colormap</span> <span class="o">=</span> <span class="p">[</span>
         <span class="s2">&quot;#1f77b4&quot;</span><span class="p">,</span>
         <span class="s2">&quot;#ff7f0e&quot;</span><span class="p">,</span>
@@ -557,6 +565,7 @@
                 <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;markers&quot;</span><span class="p">,</span>
                 <span class="n">marker</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;#f9726a&quot;</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="mi">53</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="mf">0.8</span><span class="p">),</span>
                 <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Missing peaks&quot;</span><span class="p">,</span>
+                <span class="n">showlegend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">visible</span><span class="o">=</span><span class="s2">&quot;legendonly&quot;</span><span class="p">,</span>
                 <span class="n">text</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">y</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">missing_peaks</span><span class="p">],</span>
             <span class="p">)</span>
@@ -571,8 +580,25 @@
                 <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;markers&quot;</span><span class="p">,</span>
                 <span class="n">marker</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;#335da0&quot;</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="mi">53</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="mf">0.8</span><span class="p">),</span>
                 <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Extra peaks&quot;</span><span class="p">,</span>
+                <span class="n">showlegend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">visible</span><span class="o">=</span><span class="s2">&quot;legendonly&quot;</span><span class="p">,</span>
                 <span class="n">text</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">y</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">extra_peaks</span><span class="p">],</span>
+                <span class="n">hovertemplate</span><span class="o">=</span><span class="s2">&quot;%</span><span class="si">{text}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">intensity_mismatch_peaks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">intensity_mismatch_peaks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">intensity_mismatch_peaks</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span>
+            <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span>
+                <span class="n">x</span><span class="o">=</span><span class="n">intensity_mismatch_peaks</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
+                <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">intensity_mismatch_peaks</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]),</span>
+                <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;markers&quot;</span><span class="p">,</span>
+                <span class="n">marker</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;#FFD700&quot;</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="mi">53</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="mf">0.8</span><span class="p">),</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Intensity mismatch&quot;</span><span class="p">,</span>
+                <span class="n">showlegend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">visible</span><span class="o">=</span><span class="s2">&quot;legendonly&quot;</span><span class="p">,</span>
+                <span class="n">text</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">y</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">intensity_mismatch_peaks</span><span class="p">],</span>
                 <span class="n">hovertemplate</span><span class="o">=</span><span class="s2">&quot;%</span><span class="si">{text}</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>

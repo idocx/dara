@@ -489,7 +489,10 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.peak_matcher.absolute_log_error"><code class="docutils literal notranslate"><span class="pre">absolute_log_error()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.peak_matcher.distance_matrix"><code class="docutils literal notranslate"><span class="pre">distance_matrix()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.peak_matcher.find_best_match"><code class="docutils literal notranslate"><span class="pre">find_best_match()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.peak_matcher.find_intensity_mismatch_peaks"><code class="docutils literal notranslate"><span class="pre">find_intensity_mismatch_peaks()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.peak_matcher.find_residual_regions"><code class="docutils literal notranslate"><span class="pre">find_residual_regions()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.peak_matcher.merge_peaks"><code class="docutils literal notranslate"><span class="pre">merge_peaks()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.peak_matcher.suppress_coincident_marker_pairs"><code class="docutils literal notranslate"><span class="pre">suppress_coincident_marker_pairs()</span></code></a></li>
 </ul>
             </nav>
         </div>
@@ -505,7 +508,7 @@
 <span id="dara-search-peak-matcher-module"></span><h1>dara.search.peak_matcher module<a class="headerlink" href="#module-dara.search.peak_matcher" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="dara.search.peak_matcher.PeakMatcher">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PeakMatcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peak_calc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">peak_obs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensity_resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle_resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle_tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensity_tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_intensity_tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/search/peak_matcher.html#PeakMatcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.search.peak_matcher.PeakMatcher" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PeakMatcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peak_calc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">peak_obs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensity_resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle_resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle_tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensity_tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_intensity_tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_y_calc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_y_obs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_y_bkg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height_ratio_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3333333333333333</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/search/peak_matcher.html#PeakMatcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.search.peak_matcher.PeakMatcher" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Peak matcher class to match the calculated peaks with the observed peaks.</p>
 <dl class="field-list simple">
@@ -519,6 +522,16 @@
 <li><p><strong>intensity_tolerance</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – the maximum ratio of the intensities, default to 2</p></li>
 <li><p><strong>max_intensity_tolerance</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – the maximum ratio of the intensities to be considered as missing or extra,
 default to 10</p></li>
+<li><p><strong>profile_x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – 2θ grid (degrees) for the full diffraction profile. When this and
+the three profile_y_* args are all given, matched peaks are re-examined
+against the profile (see <code class="docutils literal notranslate"><span class="pre">_reclassify_wrong_intensity_by_height</span></code> and
+<code class="docutils literal notranslate"><span class="pre">_relocate_extra_to_apex</span></code>); omit all four to skip this step.</p></li>
+<li><p><strong>profile_y_calc</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – calculated profile on <code class="docutils literal notranslate"><span class="pre">profile_x</span></code>.</p></li>
+<li><p><strong>profile_y_obs</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – observed profile on <code class="docutils literal notranslate"><span class="pre">profile_x</span></code>.</p></li>
+<li><p><strong>profile_y_bkg</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – background profile on <code class="docutils literal notranslate"><span class="pre">profile_x</span></code>.</p></li>
+<li><p><strong>height_ratio_threshold</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – passed to <code class="docutils literal notranslate"><span class="pre">_reclassify_wrong_intensity_by_height</span></code>;
+wrong_intensity pairs whose calc/obs profile-height ratio falls below
+this are reclassified as missing+extra instead.</p></li>
 </ul>
 </dd>
 </dl>
@@ -530,7 +543,7 @@ default to 10</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dara.search.peak_matcher.PeakMatcher.get_isolated_peaks">
-<span class="sig-name descname"><span class="pre">get_isolated_peaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peak_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_angle_difference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_intensity_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.03</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/search/peak_matcher.html#PeakMatcher.get_isolated_peaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.search.peak_matcher.PeakMatcher.get_isolated_peaks" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_isolated_peaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peak_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_angle_difference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_intensity_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/search/peak_matcher.html#PeakMatcher.get_isolated_peaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.search.peak_matcher.PeakMatcher.get_isolated_peaks" title="Link to this definition">#</a></dt>
 <dd><p>Get the isolated missing peaks in the <cite>observed peaks</cite>.</p>
 <p>The isolated missing/extra peaks are the missing/extra peaks that are not close to any other
 peaks in matched and wrong intensity peaks.</p>
@@ -539,7 +552,9 @@ peaks in matched and wrong intensity peaks.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>peak_type</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'missing'</span></code>, <code class="docutils literal notranslate"><span class="pre">'extra'</span></code>]</span>) – the type of the peaks to consider, either “missing” or “extra”</p></li>
 <li><p><strong>min_angle_difference</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – the tolerance to consider a peak as close to another peak, default to 0.3 degree</p></li>
-<li><p><strong>min_intensity_ratio</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – the minimum ratio of the intensity to be considered as a peak, default to 0.01</p></li>
+<li><p><strong>min_intensity_ratio</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – minimum intensity relative to the observed maximum.
+Defaults to DEFAULT_MISSING_MIN_INTENSITY_RATIO for missing peaks and
+DEFAULT_EXTRA_MIN_INTENSITY_RATIO for extra peaks when None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -695,6 +710,90 @@ extra peaks in peak_calc)</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="dara.search.peak_matcher.find_intensity_mismatch_peaks">
+<span class="sig-name descname"><span class="pre">find_intensity_mismatch_peaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_y_obs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_y_calc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_y_bkg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height_tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area_tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.15</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/search/peak_matcher.html#find_intensity_mismatch_peaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.search.peak_matcher.find_intensity_mismatch_peaks" title="Link to this definition">#</a></dt>
+<dd><p>Flag matched peaks whose profile height or area deviates beyond the respective band.</p>
+<p>Operates only on matched pairs — missing and extra take precedence.
+height band: [1 - height_tolerance, 1 + height_tolerance]
+area band:   [1 - area_tolerance,   1 + area_tolerance]
+Flags if either band is violated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pm</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#dara.search.peak_matcher.PeakMatcher" title="dara.search.peak_matcher.PeakMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">PeakMatcher</span></code></a></span>) – the PeakMatcher holding the matched calc/obs peak pairs.</p></li>
+<li><p><strong>profile_x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span>) – 2θ grid (degrees), uniformly spaced.</p></li>
+<li><p><strong>profile_y_obs</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span>) – observed counts on that grid.</p></li>
+<li><p><strong>profile_y_calc</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span>) – calculated profile on that grid.</p></li>
+<li><p><strong>profile_y_bkg</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – background on that grid. When None, zeros are used.</p></li>
+<li><p><strong>height_tolerance</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – half-width of the height band (default 0.40).</p></li>
+<li><p><strong>area_tolerance</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – half-width of the area band (default 0.60).</p></li>
+<li><p><strong>window</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – degrees either side of the peak apex used for height/area
+integration (default 0.15).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(N, 2) array of [obs_2theta, 0.0], same shape as missing_peaks</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.search.peak_matcher.find_residual_regions">
+<span class="sig-name descname"><span class="pre">find_residual_regions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">profile_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_y_obs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_y_calc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_y_bkg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_detect_fraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.003</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">integral_fraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc_profile_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.03</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc_coverage_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.35</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matched_peak_positions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/search/peak_matcher.html#find_residual_regions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.search.peak_matcher.find_residual_regions" title="Link to this definition">#</a></dt>
+<dd><p>Find regions where the integrated positive residual indicates an unfit feature.</p>
+<p>Scans the pattern with a fixed-width sliding window.  Each window’s integrated
+positive residual (sum of max(y_obs - y_calc, 0) * dx) is compared against a
+fraction of the total integrated observed intensity.  Overlapping flagged windows
+are merged into contiguous regions.</p>
+<p>Bragg-peak filter (corrected form): a merged region is suppressed only if the
+calc <em>profile</em> is already adequate inside it — i.e. max(y_calc - y_bkg) within
+the region exceeds <code class="docutils literal notranslate"><span class="pre">calc_profile_ratio</span> <span class="pre">*</span> <span class="pre">max(y_obs)</span></code>.  A tabulated Bragg peak
+whose calc profile stays near background does NOT suppress the region.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>profile_x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span>) – 2θ grid (degrees), uniformly spaced.</p></li>
+<li><p><strong>profile_y_obs</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span>) – observed counts on that grid.</p></li>
+<li><p><strong>profile_y_calc</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span>) – calculated profile on that grid.</p></li>
+<li><p><strong>profile_y_bkg</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – background on that grid.  When None, zeros are used (filter
+compares calc profile directly against obs max).</p></li>
+<li><p><strong>window_width</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – sliding window width in degrees (default 0.5°).</p></li>
+<li><p><strong>window_step</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – step between window centres in degrees (default 0.1°).</p></li>
+<li><p><strong>window_detect_fraction</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – per-window detection floor for forming candidate
+windows and merging them into regions (default 0.003 = 0.3%).  This
+is intentionally lower than <code class="docutils literal notranslate"><span class="pre">integral_fraction</span></code> so that broad
+features are not penalised for being diffuse.</p></li>
+<li><p><strong>integral_fraction</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – merged-region threshold — a region is flagged only if
+its total integrated positive residual exceeds this fraction of the
+total integrated observed intensity (default 0.010 = 1.0%).</p></li>
+<li><p><strong>calc_profile_ratio</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – suppress a window if max(y_calc - y_bkg) inside it
+exceeds this fraction of max(y_obs) (default 0.03 = 3%).</p></li>
+<li><p><strong>calc_coverage_ratio</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – suppress a merged region when
+integrated(y_calc - y_bkg) / integrated(y_obs - y_bkg) over the
+merged span exceeds this fraction — the calc already accounts for
+this much of the observed area in that region (default 0.35).</p></li>
+<li><p><strong>matched_peak_positions</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – 1-D array of 2θ positions of already-identified
+missing or extra peaks (after all normal suppression).  Any merged
+region whose [start, end] span contains one of these positions is
+dropped — the feature has already been flagged by the matcher.</p></li>
+<li><p><strong>enabled</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – when False, skip all computation and return an empty (0, 4)
+array.  Default True reproduces normal behavior.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Array of shape (N, 2) with [center_2theta, 0.0] for each flagged region,
+formatted identically to missing-peak arrays for direct concatenation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="dara.search.peak_matcher.merge_peaks">
 <span class="sig-name descname"><span class="pre">merge_peaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peaks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/search/peak_matcher.html#merge_peaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.search.peak_matcher.merge_peaks" title="Link to this definition">#</a></dt>
 <dd><p>Merge peaks that are too close to each other (smaller than resolution).</p>
@@ -710,6 +809,23 @@ extra peaks in peak_calc)</p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>the merged peaks</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.search.peak_matcher.suppress_coincident_marker_pairs">
+<span class="sig-name descname"><span class="pre">suppress_coincident_marker_pairs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">missing_peaks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_peaks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.06</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/search/peak_matcher.html#suppress_coincident_marker_pairs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.search.peak_matcher.suppress_coincident_marker_pairs" title="Link to this definition">#</a></dt>
+<dd><p>Suppress missing/extra marker pairs within <em>tolerance</em> degrees of each other.</p>
+<p>Near-coincident missing+extra pairs indicate refinement position wobble: the
+model placed a reflection slightly off-angle rather than genuinely missing it.
+Both markers are dropped.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]</span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(missing_peaks, extra_peaks) with coincident pairs removed, same shapes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -776,7 +892,10 @@ extra peaks in peak_calc)</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.peak_matcher.absolute_log_error"><code class="docutils literal notranslate"><span class="pre">absolute_log_error()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.peak_matcher.distance_matrix"><code class="docutils literal notranslate"><span class="pre">distance_matrix()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.peak_matcher.find_best_match"><code class="docutils literal notranslate"><span class="pre">find_best_match()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.peak_matcher.find_intensity_mismatch_peaks"><code class="docutils literal notranslate"><span class="pre">find_intensity_mismatch_peaks()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.peak_matcher.find_residual_regions"><code class="docutils literal notranslate"><span class="pre">find_residual_regions()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.peak_matcher.merge_peaks"><code class="docutils literal notranslate"><span class="pre">merge_peaks()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.peak_matcher.suppress_coincident_marker_pairs"><code class="docutils literal notranslate"><span class="pre">suppress_coincident_marker_pairs()</span></code></a></li>
 </ul>
   </nav></div>
 
