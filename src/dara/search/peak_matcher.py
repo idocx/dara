@@ -524,8 +524,16 @@ class PeakMatcher:
 
         if len(peaks) == 0:
             return np.array([]).reshape(-1, 2)
+
+        # Guard against an empty observed-peak array: with no observed peaks
+        # there is no reference maximum, so no peak can pass the threshold.
+        if self.peak_obs.shape[0] == 0:
+            return np.array([]).reshape(-1, 2)
+
+        min_intensity = self.peak_obs[:, 1].max() * min_intensity_ratio
+
         if len(matched) == 0:
-            return peaks[peaks[:, 1] > min_intensity_ratio * self.peak_obs[:, 1].max()]
+            return peaks[peaks[:, 1] > min_intensity]
 
         distance = cdist(
             peaks[:, 0].reshape(-1, 1),
@@ -533,7 +541,6 @@ class PeakMatcher:
             metric="cityblock",
         )
         distance = np.min(distance, axis=1)
-        min_intensity = self.peak_obs[:, 1].max() * min_intensity_ratio
 
         return peaks[(distance > min_angle_difference) & (peaks[:, 1] > min_intensity)]
 
@@ -805,7 +812,7 @@ def find_intensity_mismatch_peaks(
         (N, 2) array of [obs_2theta, 0.0], same shape as missing_peaks
     """
     matched_pairs = pm._result["matched"]
-    if not matched_pairs:
+    if matched_pairs is None or len(matched_pairs) == 0:
         return np.empty((0, 2))
 
     profile_x      = np.asarray(profile_x,      dtype=float)
