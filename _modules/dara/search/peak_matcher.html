@@ -941,8 +941,16 @@
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">peaks</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># Guard against an empty observed-peak array: with no observed peaks</span>
+        <span class="c1"># there is no reference maximum, so no peak can pass the threshold.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">peak_obs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">min_intensity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">peak_obs</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">*</span> <span class="n">min_intensity_ratio</span>
+
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matched</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">peaks</span><span class="p">[</span><span class="n">peaks</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">min_intensity_ratio</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">peak_obs</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span>
+            <span class="k">return</span> <span class="n">peaks</span><span class="p">[</span><span class="n">peaks</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">min_intensity</span><span class="p">]</span>
 
         <span class="n">distance</span> <span class="o">=</span> <span class="n">cdist</span><span class="p">(</span>
             <span class="n">peaks</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
@@ -950,7 +958,6 @@
             <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;cityblock&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">distance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">distance</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">min_intensity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">peak_obs</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">*</span> <span class="n">min_intensity_ratio</span>
 
         <span class="k">return</span> <span class="n">peaks</span><span class="p">[(</span><span class="n">distance</span> <span class="o">&gt;</span> <span class="n">min_angle_difference</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">peaks</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">min_intensity</span><span class="p">)]</span></div>
 
@@ -1235,7 +1242,7 @@
 <span class="sd">        (N, 2) array of [obs_2theta, 0.0], same shape as missing_peaks</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">matched_pairs</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">_result</span><span class="p">[</span><span class="s2">&quot;matched&quot;</span><span class="p">]</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">matched_pairs</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">matched_pairs</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">matched_pairs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
 
     <span class="n">profile_x</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">profile_x</span><span class="p">,</span>      <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
