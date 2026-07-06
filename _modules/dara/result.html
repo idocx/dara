@@ -615,7 +615,12 @@
 
 <div class="viewcode-block" id="RefinementResult.visualize">
 <a class="viewcode-back" href="../../dara.result.html#dara.result.RefinementResult.visualize">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">visualize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">diff_offset</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">plot_refinement_metrics</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">visualize</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">diff_offset</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">plot_refinement_metrics</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">phase_colors</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Visualize the refinement result with plotly.</span>
 
 <span class="sd">        Args:</span>
@@ -639,8 +644,9 @@
                              <span class="n">missing_peaks</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">missing_peaks</span> <span class="k">if</span> <span class="n">metrics</span><span class="o">.</span><span class="n">missing_peaks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">placeholder</span><span class="p">,</span>
                              <span class="n">extra_peaks</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">extra_peaks</span> <span class="k">if</span> <span class="n">metrics</span><span class="o">.</span><span class="n">extra_peaks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">placeholder</span><span class="p">,</span>
                              <span class="n">intensity_mismatch_peaks</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">intensity_mismatch_peaks</span>
-                             <span class="k">if</span> <span class="n">metrics</span><span class="o">.</span><span class="n">intensity_mismatch_peaks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">placeholder</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">visualize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">diff_offset</span><span class="o">=</span><span class="n">diff_offset</span><span class="p">)</span></div>
+                             <span class="k">if</span> <span class="n">metrics</span><span class="o">.</span><span class="n">intensity_mismatch_peaks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">placeholder</span><span class="p">,</span>
+                             <span class="n">phase_colors</span><span class="o">=</span><span class="n">phase_colors</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">visualize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">diff_offset</span><span class="o">=</span><span class="n">diff_offset</span><span class="p">,</span> <span class="n">phase_colors</span><span class="o">=</span><span class="n">phase_colors</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="RefinementResult.get_phase_weights">

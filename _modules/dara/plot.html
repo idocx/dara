@@ -412,6 +412,7 @@
     <span class="n">missing_peaks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">extra_peaks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">intensity_mismatch_peaks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">phase_colors</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Visualize the result from the refinement. It uses plotly as the backend engine.</span>
 
@@ -506,6 +507,8 @@
         <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">colormap</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">colormap</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
 
+        <span class="n">color</span> <span class="o">=</span> <span class="p">(</span><span class="n">phase_colors</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">phase_name</span><span class="p">,</span> <span class="n">colormap</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
         <span class="n">name</span> <span class="o">=</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">phase_name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">weight_fractions</span><span class="p">[</span><span class="n">phase_name</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> %)&quot;</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">weight_fractions</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span>
@@ -516,7 +519,7 @@
                 <span class="n">x</span><span class="o">=</span><span class="n">plot_data</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
                 <span class="n">y</span><span class="o">=</span><span class="n">plot_data</span><span class="o">.</span><span class="n">y_bkg</span><span class="p">,</span>
                 <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;lines&quot;</span><span class="p">,</span>
-                <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">colormap</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">width</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+                <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
                 <span class="n">fill</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                 <span class="n">showlegend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                 <span class="n">hoverinfo</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
@@ -528,7 +531,7 @@
                 <span class="n">x</span><span class="o">=</span><span class="n">plot_data</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
                 <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">plot_data</span><span class="o">.</span><span class="n">y_bkg</span><span class="p">),</span>
                 <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;lines&quot;</span><span class="p">,</span>
-                <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">colormap</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">width</span><span class="o">=</span><span class="mf">1.5</span><span class="p">),</span>
+                <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">1.5</span><span class="p">),</span>
                 <span class="n">fill</span><span class="o">=</span><span class="s2">&quot;tonexty&quot;</span><span class="p">,</span>
                 <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
                 <span class="n">visible</span><span class="o">=</span><span class="s2">&quot;legendonly&quot;</span><span class="p">,</span>
@@ -545,7 +548,7 @@
                 <span class="n">marker</span><span class="o">=</span><span class="p">{</span>
                     <span class="s2">&quot;symbol&quot;</span><span class="p">:</span> <span class="mi">142</span><span class="p">,</span>
                     <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-                    <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="n">colormap</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                    <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="n">color</span><span class="p">,</span>
                 <span class="p">},</span>
                 <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
                 <span class="n">legendgroup</span><span class="o">=</span><span class="n">phase_name</span><span class="p">,</span>

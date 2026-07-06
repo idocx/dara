@@ -587,12 +587,17 @@
 
 <div class="viewcode-block" id="SearchResult.visualize">
 <a class="viewcode-back" href="../../../dara.search.data_model.html#dara.search.data_model.SearchResult.visualize">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">visualize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">diff_offset</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">visualize</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">diff_offset</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">phase_colors</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="k">return</span> <span class="n">visualize</span><span class="p">(</span>
             <span class="n">result</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">refinement_result</span><span class="p">,</span>
             <span class="n">diff_offset</span><span class="o">=</span><span class="n">diff_offset</span><span class="p">,</span>
             <span class="n">missing_peaks</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">missing_peaks</span><span class="p">,</span>
             <span class="n">extra_peaks</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">extra_peaks</span><span class="p">,</span>
+            <span class="n">phase_colors</span><span class="o">=</span><span class="n">phase_colors</span><span class="p">,</span>
         <span class="p">)</span></div>
 </div>
 
