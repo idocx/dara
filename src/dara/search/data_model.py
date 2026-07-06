@@ -167,10 +167,15 @@ class SearchResult(BaseModel):
             grouped_phases.append(grouped_phase_with_head)
         return grouped_phases
 
-    def visualize(self, diff_offset: bool = False):
+    def visualize(
+        self,
+        diff_offset: bool = False,
+        phase_colors: dict[str, str] | None = None,
+    ):
         return visualize(
             result=self.refinement_result,
             diff_offset=diff_offset,
             missing_peaks=self.missing_peaks,
             extra_peaks=self.extra_peaks,
+            phase_colors=phase_colors,
         )

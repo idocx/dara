@@ -195,7 +195,12 @@ class RefinementResult(BaseModel):
         """Create pandas dataframe from peak data dict."""
         return pd.DataFrame(data)
 
-    def visualize(self, diff_offset=False, plot_refinement_metrics: bool = True):
+    def visualize(
+        self,
+        diff_offset=False,
+        plot_refinement_metrics: bool = True,
+        phase_colors: dict[str, str] | None = None,
+    ):
         """Visualize the refinement result with plotly.
 
         Args:
@@ -219,8 +224,9 @@ class RefinementResult(BaseModel):
                              missing_peaks=metrics.missing_peaks if metrics.missing_peaks is not None else placeholder,
                              extra_peaks=metrics.extra_peaks if metrics.extra_peaks is not None else placeholder,
                              intensity_mismatch_peaks=metrics.intensity_mismatch_peaks
-                             if metrics.intensity_mismatch_peaks is not None else placeholder)
-        return visualize(self, diff_offset=diff_offset)
+                             if metrics.intensity_mismatch_peaks is not None else placeholder,
+                             phase_colors=phase_colors)
+        return visualize(self, diff_offset=diff_offset, phase_colors=phase_colors)
 
     def get_phase_weights(self, normalize=True) -> dict[str, float]:
         """Return the weights for each phase. Default is to normalize and return weight fractions.
