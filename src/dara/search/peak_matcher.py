@@ -27,7 +27,7 @@ RESIDUAL_INTEGRAL_FRACTION: float = 0.010
 RESIDUAL_CALC_COVERAGE_RATIO: float = 0.35
 
 
-def absolute_log_error(x: np.ndarray, y: np.ndarray) -> np.ndarray:
+def absolute_log_error(x: np.ndarray, y: np.ndarray) -> float:
     """
     Calculate the absolute error of two arrays in log space.
 
@@ -39,9 +39,11 @@ def absolute_log_error(x: np.ndarray, y: np.ndarray) -> np.ndarray:
     -------
         the absolute error in log space
     """
+    x = np.asarray(x, dtype=float)
+    y = np.asarray(y, dtype=float)
     x = np.clip(x, 1e-10, None)
     y = np.clip(y, 1e-10, None)
-    return np.abs(np.log(x) - np.log(y))
+    return float(np.abs(np.log(x) - np.log(y)))
 
 
 def distance_matrix(peaks1: np.ndarray, peaks2: np.ndarray) -> np.ndarray:
