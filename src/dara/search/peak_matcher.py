@@ -43,7 +43,7 @@ def absolute_log_error(x: np.ndarray, y: np.ndarray) -> float:
     y = np.asarray(y, dtype=float)
     x = np.clip(x, 1e-10, None)
     y = np.clip(y, 1e-10, None)
-    return float(np.abs(np.log(x) - np.log(y)))
+    return float(np.abs(np.log(x) - np.log(y)).item())
 
 
 def distance_matrix(peaks1: np.ndarray, peaks2: np.ndarray) -> np.ndarray:
