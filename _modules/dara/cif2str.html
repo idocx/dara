@@ -732,22 +732,67 @@
     <span class="sa">r</span><span class="s2">&quot;^-?\d+(?:\.\d+)?_-?\d+(?:\.\d+)?(?:\^-?\d+(?:\.\d+)?)?$&quot;</span>
 <span class="p">)</span>
 
+<span class="n">_ZERO_WIDTH_SPEC_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="sa">r</span><span class="s2">&quot;^\s*(-?\d+(?:\.\d+)?)_(-?\d+(?:\.\d+)?)\^(-?\d+(?:\.\d+)?)\s*$&quot;</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_fixed_peak_value</span><span class="p">(</span><span class="n">spec</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return V if ``spec`` is a zero-width window ``value_lo^hi`` with</span>
+<span class="sd">    lo == hi == value, meaning the parameter should be held FIXED at V.</span>
+
+<span class="sd">    Mirrors the ``lo == hi`` branch of ``make_lattice_parameters_str``: a</span>
+<span class="sd">    refinement window that cannot move is emitted as a bare (non-``PARAM=``)</span>
+<span class="sd">    assignment, fixing the parameter at that value rather than the CIF/0 default.</span>
+
+<span class="sd">    The full ``value_lo^hi`` form is required: shorthand specs like the default</span>
+<span class="sd">    ``&quot;0_0&quot;`` gewicht (a refinable weight fraction with an open upper bound) are</span>
+<span class="sd">    intentionally left refinable.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">_ZERO_WIDTH_SPEC_RE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">m</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">value</span><span class="p">,</span> <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="nb">float</span><span class="p">(</span><span class="n">lo</span><span class="p">)</span> <span class="o">==</span> <span class="nb">float</span><span class="p">(</span><span class="n">hi</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">value</span>
+    <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_peak_field</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">spec</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;One peak-parameter field: ``PARAM=name=spec`` (refinable), ``name=0``</span>
+<span class="sd">    (the ``&quot;fixed&quot;`` sentinel, held at 0), or ``name=V`` (held fixed at V, for</span>
+<span class="sd">    a zero-width numeric window).&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">spec</span> <span class="o">==</span> <span class="s2">&quot;fixed&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">=0 &quot;</span>
+    <span class="n">fixed_value</span> <span class="o">=</span> <span class="n">_fixed_peak_value</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">fixed_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">fixed_value</span><span class="si">}</span><span class="s2"> &quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;PARAM=</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">spec</span><span class="si">}</span><span class="s2"> &quot;</span>
+
+
 <div class="viewcode-block" id="make_peak_parameter_str">
 <a class="viewcode-back" href="../../dara.cif2str.html#dara.cif2str.make_peak_parameter_str">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">make_peak_parameter_str</span><span class="p">(</span><span class="n">k1</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">k2</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">b1</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">gewicht</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rp</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Make the peak parameter string.&quot;&quot;&quot;</span>
-    <span class="c1"># Numeric specs are refinable; symbolic specs are emitted as fixed names.</span>
-    <span class="n">gewicht_part</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;PARAM=GEWICHT=</span><span class="si">{</span><span class="n">gewicht</span><span class="si">}</span><span class="s2"> //&quot;</span>
-        <span class="k">if</span> <span class="n">_NUMERIC_GEWICHT_RE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">gewicht</span><span class="p">)</span>
-        <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;GEWICHT=</span><span class="si">{</span><span class="n">gewicht</span><span class="si">}</span><span class="s2"> //&quot;</span>
-    <span class="p">)</span>
+    <span class="c1"># Numeric specs are refinable; symbolic specs are emitted as fixed names;</span>
+    <span class="c1"># a zero-width numeric window (value_value^value) is held fixed at value.</span>
+    <span class="k">if</span> <span class="n">_NUMERIC_GEWICHT_RE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">gewicht</span><span class="p">):</span>
+        <span class="n">fixed_gewicht</span> <span class="o">=</span> <span class="n">_fixed_peak_value</span><span class="p">(</span><span class="n">gewicht</span><span class="p">)</span>
+        <span class="n">gewicht_part</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;GEWICHT=</span><span class="si">{</span><span class="n">fixed_gewicht</span><span class="si">}</span><span class="s2"> //&quot;</span>
+            <span class="k">if</span> <span class="n">fixed_gewicht</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;PARAM=GEWICHT=</span><span class="si">{</span><span class="n">gewicht</span><span class="si">}</span><span class="s2"> //&quot;</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">gewicht_part</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;GEWICHT=</span><span class="si">{</span><span class="n">gewicht</span><span class="si">}</span><span class="s2"> //&quot;</span>
 
     <span class="k">return</span> <span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;RP=</span><span class="si">{</span><span class="n">rp</span><span class="si">}</span><span class="s2"> &quot;</span>
-        <span class="o">+</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PARAM=k1=</span><span class="si">{</span><span class="n">k1</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="k">if</span> <span class="n">k1</span> <span class="o">!=</span> <span class="s2">&quot;fixed&quot;</span> <span class="k">else</span> <span class="s2">&quot;k1=0 &quot;</span><span class="p">)</span>
-        <span class="o">+</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PARAM=k2=</span><span class="si">{</span><span class="n">k2</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="k">if</span> <span class="n">k2</span> <span class="o">!=</span> <span class="s2">&quot;fixed&quot;</span> <span class="k">else</span> <span class="s2">&quot;k2=0 &quot;</span><span class="p">)</span>
-        <span class="o">+</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PARAM=B1=</span><span class="si">{</span><span class="n">b1</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="k">if</span> <span class="n">b1</span> <span class="o">!=</span> <span class="s2">&quot;fixed&quot;</span> <span class="k">else</span> <span class="s2">&quot;B1=0 &quot;</span><span class="p">)</span>
+        <span class="o">+</span> <span class="n">_peak_field</span><span class="p">(</span><span class="s2">&quot;k1&quot;</span><span class="p">,</span> <span class="n">k1</span><span class="p">)</span>
+        <span class="o">+</span> <span class="n">_peak_field</span><span class="p">(</span><span class="s2">&quot;k2&quot;</span><span class="p">,</span> <span class="n">k2</span><span class="p">)</span>
+        <span class="o">+</span> <span class="n">_peak_field</span><span class="p">(</span><span class="s2">&quot;B1&quot;</span><span class="p">,</span> <span class="n">b1</span><span class="p">)</span>
         <span class="o">+</span> <span class="n">gewicht_part</span>
     <span class="p">)</span></div>
 
