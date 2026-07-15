@@ -25,3 +25,7 @@ jobs:
         run: uv build
       - name: Publish
         run: uv publish
+      - name: Create GitHub Release
+        run: gh release create "${GITHUB_REF_NAME}" --generate-notes dist/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
