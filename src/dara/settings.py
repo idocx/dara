@@ -1,5 +1,7 @@
 """Default DARA settings. This approach was inspired by the atomate2 package."""
 
+from __future__ import annotations
+
 import warnings
 from pathlib import Path
 from typing import Optional

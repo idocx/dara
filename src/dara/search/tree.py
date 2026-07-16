@@ -968,57 +968,32 @@ class BaseSearchTree(Tree):
         minimal_result: RefinementResult,
     ) -> list[str]:
         """
-        Ensure a node exists in the tree for exactly `minimal_phases`
-        (already verified by the caller, via `is_recovery_material`, to fit
-        at least as well as the bloated branch it was recovered from), so the
-        search can continue from the minimal, redundancy-free combination
-        instead of dead-ending when `remove_unnecessary_phases` finds a
-        combination is only good because of a phase added earlier in the
-        branch, not because of the phase that was just added.
+        Ensure a node exists for exactly `minimal_phases`, so the search can
+        continue from a redundancy-free combination instead of dead-ending on
+        the bloated branch `minimal_result` was recovered from (see
+        `is_recovery_material`).
 
-        Must be called against a tree that has full visibility of the real
-        search tree (i.e. the orchestrator's tree in `search_phases`, after
-        merging a worker's subtree -- not from inside a ray-distributed
-        `expand_node` call, whose `self` is an isolated single-node subtree
-        with no other branches to check for reuse or valid ancestors to
-        attach to).
+        Must be called against the orchestrator's full tree (post-
+        `add_subtree`), not from inside a ray-distributed `expand_node`,
+        which only sees an isolated single-node subtree with no other
+        branches to check for reuse.
 
-        Walks `minimal_phases` from the root, reusing an existing child node
-        at each step if one with that exact phase-prefix already exists
-        (this is expected to be the common case -- e.g. the single-phase
-        prefix is very likely to already exist as some other branch's root
-        child), and only refining + creating a new node for the prefixes
-        that are actually missing. If an existing node is found, its current
-        status is left untouched -- the normal search already had its own,
-        more-informed chance to evaluate that exact combination, so this
-        does not attempt to reopen or override it.
-
-        A phase-matching node is only eligible for reuse if its status is in
+        Walks `minimal_phases` from the root, reusing an existing child at
+        each step if its phase-prefix already exists with a status in
         `_REUSABLE_ANCESTOR_STATUSES` (`"expanded"`, `"max_depth"`,
-        `"pending"`, or `"similar_structure"`) -- i.e. a status that either
-        already satisfies, or will eventually satisfy,
-        `get_all_possible_nodes_at_same_level`'s ancestor-status check
-        (`tree.py`). `"no_improvement"` and `"low_weight_fraction"` are
-        *not* reusable: those are normal terminal outcomes that are never
-        resubmitted for expansion by anything else in the codebase, so
-        attaching a new child under one would permanently strand it as an
-        unexpandable ancestor -- exactly the "Node ... is not expanded"
-        collection-time crash this check prevents. When the only
-        phase-matching node has one of these statuses, it is treated as if
-        no match were found, and a fresh node is refined and created for
-        that step instead, with its own proper `"pending"` -> `"expanded"`
-        lifecycle.
+        `"pending"`, `"similar_structure"`) -- statuses
+        `get_all_possible_nodes_at_same_level` accepts as valid ancestors.
+        `"no_improvement"`/`"low_weight_fraction"` nodes are never reused as
+        attachment points: nothing else in the codebase resubmits them for
+        expansion, so a child attached under one would be permanently
+        stranded, crashing collection with "Node ... is not expanded". A
+        fresh node is created instead.
 
         Returns
         -------
-            the identifiers of any newly-created nodes with status
-            `"pending"`. Reused (pre-existing) nodes are deliberately never
-            included, even if their own status happens to be `"pending"`:
-            such a node is already someone else's responsibility to enqueue
-            (either the search loop already queued it when it was first
-            created, or it's currently in flight on a ray worker) --
-            returning it again here would submit a second, duplicate
-            `expand_node` call for the same node id.
+            identifiers of newly-created `"pending"` nodes to enqueue. Reused
+            nodes are excluded even if `"pending"`, to avoid a duplicate
+            `expand_node` call for a node id already tracked elsewhere.
         """
         phases_to_add = [p for p in minimal_phases if p not in self.pinned_phases]
         if not phases_to_add:

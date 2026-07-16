@@ -112,29 +112,36 @@ def _attach_peak_markers(
         suppress_coincident_marker_pairs,
     )
 
-    edf      = detect_peaks(str(pattern_path), wavelength=wavelength,
-                            instrument_profile=str(instrument_profile))
-    obs_raw  = edf[["2theta", "intensity"]].values
+    edf = detect_peaks(str(pattern_path), wavelength=wavelength, instrument_profile=str(instrument_profile))
+    obs_raw = edf[["2theta", "intensity"]].values
     calc_raw = result.peak_data[["2theta", "intensity"]].values
 
-    px    = np.asarray(result.plot_data.x)
-    yobs  = np.asarray(result.plot_data.y_obs)
+    px = np.asarray(result.plot_data.x)
+    yobs = np.asarray(result.plot_data.y_obs)
     ycalc = np.asarray(result.plot_data.y_calc)
-    ybkg  = np.asarray(result.plot_data.y_bkg)
+    ybkg = np.asarray(result.plot_data.y_bkg)
 
-    pm = PeakMatcher(calc_raw, obs_raw, intensity_resolution=0.005,
-                     profile_x=px, profile_y_calc=ycalc,
-                     profile_y_obs=yobs, profile_y_bkg=ybkg)
+    pm = PeakMatcher(
+        calc_raw,
+        obs_raw,
+        intensity_resolution=0.005,
+        profile_x=px,
+        profile_y_calc=ycalc,
+        profile_y_obs=yobs,
+        profile_y_bkg=ybkg,
+    )
     miss_f, extra_f = suppress_coincident_marker_pairs(
         pm.get_isolated_peaks("missing", min_intensity_ratio=missing_intensity_ratio),
-        pm.get_isolated_peaks("extra",   min_intensity_ratio=extra_intensity_ratio),
+        pm.get_isolated_peaks("extra", min_intensity_ratio=extra_intensity_ratio),
     )
 
     parts = [a[:, 0] for a in (miss_f, extra_f) if len(a)]
     known = np.concatenate(parts) if parts else None
 
     residual = find_residual_regions(
-        px, yobs, ycalc,
+        px,
+        yobs,
+        ycalc,
         profile_y_bkg=ybkg,
         matched_peak_positions=known,
         enabled=use_residual,
@@ -143,12 +150,16 @@ def _attach_peak_markers(
         calc_coverage_ratio=residual_calc_coverage_ratio,
     )
 
-    miss_combined = np.vstack([miss_f, residual]) if len(residual) and len(miss_f) else (
-        residual if len(residual) else miss_f
+    miss_combined = (
+        np.vstack([miss_f, residual]) if len(residual) and len(miss_f) else (residual if len(residual) else miss_f)
     )
 
     mismatch = find_intensity_mismatch_peaks(
-        pm, px, yobs, ycalc, profile_y_bkg=ybkg,
+        pm,
+        px,
+        yobs,
+        ycalc,
+        profile_y_bkg=ybkg,
         height_tolerance=intensity_mismatch_height_tolerance,
         area_tolerance=intensity_mismatch_area_tolerance,
     )

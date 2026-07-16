@@ -144,15 +144,10 @@ def search_phases(
     max_worker = ray.cluster_resources()["CPU"]
     pending = [remote_expand_node(search_tree, search_tree.root)]
     to_be_submitted = deque()
-    # Tracks every node id that's either queued in `to_be_submitted` or has
-    # an in-flight ray task, so a node is never submitted for expansion more
-    # than once concurrently. `get_expandable_children` and
-    # `attempt_minimal_phase_recovery` can, between them, surface the same
-    # node id from two different angles in the same merge event (e.g. a
-    # recovery chain that reuses a node the normal search just created as a
-    # sibling); without this guard, a duplicate submission of the same node
-    # id crashes `expand_node`'s "not expandable" guard on whichever ray
-    # task loses the race to complete first.
+    # Tracks nodes queued or in-flight so `get_expandable_children` and
+    # `attempt_minimal_phase_recovery` can't both submit the same node id in
+    # one merge event -- a duplicate submission crashes `expand_node`'s
+    # "not expandable" guard on whichever task loses the race.
     queued_or_in_flight = {search_tree.root}
 
     def _enqueue(nid: str) -> None:
