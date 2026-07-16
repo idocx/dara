@@ -39,6 +39,20 @@ if TYPE_CHECKING:
 
 logger = get_logger(__name__, level="INFO")
 
+# Minimum relative Rwp improvement (over the parent node) required for a
+# newly-added phase to be kept despite being larger than a phase added
+# earlier in the same branch (see `is_low_weight_fraction` in `expand_node`).
+LOW_WEIGHT_FRACTION_MATERIAL_RWP_IMPROVEMENT = 0.10
+
+# Statuses that `_recover_minimal_phase_branch` may treat as a reusable
+# phase-prefix match: each either already satisfies, or will eventually
+# satisfy, `get_all_possible_nodes_at_same_level`'s ancestor-status check.
+# `"no_improvement"` and `"low_weight_fraction"` are deliberately excluded --
+# both are normal terminal outcomes that nothing else in the codebase ever
+# resubmits for expansion, so reusing one as a chain attachment point would
+# permanently strand it as an unexpandable ancestor.
+_REUSABLE_ANCESTOR_STATUSES = {"expanded", "max_depth", "pending", "similar_structure"}
+
 
 @ray.remote(num_cpus=1)
 def remote_do_refinement_no_saving(
@@ -129,8 +143,14 @@ def batch_refinement(
     phase_params: dict[str, ...] | None = None,
     refinement_params: dict[str, float] | None = None,
 ) -> list[RefinementResult]:
+    # Declare this task's real CPU cost as whatever `n_threads` its BGMN
+    # subprocess will actually use (falling back to the decorator's own
+    # num_cpus=1 default if not specified), so Ray's own scheduler throttles
+    # concurrency to match -- instead of always assuming num_cpus=1
+    # regardless of how many threads the task actually spawns.
+    n_threads = (refinement_params or {}).get("n_threads", 1)
     handles = [
-        remote_do_refinement_no_saving.remote(
+        remote_do_refinement_no_saving.options(num_cpus=n_threads).remote(
             pattern_path,
             cif_paths,
             wavelength=wavelength,
@@ -324,6 +344,101 @@ def remove_unnecessary_phases(
     return new_phases
 
 
+def find_minimal_phase_set(
+    new_phases: list[RefinementPhase],
+    necessary_paths: list[Path],
+) -> list[RefinementPhase]:
+    """
+    Return the subsequence of `new_phases` whose paths were flagged as
+    necessary by `remove_unnecessary_phases`, preserving the original order.
+
+    `remove_unnecessary_phases` tests removing each phase *individually*, so
+    it does not by itself guarantee that dropping every flagged-removable
+    phase *simultaneously* still fits well -- that must be checked separately
+    (see `is_recovery_material`) by actually refining the returned subset.
+    """
+    necessary_set = set(necessary_paths)
+    return [phase for phase in new_phases if phase.path in necessary_set]
+
+
+def is_recovery_material(
+    minimal_result: RefinementResult,
+    original_result: RefinementResult,
+    rpb_threshold: float,
+) -> bool:
+    """
+    Whether a reduced (redundancy-free) phase combination fits at least as
+    well, within noise, as the bloated combination it was derived from.
+
+    Used to gate whether a minimal-phase-set recovery node should actually be
+    added to the search tree: `remove_unnecessary_phases` only proves each
+    dropped phase is individually dispensable, not that the fit survives
+    dropping all of them together, so this checks the *actual* refined result
+    of the reduced set before it's allowed to re-enter the search.
+    """
+    return minimal_result.lst_data.rpb <= original_result.lst_data.rpb + rpb_threshold
+
+
+def check_low_weight_fraction(
+    new_phases: list[RefinementPhase],
+    pinned_phases: list[RefinementPhase],
+    new_result: RefinementResult,
+    parent_result: RefinementResult | None,
+) -> bool:
+    """
+    Decide whether a branch should be flagged as a suspicious low-weight-fraction
+    addition.
+
+    Phases are expected to be discovered in roughly decreasing order of
+    abundance (the naive peak-match search tends to find the biggest
+    contributor to the pattern first), so a newly-added phase that turns out
+    to have *more* calculated peak intensity than a phase added earlier in the
+    same branch is treated as suspicious -- it could mean the refinement is
+    using this phase to absorb residual intensity that doesn't belong to it
+    (overfitting), rather than genuinely explaining new pattern features.
+
+    But that's only actually suspicious if the phase isn't earning its keep.
+    If adding it materially improved the fit (Rwp) over the parent node, the
+    improvement is real signal, not an artifact, regardless of what order the
+    search happened to try phases in -- so the branch is kept.
+
+    Args:
+        new_phases: the full phase list at the new (child) node, in the order
+            they were added.
+        pinned_phases: phases that are excluded from the ordering check (they
+            are present in every branch, so their position carries no
+            information about search order).
+        new_result: the refinement result at the new (child) node.
+        parent_result: the refinement result at the parent node, or None if
+            the parent is the (unrefined) root.
+
+    Returns
+    -------
+        True if the branch should be flagged as a low-weight-fraction
+        (suspicious) addition.
+    """
+    searched_phases = [p for p in new_phases if p not in pinned_phases]
+    sorted_searched_phases = sorted(
+        searched_phases,
+        key=lambda phase: new_result.peak_data[
+            new_result.peak_data["phase"] == phase.path.stem
+        ]["intensity"].sum(),
+        reverse=True,
+    )
+    newest_phase_out_of_order = sorted_searched_phases[-1] != searched_phases[-1]
+
+    if not newest_phase_out_of_order or parent_result is None:
+        return newest_phase_out_of_order
+
+    parent_rwp = parent_result.lst_data.rwp
+    new_rwp = new_result.lst_data.rwp
+    material_improvement = parent_rwp > 0 and (
+        (parent_rwp - new_rwp) / parent_rwp
+        >= LOW_WEIGHT_FRACTION_MATERIAL_RWP_IMPROVEMENT
+    )
+    return not material_improvement
+
+
 def get_natural_break_results(
     results: list[SearchResult], sorting: bool = True
 ) -> list[SearchResult]:
@@ -413,6 +528,18 @@ class BaseSearchTree(Tree):
         self.all_phases_result = all_phases_result
         self.peak_obs = peak_obs
 
+        # Recovery nodes (see `_recover_minimal_phase_branch`) are created
+        # outside the normal per-candidate sibling loop in `expand_node`, so
+        # they need `group_id`s that can't collide with the small
+        # non-negative integers `AgglomerativeClustering` assigns to real
+        # sibling groups at the same tree level.
+        self._recovery_group_id_counter = 10**6
+
+    def _next_recovery_group_id(self) -> int:
+        group_id = self._recovery_group_id_counter
+        self._recovery_group_id_counter += 1
+        return group_id
+
     def expand_node(self, nid: str) -> list[str]:
         """
         Expand a node in the search tree.
@@ -481,19 +608,11 @@ class BaseSearchTree(Tree):
                 )
 
                 if new_result is not None:
-                    searched_phases = [
-                        p for p in new_phases if p not in self.pinned_phases
-                    ]
-                    sorted_searched_phases = sorted(
-                        searched_phases,
-                        key=lambda phase: new_result.peak_data[
-                            new_result.peak_data["phase"] == phase.path.stem
-                        ]["intensity"].sum(),
-                        reverse=True,
-                    )
-                    # make sure the newly added phase has the lowest peak intensity
-                    is_low_weight_fraction = (
-                        sorted_searched_phases[-1] != searched_phases[-1]
+                    is_low_weight_fraction = check_low_weight_fraction(
+                        new_phases,
+                        self.pinned_phases,
+                        new_result,
+                        node.data.current_result,
                     )
                 else:
                     is_low_weight_fraction = False
@@ -843,6 +962,114 @@ class BaseSearchTree(Tree):
             refinement_params=self.refinement_params,
         )
 
+    def _recover_minimal_phase_branch(
+        self,
+        minimal_phases: list[RefinementPhase],
+        minimal_result: RefinementResult,
+    ) -> list[str]:
+        """
+        Ensure a node exists in the tree for exactly `minimal_phases`
+        (already verified by the caller, via `is_recovery_material`, to fit
+        at least as well as the bloated branch it was recovered from), so the
+        search can continue from the minimal, redundancy-free combination
+        instead of dead-ending when `remove_unnecessary_phases` finds a
+        combination is only good because of a phase added earlier in the
+        branch, not because of the phase that was just added.
+
+        Must be called against a tree that has full visibility of the real
+        search tree (i.e. the orchestrator's tree in `search_phases`, after
+        merging a worker's subtree -- not from inside a ray-distributed
+        `expand_node` call, whose `self` is an isolated single-node subtree
+        with no other branches to check for reuse or valid ancestors to
+        attach to).
+
+        Walks `minimal_phases` from the root, reusing an existing child node
+        at each step if one with that exact phase-prefix already exists
+        (this is expected to be the common case -- e.g. the single-phase
+        prefix is very likely to already exist as some other branch's root
+        child), and only refining + creating a new node for the prefixes
+        that are actually missing. If an existing node is found, its current
+        status is left untouched -- the normal search already had its own,
+        more-informed chance to evaluate that exact combination, so this
+        does not attempt to reopen or override it.
+
+        A phase-matching node is only eligible for reuse if its status is in
+        `_REUSABLE_ANCESTOR_STATUSES` (`"expanded"`, `"max_depth"`,
+        `"pending"`, or `"similar_structure"`) -- i.e. a status that either
+        already satisfies, or will eventually satisfy,
+        `get_all_possible_nodes_at_same_level`'s ancestor-status check
+        (`tree.py`). `"no_improvement"` and `"low_weight_fraction"` are
+        *not* reusable: those are normal terminal outcomes that are never
+        resubmitted for expansion by anything else in the codebase, so
+        attaching a new child under one would permanently strand it as an
+        unexpandable ancestor -- exactly the "Node ... is not expanded"
+        collection-time crash this check prevents. When the only
+        phase-matching node has one of these statuses, it is treated as if
+        no match were found, and a fresh node is refined and created for
+        that step instead, with its own proper `"pending"` -> `"expanded"`
+        lifecycle.
+
+        Returns
+        -------
+            the identifiers of any newly-created nodes with status
+            `"pending"`. Reused (pre-existing) nodes are deliberately never
+            included, even if their own status happens to be `"pending"`:
+            such a node is already someone else's responsibility to enqueue
+            (either the search loop already queued it when it was first
+            created, or it's currently in flight on a ray worker) --
+            returning it again here would submit a second, duplicate
+            `expand_node` call for the same node id.
+        """
+        phases_to_add = [p for p in minimal_phases if p not in self.pinned_phases]
+        if not phases_to_add:
+            return []
+
+        newly_pending_nids = []
+        current_nid = self.root
+        accumulated = list(self.pinned_phases)
+        for i, phase in enumerate(phases_to_add):
+            accumulated = [*accumulated, phase]
+            is_last = i == len(phases_to_add) - 1
+
+            existing = next(
+                (
+                    child
+                    for child in self.children(current_nid)
+                    if child.data.current_phases == accumulated
+                    and child.data.status in _REUSABLE_ANCESTOR_STATUSES
+                ),
+                None,
+            )
+            if existing is not None:
+                current_nid = existing.identifier
+                continue
+
+            if is_last:
+                result = minimal_result
+            else:
+                result = self._batch_refine([accumulated])[0]
+                if result is None:
+                    return newly_pending_nids
+
+            fom, lattice_strain = calculate_fom_and_strain(phase, result)
+            status = "pending" if len(accumulated) < self.max_phases else "max_depth"
+            new_node = self.create_node(
+                data=SearchNodeData(
+                    current_result=result,
+                    current_phases=accumulated,
+                    status=status,
+                    group_id=self._next_recovery_group_id(),
+                    fom=fom,
+                    lattice_strain=lattice_strain,
+                ),
+                parent=current_nid,
+            )
+            current_nid = new_node.identifier
+            if status == "pending":
+                newly_pending_nids.append(current_nid)
+
+        return newly_pending_nids
+
     def _clone(self, identifier=None, with_tree=False, deep=False):
         return self.__class__(
             identifier=identifier,
@@ -926,6 +1153,70 @@ class BaseSearchTree(Tree):
 
         self.merge(nid=anchor_nid, new_tree=search_tree, deep=False)
         self.update_node(anchor_nid, data=search_tree.get_node(search_tree.root).data)
+
+
+def attempt_minimal_phase_recovery(
+    search_tree: BaseSearchTree, anchor_nid: str
+) -> list[str]:
+    """
+    Look for `"no_improvement"` nodes just merged under `anchor_nid` whose
+    status came from `remove_unnecessary_phases` finding a redundant phase
+    (as opposed to, or in addition to, insufficient Rwp improvement over the
+    parent), and recover the minimal, redundancy-free phase combination
+    hiding inside each one, if it actually fits at least as well.
+
+    Must be called against the orchestrator's real search tree (full
+    visibility of every branch explored so far), after
+    `search_tree.add_subtree(anchor_nid, ...)` has merged a worker's
+    completed `expand_node` call -- not from inside `expand_node` itself,
+    which only ever sees an isolated single-node subtree and cannot safely
+    determine where a recovered branch actually belongs in the real tree
+    (see `BaseSearchTree._recover_minimal_phase_branch`).
+
+    Args:
+        search_tree: the orchestrator's full search tree.
+        anchor_nid: the node whose newly-merged children should be checked.
+
+    Returns
+    -------
+        the identifiers of newly-*created* nodes with status `"pending"`
+        (see `BaseSearchTree._recover_minimal_phase_branch`), i.e. ones the
+        caller should enqueue for further expansion. Reused/pre-existing
+        nodes are never included, even if `"pending"`, to avoid submitting a
+        duplicate `expand_node` call for a node id already tracked elsewhere.
+    """
+    newly_pending = []
+
+    for child in search_tree.children(anchor_nid):
+        if child.data.status != "no_improvement" or child.data.current_result is None:
+            continue
+
+        new_phases = child.data.current_phases
+        necessary_paths = remove_unnecessary_phases(
+            child.data.current_result,
+            [p.path for p in new_phases],
+            search_tree.rpb_threshold,
+        )
+        if len(necessary_paths) == len(new_phases):
+            continue  # no_improvement was purely from insufficient Rwp improvement
+
+        minimal_phases = find_minimal_phase_set(new_phases, necessary_paths)
+        if len(minimal_phases) >= len(new_phases):
+            continue
+
+        minimal_result = search_tree._batch_refine([minimal_phases])[0]
+        if minimal_result is None:
+            continue
+        if not is_recovery_material(
+            minimal_result, child.data.current_result, search_tree.rpb_threshold
+        ):
+            continue
+
+        newly_pending.extend(
+            search_tree._recover_minimal_phase_branch(minimal_phases, minimal_result)
+        )
+
+    return newly_pending
 
 
 class SearchTree(BaseSearchTree):
