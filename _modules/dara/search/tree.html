@@ -268,6 +268,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../dara.peak_detection.html">dara.peak_detection module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../dara.plot.html">dara.plot module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../dara.refine.html">dara.refine module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dara.resource_detection.html">dara.resource_detection module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../dara.result.html">dara.result module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../dara.schema.html">dara.schema module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../dara.settings.html">dara.settings module</a></li>
@@ -434,6 +435,20 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">)</span>
 
+<span class="c1"># Minimum relative Rwp improvement (over the parent node) required for a</span>
+<span class="c1"># newly-added phase to be kept despite being larger than a phase added</span>
+<span class="c1"># earlier in the same branch (see `is_low_weight_fraction` in `expand_node`).</span>
+<span class="n">LOW_WEIGHT_FRACTION_MATERIAL_RWP_IMPROVEMENT</span> <span class="o">=</span> <span class="mf">0.10</span>
+
+<span class="c1"># Statuses that `_recover_minimal_phase_branch` may treat as a reusable</span>
+<span class="c1"># phase-prefix match: each either already satisfies, or will eventually</span>
+<span class="c1"># satisfy, `get_all_possible_nodes_at_same_level`&#39;s ancestor-status check.</span>
+<span class="c1"># `&quot;no_improvement&quot;` and `&quot;low_weight_fraction&quot;` are deliberately excluded --</span>
+<span class="c1"># both are normal terminal outcomes that nothing else in the codebase ever</span>
+<span class="c1"># resubmits for expansion, so reusing one as a chain attachment point would</span>
+<span class="c1"># permanently strand it as an unexpandable ancestor.</span>
+<span class="n">_REUSABLE_ANCESTOR_STATUSES</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;expanded&quot;</span><span class="p">,</span> <span class="s2">&quot;max_depth&quot;</span><span class="p">,</span> <span class="s2">&quot;pending&quot;</span><span class="p">,</span> <span class="s2">&quot;similar_structure&quot;</span><span class="p">}</span>
+
 
 <span class="nd">@ray</span><span class="o">.</span><span class="n">remote</span><span class="p">(</span><span class="n">num_cpus</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">remote_do_refinement_no_saving</span><span class="p">(</span>
@@ -529,8 +544,14 @@
     <span class="n">phase_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">refinement_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">RefinementResult</span><span class="p">]:</span>
+    <span class="c1"># Declare this task&#39;s real CPU cost as whatever `n_threads` its BGMN</span>
+    <span class="c1"># subprocess will actually use (falling back to the decorator&#39;s own</span>
+    <span class="c1"># num_cpus=1 default if not specified), so Ray&#39;s own scheduler throttles</span>
+    <span class="c1"># concurrency to match -- instead of always assuming num_cpus=1</span>
+    <span class="c1"># regardless of how many threads the task actually spawns.</span>
+    <span class="n">n_threads</span> <span class="o">=</span> <span class="p">(</span><span class="n">refinement_params</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;n_threads&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">handles</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">remote_do_refinement_no_saving</span><span class="o">.</span><span class="n">remote</span><span class="p">(</span>
+        <span class="n">remote_do_refinement_no_saving</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="n">num_cpus</span><span class="o">=</span><span class="n">n_threads</span><span class="p">)</span><span class="o">.</span><span class="n">remote</span><span class="p">(</span>
             <span class="n">pattern_path</span><span class="p">,</span>
             <span class="n">cif_paths</span><span class="p">,</span>
             <span class="n">wavelength</span><span class="o">=</span><span class="n">wavelength</span><span class="p">,</span>
@@ -734,6 +755,110 @@
 
 
 
+<div class="viewcode-block" id="find_minimal_phase_set">
+<a class="viewcode-back" href="../../../dara.search.tree.html#dara.search.tree.find_minimal_phase_set">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_minimal_phase_set</span><span class="p">(</span>
+    <span class="n">new_phases</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RefinementPhase</span><span class="p">],</span>
+    <span class="n">necessary_paths</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">RefinementPhase</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the subsequence of `new_phases` whose paths were flagged as</span>
+<span class="sd">    necessary by `remove_unnecessary_phases`, preserving the original order.</span>
+
+<span class="sd">    `remove_unnecessary_phases` tests removing each phase *individually*, so</span>
+<span class="sd">    it does not by itself guarantee that dropping every flagged-removable</span>
+<span class="sd">    phase *simultaneously* still fits well -- that must be checked separately</span>
+<span class="sd">    (see `is_recovery_material`) by actually refining the returned subset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">necessary_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">necessary_paths</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">phase</span> <span class="k">for</span> <span class="n">phase</span> <span class="ow">in</span> <span class="n">new_phases</span> <span class="k">if</span> <span class="n">phase</span><span class="o">.</span><span class="n">path</span> <span class="ow">in</span> <span class="n">necessary_set</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="is_recovery_material">
+<a class="viewcode-back" href="../../../dara.search.tree.html#dara.search.tree.is_recovery_material">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_recovery_material</span><span class="p">(</span>
+    <span class="n">minimal_result</span><span class="p">:</span> <span class="n">RefinementResult</span><span class="p">,</span>
+    <span class="n">original_result</span><span class="p">:</span> <span class="n">RefinementResult</span><span class="p">,</span>
+    <span class="n">rpb_threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Whether a reduced (redundancy-free) phase combination fits at least as</span>
+<span class="sd">    well, within noise, as the bloated combination it was derived from.</span>
+
+<span class="sd">    Used to gate whether a minimal-phase-set recovery node should actually be</span>
+<span class="sd">    added to the search tree: `remove_unnecessary_phases` only proves each</span>
+<span class="sd">    dropped phase is individually dispensable, not that the fit survives</span>
+<span class="sd">    dropping all of them together, so this checks the *actual* refined result</span>
+<span class="sd">    of the reduced set before it&#39;s allowed to re-enter the search.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">minimal_result</span><span class="o">.</span><span class="n">lst_data</span><span class="o">.</span><span class="n">rpb</span> <span class="o">&lt;=</span> <span class="n">original_result</span><span class="o">.</span><span class="n">lst_data</span><span class="o">.</span><span class="n">rpb</span> <span class="o">+</span> <span class="n">rpb_threshold</span></div>
+
+
+
+<div class="viewcode-block" id="check_low_weight_fraction">
+<a class="viewcode-back" href="../../../dara.search.tree.html#dara.search.tree.check_low_weight_fraction">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_low_weight_fraction</span><span class="p">(</span>
+    <span class="n">new_phases</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RefinementPhase</span><span class="p">],</span>
+    <span class="n">pinned_phases</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RefinementPhase</span><span class="p">],</span>
+    <span class="n">new_result</span><span class="p">:</span> <span class="n">RefinementResult</span><span class="p">,</span>
+    <span class="n">parent_result</span><span class="p">:</span> <span class="n">RefinementResult</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decide whether a branch should be flagged as a suspicious low-weight-fraction</span>
+<span class="sd">    addition.</span>
+
+<span class="sd">    Phases are expected to be discovered in roughly decreasing order of</span>
+<span class="sd">    abundance (the naive peak-match search tends to find the biggest</span>
+<span class="sd">    contributor to the pattern first), so a newly-added phase that turns out</span>
+<span class="sd">    to have *more* calculated peak intensity than a phase added earlier in the</span>
+<span class="sd">    same branch is treated as suspicious -- it could mean the refinement is</span>
+<span class="sd">    using this phase to absorb residual intensity that doesn&#39;t belong to it</span>
+<span class="sd">    (overfitting), rather than genuinely explaining new pattern features.</span>
+
+<span class="sd">    But that&#39;s only actually suspicious if the phase isn&#39;t earning its keep.</span>
+<span class="sd">    If adding it materially improved the fit (Rwp) over the parent node, the</span>
+<span class="sd">    improvement is real signal, not an artifact, regardless of what order the</span>
+<span class="sd">    search happened to try phases in -- so the branch is kept.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        new_phases: the full phase list at the new (child) node, in the order</span>
+<span class="sd">            they were added.</span>
+<span class="sd">        pinned_phases: phases that are excluded from the ordering check (they</span>
+<span class="sd">            are present in every branch, so their position carries no</span>
+<span class="sd">            information about search order).</span>
+<span class="sd">        new_result: the refinement result at the new (child) node.</span>
+<span class="sd">        parent_result: the refinement result at the parent node, or None if</span>
+<span class="sd">            the parent is the (unrefined) root.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        True if the branch should be flagged as a low-weight-fraction</span>
+<span class="sd">        (suspicious) addition.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">searched_phases</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">new_phases</span> <span class="k">if</span> <span class="n">p</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pinned_phases</span><span class="p">]</span>
+    <span class="n">sorted_searched_phases</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+        <span class="n">searched_phases</span><span class="p">,</span>
+        <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">phase</span><span class="p">:</span> <span class="n">new_result</span><span class="o">.</span><span class="n">peak_data</span><span class="p">[</span>
+            <span class="n">new_result</span><span class="o">.</span><span class="n">peak_data</span><span class="p">[</span><span class="s2">&quot;phase&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">phase</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">stem</span>
+        <span class="p">][</span><span class="s2">&quot;intensity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span>
+        <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">newest_phase_out_of_order</span> <span class="o">=</span> <span class="n">sorted_searched_phases</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">searched_phases</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">newest_phase_out_of_order</span> <span class="ow">or</span> <span class="n">parent_result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">newest_phase_out_of_order</span>
+
+    <span class="n">parent_rwp</span> <span class="o">=</span> <span class="n">parent_result</span><span class="o">.</span><span class="n">lst_data</span><span class="o">.</span><span class="n">rwp</span>
+    <span class="n">new_rwp</span> <span class="o">=</span> <span class="n">new_result</span><span class="o">.</span><span class="n">lst_data</span><span class="o">.</span><span class="n">rwp</span>
+    <span class="n">material_improvement</span> <span class="o">=</span> <span class="n">parent_rwp</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">parent_rwp</span> <span class="o">-</span> <span class="n">new_rwp</span><span class="p">)</span> <span class="o">/</span> <span class="n">parent_rwp</span>
+        <span class="o">&gt;=</span> <span class="n">LOW_WEIGHT_FRACTION_MATERIAL_RWP_IMPROVEMENT</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="ow">not</span> <span class="n">material_improvement</span></div>
+
+
+
 <div class="viewcode-block" id="get_natural_break_results">
 <a class="viewcode-back" href="../../../dara.search.tree.html#dara.search.tree.get_natural_break_results">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_natural_break_results</span><span class="p">(</span>
@@ -828,6 +953,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">all_phases_result</span> <span class="o">=</span> <span class="n">all_phases_result</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">peak_obs</span> <span class="o">=</span> <span class="n">peak_obs</span>
 
+        <span class="c1"># Recovery nodes (see `_recover_minimal_phase_branch`) are created</span>
+        <span class="c1"># outside the normal per-candidate sibling loop in `expand_node`, so</span>
+        <span class="c1"># they need `group_id`s that can&#39;t collide with the small</span>
+        <span class="c1"># non-negative integers `AgglomerativeClustering` assigns to real</span>
+        <span class="c1"># sibling groups at the same tree level.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_recovery_group_id_counter</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="mi">6</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_next_recovery_group_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="n">group_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recovery_group_id_counter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_recovery_group_id_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">group_id</span>
+
 <div class="viewcode-block" id="BaseSearchTree.expand_node">
 <a class="viewcode-back" href="../../../dara.search.tree.html#dara.search.tree.BaseSearchTree.expand_node">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">expand_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
@@ -898,19 +1035,11 @@
                 <span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">new_result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">searched_phases</span> <span class="o">=</span> <span class="p">[</span>
-                        <span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">new_phases</span> <span class="k">if</span> <span class="n">p</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pinned_phases</span>
-                    <span class="p">]</span>
-                    <span class="n">sorted_searched_phases</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
-                        <span class="n">searched_phases</span><span class="p">,</span>
-                        <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">phase</span><span class="p">:</span> <span class="n">new_result</span><span class="o">.</span><span class="n">peak_data</span><span class="p">[</span>
-                            <span class="n">new_result</span><span class="o">.</span><span class="n">peak_data</span><span class="p">[</span><span class="s2">&quot;phase&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">phase</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">stem</span>
-                        <span class="p">][</span><span class="s2">&quot;intensity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span>
-                        <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                    <span class="p">)</span>
-                    <span class="c1"># make sure the newly added phase has the lowest peak intensity</span>
-                    <span class="n">is_low_weight_fraction</span> <span class="o">=</span> <span class="p">(</span>
-                        <span class="n">sorted_searched_phases</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">searched_phases</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">is_low_weight_fraction</span> <span class="o">=</span> <span class="n">check_low_weight_fraction</span><span class="p">(</span>
+                        <span class="n">new_phases</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">pinned_phases</span><span class="p">,</span>
+                        <span class="n">new_result</span><span class="p">,</span>
+                        <span class="n">node</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">current_result</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">is_low_weight_fraction</span> <span class="o">=</span> <span class="kc">False</span>
@@ -1279,6 +1408,89 @@
             <span class="n">refinement_params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">refinement_params</span><span class="p">,</span>
         <span class="p">)</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_recover_minimal_phase_branch</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">minimal_phases</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RefinementPhase</span><span class="p">],</span>
+        <span class="n">minimal_result</span><span class="p">:</span> <span class="n">RefinementResult</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ensure a node exists for exactly `minimal_phases`, so the search can</span>
+<span class="sd">        continue from a redundancy-free combination instead of dead-ending on</span>
+<span class="sd">        the bloated branch `minimal_result` was recovered from (see</span>
+<span class="sd">        `is_recovery_material`).</span>
+
+<span class="sd">        Must be called against the orchestrator&#39;s full tree (post-</span>
+<span class="sd">        `add_subtree`), not from inside a ray-distributed `expand_node`,</span>
+<span class="sd">        which only sees an isolated single-node subtree with no other</span>
+<span class="sd">        branches to check for reuse.</span>
+
+<span class="sd">        Walks `minimal_phases` from the root, reusing an existing child at</span>
+<span class="sd">        each step if its phase-prefix already exists with a status in</span>
+<span class="sd">        `_REUSABLE_ANCESTOR_STATUSES` (`&quot;expanded&quot;`, `&quot;max_depth&quot;`,</span>
+<span class="sd">        `&quot;pending&quot;`, `&quot;similar_structure&quot;`) -- statuses</span>
+<span class="sd">        `get_all_possible_nodes_at_same_level` accepts as valid ancestors.</span>
+<span class="sd">        `&quot;no_improvement&quot;`/`&quot;low_weight_fraction&quot;` nodes are never reused as</span>
+<span class="sd">        attachment points: nothing else in the codebase resubmits them for</span>
+<span class="sd">        expansion, so a child attached under one would be permanently</span>
+<span class="sd">        stranded, crashing collection with &quot;Node ... is not expanded&quot;. A</span>
+<span class="sd">        fresh node is created instead.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">            identifiers of newly-created `&quot;pending&quot;` nodes to enqueue. Reused</span>
+<span class="sd">            nodes are excluded even if `&quot;pending&quot;`, to avoid a duplicate</span>
+<span class="sd">            `expand_node` call for a node id already tracked elsewhere.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">phases_to_add</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">minimal_phases</span> <span class="k">if</span> <span class="n">p</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pinned_phases</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">phases_to_add</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="n">newly_pending_nids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">current_nid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span>
+        <span class="n">accumulated</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinned_phases</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">phase</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">phases_to_add</span><span class="p">):</span>
+            <span class="n">accumulated</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="n">accumulated</span><span class="p">,</span> <span class="n">phase</span><span class="p">]</span>
+            <span class="n">is_last</span> <span class="o">=</span> <span class="n">i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">phases_to_add</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+
+            <span class="n">existing</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="n">child</span>
+                    <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">(</span><span class="n">current_nid</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">child</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">current_phases</span> <span class="o">==</span> <span class="n">accumulated</span>
+                    <span class="ow">and</span> <span class="n">child</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">status</span> <span class="ow">in</span> <span class="n">_REUSABLE_ANCESTOR_STATUSES</span>
+                <span class="p">),</span>
+                <span class="kc">None</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">existing</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">current_nid</span> <span class="o">=</span> <span class="n">existing</span><span class="o">.</span><span class="n">identifier</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">is_last</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">minimal_result</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_batch_refine</span><span class="p">([</span><span class="n">accumulated</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">newly_pending_nids</span>
+
+            <span class="n">fom</span><span class="p">,</span> <span class="n">lattice_strain</span> <span class="o">=</span> <span class="n">calculate_fom_and_strain</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;pending&quot;</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">accumulated</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_phases</span> <span class="k">else</span> <span class="s2">&quot;max_depth&quot;</span>
+            <span class="n">new_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_node</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">SearchNodeData</span><span class="p">(</span>
+                    <span class="n">current_result</span><span class="o">=</span><span class="n">result</span><span class="p">,</span>
+                    <span class="n">current_phases</span><span class="o">=</span><span class="n">accumulated</span><span class="p">,</span>
+                    <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
+                    <span class="n">group_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_next_recovery_group_id</span><span class="p">(),</span>
+                    <span class="n">fom</span><span class="o">=</span><span class="n">fom</span><span class="p">,</span>
+                    <span class="n">lattice_strain</span><span class="o">=</span><span class="n">lattice_strain</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">parent</span><span class="o">=</span><span class="n">current_nid</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">current_nid</span> <span class="o">=</span> <span class="n">new_node</span><span class="o">.</span><span class="n">identifier</span>
+            <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;pending&quot;</span><span class="p">:</span>
+                <span class="n">newly_pending_nids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_nid</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">newly_pending_nids</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_clone</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">with_tree</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span>
             <span class="n">identifier</span><span class="o">=</span><span class="n">identifier</span><span class="p">,</span>
@@ -1368,6 +1580,73 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">nid</span><span class="o">=</span><span class="n">anchor_nid</span><span class="p">,</span> <span class="n">new_tree</span><span class="o">=</span><span class="n">search_tree</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_node</span><span class="p">(</span><span class="n">anchor_nid</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">search_tree</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">search_tree</span><span class="o">.</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
 </div>
+
+
+
+<div class="viewcode-block" id="attempt_minimal_phase_recovery">
+<a class="viewcode-back" href="../../../dara.search.tree.html#dara.search.tree.attempt_minimal_phase_recovery">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">attempt_minimal_phase_recovery</span><span class="p">(</span>
+    <span class="n">search_tree</span><span class="p">:</span> <span class="n">BaseSearchTree</span><span class="p">,</span> <span class="n">anchor_nid</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Look for `&quot;no_improvement&quot;` nodes just merged under `anchor_nid` whose</span>
+<span class="sd">    status came from `remove_unnecessary_phases` finding a redundant phase</span>
+<span class="sd">    (as opposed to, or in addition to, insufficient Rwp improvement over the</span>
+<span class="sd">    parent), and recover the minimal, redundancy-free phase combination</span>
+<span class="sd">    hiding inside each one, if it actually fits at least as well.</span>
+
+<span class="sd">    Must be called against the orchestrator&#39;s real search tree (full</span>
+<span class="sd">    visibility of every branch explored so far), after</span>
+<span class="sd">    `search_tree.add_subtree(anchor_nid, ...)` has merged a worker&#39;s</span>
+<span class="sd">    completed `expand_node` call -- not from inside `expand_node` itself,</span>
+<span class="sd">    which only ever sees an isolated single-node subtree and cannot safely</span>
+<span class="sd">    determine where a recovered branch actually belongs in the real tree</span>
+<span class="sd">    (see `BaseSearchTree._recover_minimal_phase_branch`).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        search_tree: the orchestrator&#39;s full search tree.</span>
+<span class="sd">        anchor_nid: the node whose newly-merged children should be checked.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        the identifiers of newly-*created* nodes with status `&quot;pending&quot;`</span>
+<span class="sd">        (see `BaseSearchTree._recover_minimal_phase_branch`), i.e. ones the</span>
+<span class="sd">        caller should enqueue for further expansion. Reused/pre-existing</span>
+<span class="sd">        nodes are never included, even if `&quot;pending&quot;`, to avoid submitting a</span>
+<span class="sd">        duplicate `expand_node` call for a node id already tracked elsewhere.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">newly_pending</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">search_tree</span><span class="o">.</span><span class="n">children</span><span class="p">(</span><span class="n">anchor_nid</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">child</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;no_improvement&quot;</span> <span class="ow">or</span> <span class="n">child</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">current_result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">new_phases</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">current_phases</span>
+        <span class="n">necessary_paths</span> <span class="o">=</span> <span class="n">remove_unnecessary_phases</span><span class="p">(</span>
+            <span class="n">child</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">current_result</span><span class="p">,</span>
+            <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">path</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">new_phases</span><span class="p">],</span>
+            <span class="n">search_tree</span><span class="o">.</span><span class="n">rpb_threshold</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">necessary_paths</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_phases</span><span class="p">):</span>
+            <span class="k">continue</span>  <span class="c1"># no_improvement was purely from insufficient Rwp improvement</span>
+
+        <span class="n">minimal_phases</span> <span class="o">=</span> <span class="n">find_minimal_phase_set</span><span class="p">(</span><span class="n">new_phases</span><span class="p">,</span> <span class="n">necessary_paths</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">minimal_phases</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_phases</span><span class="p">):</span>
+            <span class="k">continue</span>
+
+        <span class="n">minimal_result</span> <span class="o">=</span> <span class="n">search_tree</span><span class="o">.</span><span class="n">_batch_refine</span><span class="p">([</span><span class="n">minimal_phases</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">minimal_result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_recovery_material</span><span class="p">(</span>
+            <span class="n">minimal_result</span><span class="p">,</span> <span class="n">child</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">current_result</span><span class="p">,</span> <span class="n">search_tree</span><span class="o">.</span><span class="n">rpb_threshold</span>
+        <span class="p">):</span>
+            <span class="k">continue</span>
+
+        <span class="n">newly_pending</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+            <span class="n">search_tree</span><span class="o">.</span><span class="n">_recover_minimal_phase_branch</span><span class="p">(</span><span class="n">minimal_phases</span><span class="p">,</span> <span class="n">minimal_result</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">newly_pending</span></div>
 
 
 

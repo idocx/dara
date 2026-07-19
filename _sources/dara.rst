@@ -29,6 +29,7 @@ Submodules
    dara.peak_detection
    dara.plot
    dara.refine
+   dara.resource_detection
    dara.result
    dara.schema
    dara.settings

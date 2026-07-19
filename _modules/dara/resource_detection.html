@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dara.schema &#8212; Dara Documentation</title>
+    <title>dara.resource_detection &#8212; Dara Documentation</title>
   
   
   
@@ -49,7 +49,7 @@
     <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/dara/schema';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/dara/resource_detection';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="icon" href="../../_static/logo.svg"/>
@@ -393,109 +393,89 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <h1>Source code for dara.schema</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Pydantic document schemas for jobflow jobs.&quot;&quot;&quot;</span>
+  <h1>Source code for dara.resource_detection</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Portable CPU/thread-budget detection for Ray + BGMN.</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="sd">BGMN&#39;s own internal thread scaling saturates early (measured: a 2-phase</span>
+<span class="sd">refinement sped up 1.36x at 2 threads vs. 1.71x at 10 threads, on a 12-core</span>
+<span class="sd">machine), while Ray&#39;s default `num_cpus=1` per refinement task lets as many</span>
+<span class="sd">concurrent tasks run as there are detected CPUs -- decoupled from the actual</span>
+<span class="sd">`n_threads` a task&#39;s BGMN subprocess uses. Left at defaults (e.g.</span>
+<span class="sd">`n_threads=10` with 12 concurrent tasks), this oversubscribes the machine by</span>
+<span class="sd">up to ~10x (120 OS threads on 12 physical cores), which can starve other</span>
+<span class="sd">processes -- including Ray&#39;s own GCS -- of scheduling time under sustained</span>
+<span class="sd">load.</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">Field</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pymatgen.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Composition</span>
+<span class="sd">This module derives a `(n_threads, concurrency)` pair such that</span>
+<span class="sd">`concurrency * n_threads` stays close to the actually-available core count,</span>
+<span class="sd">on whatever machine dara is running on -- a laptop, a shared workstation, or</span>
+<span class="sd">an HPC compute node -- rather than assuming a fixed core count.</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">dara.cif</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cif</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dara.prediction.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhasePredictor</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dara.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">RefinementResult</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dara.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime_str</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dara.xrd</span><span class="w"> </span><span class="kn">import</span> <span class="n">XRDData</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 
-<div class="viewcode-block" id="RefinementDocument">
-<a class="viewcode-back" href="../../dara.schema.html#dara.schema.RefinementDocument">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">RefinementDocument</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Refinement document schema. This is used to store the results of a refinement</span>
-<span class="sd">    job.</span>
+<div class="viewcode-block" id="detect_available_cores">
+<a class="viewcode-back" href="../../dara.resource_detection.html#dara.resource_detection.detect_available_cores">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">detect_available_cores</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Detect the number of CPUs actually available to this process.</span>
+
+<span class="sd">    Priority, most authoritative first:</span>
+<span class="sd">    1. An explicit SLURM allocation (`SLURM_CPUS_PER_TASK`), if present --</span>
+<span class="sd">       trusts a scheduler-assigned budget over anything detected locally.</span>
+<span class="sd">    2. OS-level CPU affinity (`os.sched_getaffinity`, Linux only) -- respects</span>
+<span class="sd">       cgroup/container/taskset restrictions that `os.cpu_count()` ignores,</span>
+<span class="sd">       which matters on shared workstations and HPC nodes.</span>
+<span class="sd">    3. `os.cpu_count()` -- universal fallback (also the only option on</span>
+<span class="sd">       macOS, where `sched_getaffinity` doesn&#39;t exist).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        the detected core count, at least 1.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">slurm_cpus</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SLURM_CPUS_PER_TASK&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">slurm_cpus</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">slurm_cpus</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">pass</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">sched_getaffinity</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">os</span><span class="p">,</span> <span class="s2">&quot;sched_getaffinity&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sched_getaffinity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sched_getaffinity</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">pass</span>
 
-    <span class="n">task_label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;refine&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The name of the task.&quot;</span><span class="p">)</span>
-    <span class="n">last_updated</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default_factory</span><span class="o">=</span><span class="n">datetime_str</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Timestamp of when the document was last updated.&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">result</span><span class="p">:</span> <span class="n">RefinementResult</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;The result of the refinement.&quot;</span><span class="p">)</span>
-    <span class="n">rwp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The Rwp of the refinement.&quot;</span><span class="p">)</span>
-    <span class="n">xrd_data</span><span class="p">:</span> <span class="n">XRDData</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;The input XRD data.&quot;</span><span class="p">)</span>
-    <span class="c1"># input_cifs: list[Cif] = Field(description=&quot;The input CIFs.&quot;)</span>
-    <span class="n">refinement_params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The refinement parameters.&quot;</span>
-    <span class="p">)</span>
-    <span class="n">phase_params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The phase parameters.&quot;</span><span class="p">)</span>
-    <span class="n">instrument_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The instrument name.&quot;</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span> <span class="ow">or</span> <span class="mi">1</span><span class="p">)</span></div>
 
 
 
-<div class="viewcode-block" id="PhaseSearchDocument">
-<a class="viewcode-back" href="../../dara.schema.html#dara.schema.PhaseSearchDocument">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">PhaseSearchDocument</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Phase search document schema. This is used to store the results of a phase search</span>
-<span class="sd">    job.</span>
+<div class="viewcode-block" id="default_bgmn_n_threads">
+<a class="viewcode-back" href="../../dara.resource_detection.html#dara.resource_detection.default_bgmn_n_threads">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">default_bgmn_n_threads</span><span class="p">(</span><span class="n">available_cores</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Default BGMN thread count per refinement task, given `available_cores`.</span>
+
+<span class="sd">    Fixed at a small constant (2) regardless of machine size: BGMN&#39;s own</span>
+<span class="sd">    thread scaling saturates well before 10 threads (see module docstring),</span>
+<span class="sd">    so additional cores are better spent on more *concurrent* refinement</span>
+<span class="sd">    tasks -- exploring more of the tree search at once -- than on making any</span>
+<span class="sd">    single task more heavily threaded.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">available_cores</span><span class="p">)</span></div>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="n">task_label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">&quot;phase_search&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The name of the task.&quot;</span>
-    <span class="p">)</span>
-    <span class="n">last_updated</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default_factory</span><span class="o">=</span><span class="n">datetime_str</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Timestamp of when the document was last updated.&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">results</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
-        <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Cif</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Cif</span><span class="p">]]],</span> <span class="n">RefinementResult</span><span class="p">]]</span>
-    <span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The result of the refinement.&quot;</span><span class="p">)</span>
 
-    <span class="n">foms</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The FOMs of the results.&quot;</span>
-    <span class="p">)</span>
-    <span class="n">lattice_strains</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The lattice strains of the results.&quot;</span>
-    <span class="p">)</span>
-    <span class="n">missing_peaks</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The missing peaks of the results.&quot;</span>
-    <span class="p">)</span>
-    <span class="n">extra_peaks</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The extra peaks of the results.&quot;</span>
-    <span class="p">)</span>
-
-    <span class="n">final_result</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RefinementResult</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The result of the re-refinement of the best result.&quot;</span>
-    <span class="p">)</span>
-    <span class="n">best_rwp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The best (lowest) Rwp.&quot;</span><span class="p">)</span>
-    <span class="n">xrd_data</span><span class="p">:</span> <span class="n">XRDData</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;The input XRD data.&quot;</span><span class="p">)</span>
-    <span class="n">input_cifs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Cif</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The input CIFs.&quot;</span><span class="p">)</span>
-    <span class="n">precursors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The precursor formulas.&quot;</span><span class="p">)</span>
-    <span class="n">phase_predictor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PhasePredictor</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The phase predictor.&quot;</span>
-    <span class="p">)</span>
-    <span class="n">predict_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The kwargs for the phase predictor.&quot;</span>
-    <span class="p">)</span>
-    <span class="n">search_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The kwargs for the search.&quot;</span>
-    <span class="p">)</span>
-    <span class="n">final_refinement_params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The final refinement parameters.&quot;</span>
-    <span class="p">)</span>
-    <span class="n">run_final_refinement</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Whether to run final refinement.&quot;</span>
-    <span class="p">)</span>
-    <span class="n">cifs_folder_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The name of the folder containing the CIFs.&quot;</span>
-    <span class="p">)</span>
-
-    <span class="n">grouped_phases</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Composition</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]]]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The groupped phases.&quot;</span>
-    <span class="p">)</span></div>
+<div class="viewcode-block" id="default_ray_concurrency">
+<a class="viewcode-back" href="../../dara.resource_detection.html#dara.resource_detection.default_ray_concurrency">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">default_ray_concurrency</span><span class="p">(</span><span class="n">available_cores</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_threads</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    How many refinement tasks can run concurrently without exceeding</span>
+<span class="sd">    `available_cores`, given each one uses `n_threads` OS threads.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">available_cores</span> <span class="o">//</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_threads</span><span class="p">))</span></div>
 
 </pre></div>
 

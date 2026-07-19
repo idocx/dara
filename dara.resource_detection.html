@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>dara.bgmn package &#8212; Dara Documentation</title>
+    <title>dara.resource_detection module &#8212; Dara Documentation</title>
   
   
   
@@ -50,14 +50,14 @@
     <script src="_static/copybutton.js?v=f281be69"></script>
     <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
     <script src="_static/design-tabs.js?v=f930bc37"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'dara.bgmn';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'dara.resource_detection';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="icon" href="_static/logo.svg"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="dara.bgmn.download_bgmn module" href="dara.bgmn.download_bgmn.html" />
-    <link rel="prev" title="dara package" href="dara.html" />
+    <link rel="next" title="dara.result module" href="dara.result.html" />
+    <link rel="prev" title="dara.refine module" href="dara.refine.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.3.0" />
@@ -236,7 +236,7 @@
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="modules.html">API Docs</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="dara.html">dara package</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l3 current active has-children"><a class="current reference internal" href="#">dara.bgmn package</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="dara.bgmn.html">dara.bgmn package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="dara.bgmn.download_bgmn.html">dara.bgmn.download_bgmn module</a></li>
 </ul>
 </details></li>
@@ -273,7 +273,7 @@
 <li class="toctree-l3"><a class="reference internal" href="dara.peak_detection.html">dara.peak_detection module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.plot.html">dara.plot module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.refine.html">dara.refine module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dara.resource_detection.html">dara.resource_detection module</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">dara.resource_detection module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.result.html">dara.result module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.schema.html">dara.schema module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.settings.html">dara.settings module</a></li>
@@ -360,7 +360,7 @@
       
       
       
-      <li><a href="https://github.com/CederGroupHub/dara/blob/docs/dara.bgmn.rst?plain=1" target="_blank"
+      <li><a href="https://github.com/CederGroupHub/dara/blob/docs/dara.resource_detection.rst?plain=1" target="_blank"
    class="btn btn-sm btn-source-file-button dropdown-item"
    title="Show source"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -390,7 +390,7 @@
       
       
       
-      <li><a href="_sources/dara.bgmn.rst" target="_blank"
+      <li><a href="_sources/dara.resource_detection.rst" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -466,7 +466,7 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>dara.bgmn package</h1>
+    <h1>dara.resource_detection module</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -476,8 +476,9 @@
             </div>
             <nav aria-label="Page">
                 <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-dara.bgmn">Module contents</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.resource_detection.default_bgmn_n_threads"><code class="docutils literal notranslate"><span class="pre">default_bgmn_n_threads()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.resource_detection.default_ray_concurrency"><code class="docutils literal notranslate"><span class="pre">default_ray_concurrency()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.resource_detection.detect_available_cores"><code class="docutils literal notranslate"><span class="pre">detect_available_cores()</span></code></a></li>
 </ul>
             </nav>
         </div>
@@ -489,22 +490,76 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="dara-bgmn-package">
-<h1>dara.bgmn package<a class="headerlink" href="#dara-bgmn-package" title="Link to this heading">#</a></h1>
-<section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">#</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="dara.bgmn.download_bgmn.html">dara.bgmn.download_bgmn module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="dara.bgmn.download_bgmn.html#dara.bgmn.download_bgmn.download_bgmn"><code class="docutils literal notranslate"><span class="pre">download_bgmn()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="module-dara.bgmn">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-dara.bgmn" title="Link to this heading">#</a></h2>
-</section>
+  <section id="module-dara.resource_detection">
+<span id="dara-resource-detection-module"></span><h1>dara.resource_detection module<a class="headerlink" href="#module-dara.resource_detection" title="Link to this heading">#</a></h1>
+<p>Portable CPU/thread-budget detection for Ray + BGMN.</p>
+<p>BGMN’s own internal thread scaling saturates early (measured: a 2-phase
+refinement sped up 1.36x at 2 threads vs. 1.71x at 10 threads, on a 12-core
+machine), while Ray’s default <cite>num_cpus=1</cite> per refinement task lets as many
+concurrent tasks run as there are detected CPUs – decoupled from the actual
+<cite>n_threads</cite> a task’s BGMN subprocess uses. Left at defaults (e.g.
+<cite>n_threads=10</cite> with 12 concurrent tasks), this oversubscribes the machine by
+up to ~10x (120 OS threads on 12 physical cores), which can starve other
+processes – including Ray’s own GCS – of scheduling time under sustained
+load.</p>
+<p>This module derives a <cite>(n_threads, concurrency)</cite> pair such that
+<cite>concurrency * n_threads</cite> stays close to the actually-available core count,
+on whatever machine dara is running on – a laptop, a shared workstation, or
+an HPC compute node – rather than assuming a fixed core count.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.resource_detection.default_bgmn_n_threads">
+<span class="sig-name descname"><span class="pre">default_bgmn_n_threads</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">available_cores</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/resource_detection.html#default_bgmn_n_threads"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.resource_detection.default_bgmn_n_threads" title="Link to this definition">#</a></dt>
+<dd><p>Default BGMN thread count per refinement task, given <cite>available_cores</cite>.</p>
+<p>Fixed at a small constant (2) regardless of machine size: BGMN’s own
+thread scaling saturates well before 10 threads (see module docstring),
+so additional cores are better spent on more <em>concurrent</em> refinement
+tasks – exploring more of the tree search at once – than on making any
+single task more heavily threaded.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.resource_detection.default_ray_concurrency">
+<span class="sig-name descname"><span class="pre">default_ray_concurrency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">available_cores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_threads</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/resource_detection.html#default_ray_concurrency"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.resource_detection.default_ray_concurrency" title="Link to this definition">#</a></dt>
+<dd><p>How many refinement tasks can run concurrently without exceeding
+<cite>available_cores</cite>, given each one uses <cite>n_threads</cite> OS threads.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dara.resource_detection.detect_available_cores">
+<span class="sig-name descname"><span class="pre">detect_available_cores</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/resource_detection.html#detect_available_cores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.resource_detection.detect_available_cores" title="Link to this definition">#</a></dt>
+<dd><p>Detect the number of CPUs actually available to this process.</p>
+<p>Priority, most authoritative first:
+1. An explicit SLURM allocation (<cite>SLURM_CPUS_PER_TASK</cite>), if present –</p>
+<blockquote>
+<div><p>trusts a scheduler-assigned budget over anything detected locally.</p>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>OS-level CPU affinity (<cite>os.sched_getaffinity</cite>, Linux only) – respects
+cgroup/container/taskset restrictions that <cite>os.cpu_count()</cite> ignores,
+which matters on shared workstations and HPC nodes.</p></li>
+<li><p><cite>os.cpu_count()</cite> – universal fallback (also the only option on
+macOS, where <cite>sched_getaffinity</cite> doesn’t exist).</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the detected core count, at least 1.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 
@@ -519,20 +574,20 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="dara.html"
+       href="dara.refine.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">dara package</p>
+        <p class="prev-next-title">dara.refine module</p>
       </div>
     </a>
     <a class="right-next"
-       href="dara.bgmn.download_bgmn.html"
+       href="dara.result.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">dara.bgmn.download_bgmn module</p>
+        <p class="prev-next-title">dara.result module</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -553,8 +608,9 @@
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-dara.bgmn">Module contents</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.resource_detection.default_bgmn_n_threads"><code class="docutils literal notranslate"><span class="pre">default_bgmn_n_threads()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.resource_detection.default_ray_concurrency"><code class="docutils literal notranslate"><span class="pre">default_ray_concurrency()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.resource_detection.detect_available_cores"><code class="docutils literal notranslate"><span class="pre">detect_available_cores()</span></code></a></li>
 </ul>
   </nav></div>
 

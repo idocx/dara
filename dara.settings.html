@@ -273,6 +273,7 @@
 <li class="toctree-l3"><a class="reference internal" href="dara.peak_detection.html">dara.peak_detection module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.plot.html">dara.plot module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.refine.html">dara.refine module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dara.resource_detection.html">dara.resource_detection module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.result.html">dara.result module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.schema.html">dara.schema module</a></li>
 <li class="toctree-l3 current active"><a class="current reference internal" href="#">dara.settings module</a></li>
@@ -476,9 +477,11 @@
             <nav aria-label="Page">
                 <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.settings.DaraSettings"><code class="docutils literal notranslate"><span class="pre">DaraSettings</span></code></a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.settings.DaraSettings.BGMN_N_THREADS"><code class="docutils literal notranslate"><span class="pre">DaraSettings.BGMN_N_THREADS</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.settings.DaraSettings.CONFIG_FILE"><code class="docutils literal notranslate"><span class="pre">DaraSettings.CONFIG_FILE</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.settings.DaraSettings.PATH_TO_COD"><code class="docutils literal notranslate"><span class="pre">DaraSettings.PATH_TO_COD</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.settings.DaraSettings.PATH_TO_ICSD"><code class="docutils literal notranslate"><span class="pre">DaraSettings.PATH_TO_ICSD</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.settings.DaraSettings.RAY_NUM_CPUS"><code class="docutils literal notranslate"><span class="pre">DaraSettings.RAY_NUM_CPUS</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.settings.DaraSettings.load_default_settings"><code class="docutils literal notranslate"><span class="pre">DaraSettings.load_default_settings</span></code></a></li>
 </ul>
 </li>
@@ -527,6 +530,32 @@
 <span class="w">         </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;path&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Path To Cod&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;RAY_NUM_CPUS&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Number of CPUs to give Ray&#39;s own resource accounting (passed as `num_cpus=` to `ray.init()`). If unset, auto-detected from an explicit SLURM allocation, then OS-level CPU affinity (respects cgroup/container restrictions), then the total CPU count -- see `dara.resource_detection.detect_available_cores`.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Ray Num Cpus&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;BGMN_N_THREADS&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Threads per BGMN refinement task (the `n_threads` refinement param). If unset, auto-derived from the detected core count -- see `dara.resource_detection.default_bgmn_n_threads`. BGMN&#39;s own thread scaling saturates early (measured: 1.36x speedup at 2 threads vs. 1.71x at 10, on a 12-core machine), so the default favors more concurrent Ray tasks (wider tree-search exploration) over one heavily-threaded task.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bgmn N Threads&quot;</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">   </span><span class="p">},</span>
 <span class="w">   </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
@@ -541,9 +570,11 @@
 </dd>
 <dt class="field-even">Fields<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#dara.settings.DaraSettings.BGMN_N_THREADS" title="dara.settings.DaraSettings.BGMN_N_THREADS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BGMN_N_THREADS</span> <span class="pre">(int</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#dara.settings.DaraSettings.CONFIG_FILE" title="dara.settings.DaraSettings.CONFIG_FILE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CONFIG_FILE</span> <span class="pre">(str)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#dara.settings.DaraSettings.PATH_TO_COD" title="dara.settings.DaraSettings.PATH_TO_COD"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PATH_TO_COD</span> <span class="pre">(pathlib.Path)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#dara.settings.DaraSettings.PATH_TO_ICSD" title="dara.settings.DaraSettings.PATH_TO_ICSD"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PATH_TO_ICSD</span> <span class="pre">(pathlib.Path)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#dara.settings.DaraSettings.RAY_NUM_CPUS" title="dara.settings.DaraSettings.RAY_NUM_CPUS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RAY_NUM_CPUS</span> <span class="pre">(int</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
 </ul>
 </dd>
 <dt class="field-odd">Validators<span class="colon">:</span></dt>
@@ -553,8 +584,21 @@
 </dd>
 </dl>
 <dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="dara.settings.DaraSettings.BGMN_N_THREADS">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BGMN_N_THREADS</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional[int]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#dara.settings.DaraSettings.BGMN_N_THREADS" title="Link to this definition">#</a></dt>
+<dd><p>Threads per BGMN refinement task (the <cite>n_threads</cite> refinement param). If unset, auto-derived from the detected core count – see <cite>dara.resource_detection.default_bgmn_n_threads</cite>. BGMN’s own thread scaling saturates early (measured: 1.36x speedup at 2 threads vs. 1.71x at 10, on a 12-core machine), so the default favors more concurrent Ray tasks (wider tree-search exploration) over one heavily-threaded task.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Validated by<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#dara.settings.DaraSettings.load_default_settings" title="dara.settings.DaraSettings.load_default_settings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_default_settings</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="dara.settings.DaraSettings.CONFIG_FILE">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CONFIG_FILE</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'~/.dara.yaml'</span></em><a class="headerlink" href="#dara.settings.DaraSettings.CONFIG_FILE" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CONFIG_FILE</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'~/.dara.yaml'</span></em><a class="headerlink" href="#dara.settings.DaraSettings.CONFIG_FILE" title="Link to this definition">#</a></dt>
 <dd><p>File to load alternative defaults from.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Validated by<span class="colon">:</span></dt>
@@ -567,7 +611,7 @@
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="dara.settings.DaraSettings.PATH_TO_COD">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PATH_TO_COD</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PosixPath('/home/runner/COD_2024')</span></em><a class="headerlink" href="#dara.settings.DaraSettings.PATH_TO_COD" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PATH_TO_COD</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Path</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PosixPath('/home/runner/COD_2024')</span></em><a class="headerlink" href="#dara.settings.DaraSettings.PATH_TO_COD" title="Link to this definition">#</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Validated by<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -579,8 +623,21 @@
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="dara.settings.DaraSettings.PATH_TO_ICSD">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PATH_TO_ICSD</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PosixPath('/home/runner/ICSD_2024/ICSD_2024_experimental_inorganic/experimental_inorganic')</span></em><a class="headerlink" href="#dara.settings.DaraSettings.PATH_TO_ICSD" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PATH_TO_ICSD</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Path</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PosixPath('/home/runner/ICSD_2024/ICSD_2024_experimental_inorganic/experimental_inorganic')</span></em><a class="headerlink" href="#dara.settings.DaraSettings.PATH_TO_ICSD" title="Link to this definition">#</a></dt>
 <dd><dl class="field-list simple">
+<dt class="field-odd">Validated by<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#dara.settings.DaraSettings.load_default_settings" title="dara.settings.DaraSettings.load_default_settings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_default_settings</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="dara.settings.DaraSettings.RAY_NUM_CPUS">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RAY_NUM_CPUS</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional[int]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#dara.settings.DaraSettings.RAY_NUM_CPUS" title="Link to this definition">#</a></dt>
+<dd><p>Number of CPUs to give Ray’s own resource accounting (passed as <cite>num_cpus=</cite> to <cite>ray.init()</cite>). If unset, auto-detected from an explicit SLURM allocation, then OS-level CPU affinity (respects cgroup/container restrictions), then the total CPU count – see <cite>dara.resource_detection.detect_available_cores</cite>.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Validated by<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><a class="reference internal" href="#dara.settings.DaraSettings.load_default_settings" title="dara.settings.DaraSettings.load_default_settings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_default_settings</span></code></a></p></li>
@@ -654,9 +711,11 @@ place of built-in defaults.</p>
   <nav class="bd-toc-nav page-toc">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.settings.DaraSettings"><code class="docutils literal notranslate"><span class="pre">DaraSettings</span></code></a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.settings.DaraSettings.BGMN_N_THREADS"><code class="docutils literal notranslate"><span class="pre">DaraSettings.BGMN_N_THREADS</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.settings.DaraSettings.CONFIG_FILE"><code class="docutils literal notranslate"><span class="pre">DaraSettings.CONFIG_FILE</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.settings.DaraSettings.PATH_TO_COD"><code class="docutils literal notranslate"><span class="pre">DaraSettings.PATH_TO_COD</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.settings.DaraSettings.PATH_TO_ICSD"><code class="docutils literal notranslate"><span class="pre">DaraSettings.PATH_TO_ICSD</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.settings.DaraSettings.RAY_NUM_CPUS"><code class="docutils literal notranslate"><span class="pre">DaraSettings.RAY_NUM_CPUS</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.settings.DaraSettings.load_default_settings"><code class="docutils literal notranslate"><span class="pre">DaraSettings.load_default_settings</span></code></a></li>
 </ul>
 </li>
