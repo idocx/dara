@@ -9,10 +9,8 @@ from typing import TYPE_CHECKING, Literal
 
 import ray
 
-from dara.resource_detection import default_bgmn_n_threads, detect_available_cores
 from dara.search.data_model import PeakMatchingStrategy
-from dara.search.tree import BaseSearchTree, SearchTree, attempt_minimal_phase_recovery
-from dara.settings import DaraSettings
+from dara.search.tree import BaseSearchTree, SearchTree
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -28,20 +26,7 @@ DEFAULT_PHASE_PARAMS = {
     "b1": "0_0^0.005",
     "rp": 4,
 }
-
-# Portable CPU/thread budget: respects an explicit SLURM allocation or OS
-# CPU affinity if detectable, else falls back to the total core count (see
-# `dara.resource_detection`). Both are overridable via `DaraSettings`
-# (`~/.dara.yaml` or `DARA_RAY_NUM_CPUS`/`DARA_BGMN_N_THREADS` env vars).
-_settings = DaraSettings()
-AVAILABLE_CORES = _settings.RAY_NUM_CPUS or detect_available_cores()
-DEFAULT_N_THREADS = _settings.BGMN_N_THREADS or default_bgmn_n_threads(AVAILABLE_CORES)
-
-DEFAULT_REFINEMENT_PARAMS = {
-    "n_threads": DEFAULT_N_THREADS,
-    "eps1": 0,
-    "eps2": "0_-0.05^0.05",
-}
+DEFAULT_REFINEMENT_PARAMS = {"n_threads": 8, "eps1": 0, "eps2": "0_-0.05^0.05"}
 DEFAULT_PEAK_MATCHING_STRATEGY = PeakMatchingStrategy.default()
 
 
@@ -115,11 +100,7 @@ def search_phases(
         refinement_params = {}
 
     if not ray.is_initialized():
-        # num_cpus is set explicitly to the detected/allocated core count
-        # (AVAILABLE_CORES) rather than left to Ray's own auto-detection,
-        # which just calls `os.cpu_count()` and would ignore an explicit
-        # SLURM allocation or cgroup/container CPU affinity restriction.
-        ray.init(runtime_env={"working_dir": None}, num_cpus=AVAILABLE_CORES)
+        ray.init(runtime_env={"working_dir": None})
 
     phase_params = {**DEFAULT_PHASE_PARAMS, **phase_params}
     refinement_params = {**DEFAULT_REFINEMENT_PARAMS, **refinement_params}
@@ -144,16 +125,6 @@ def search_phases(
     max_worker = ray.cluster_resources()["CPU"]
     pending = [remote_expand_node(search_tree, search_tree.root)]
     to_be_submitted = deque()
-    # Tracks nodes queued or in-flight so `get_expandable_children` and
-    # `attempt_minimal_phase_recovery` can't both submit the same node id in
-    # one merge event -- a duplicate submission crashes `expand_node`'s
-    # "not expandable" guard on whichever task loses the race.
-    queued_or_in_flight = {search_tree.root}
-
-    def _enqueue(nid: str) -> None:
-        if nid not in queued_or_in_flight:
-            queued_or_in_flight.add(nid)
-            to_be_submitted.append(nid)
 
     while pending:
         done, pending = ray.wait(pending, timeout=0.5)
@@ -161,22 +132,11 @@ def search_phases(
         for task in done:
             remote_search_tree = ray.get(task)
             remote_search_tree = copy.deepcopy(remote_search_tree)
-            queued_or_in_flight.discard(remote_search_tree.root)
             search_tree.add_subtree(
                 anchor_nid=remote_search_tree.root, search_tree=remote_search_tree
             )
             for nid in search_tree.get_expandable_children(remote_search_tree.root):
-                _enqueue(nid)
-
-            # A "no_improvement" child may be overfit only because it's
-            # carrying a now-redundant phase from earlier in the branch, not
-            # because the newly-added phase itself is bad -- recover the
-            # minimal, redundancy-free combination hiding inside it (if any)
-            # and let the search continue from there instead of dead-ending.
-            for nid in attempt_minimal_phase_recovery(
-                search_tree, remote_search_tree.root
-            ):
-                _enqueue(nid)
+                to_be_submitted.append(nid)
 
         while len(pending) < max_worker and to_be_submitted:
             nid = to_be_submitted.popleft()

@@ -16,10 +16,10 @@ COINCIDENCE_SUPPRESSION_TOLERANCE: float = 0.06
 DEFAULT_MISSING_MIN_INTENSITY_RATIO: float = 0.005
 DEFAULT_EXTRA_MIN_INTENSITY_RATIO: float = 0.03
 INTENSITY_MISMATCH_HEIGHT_TOLERANCE: float = 0.40  # height band [0.60, 1.40]; catches ~2x height mismatches
-INTENSITY_MISMATCH_AREA_TOLERANCE: float = 0.60  # area band [0.40, 1.60]
-INTENSITY_MISMATCH_WINDOW: float = 0.15  # degrees either side of peak apex for profile integration
-RESIDUAL_WINDOW_WIDTH: float = 0.5  # degrees 2θ; sliding window width for integrated residual scan
-RESIDUAL_WINDOW_STEP: float = 0.1  # degrees 2θ; step size between window centres
+INTENSITY_MISMATCH_AREA_TOLERANCE: float = 0.60    # area band [0.40, 1.60]
+INTENSITY_MISMATCH_WINDOW: float = 0.15             # degrees either side of peak apex for profile integration
+RESIDUAL_WINDOW_WIDTH: float = 0.5    # degrees 2θ; sliding window width for integrated residual scan
+RESIDUAL_WINDOW_STEP: float = 0.1    # degrees 2θ; step size between window centres
 RESIDUAL_WINDOW_DETECT_FRACTION: float = 0.003  # per-window detection floor for forming/merging candidate regions
 # merged-region threshold: flag only if total >= this fraction of total integrated obs
 RESIDUAL_INTEGRAL_FRACTION: float = 0.010
@@ -291,17 +291,14 @@ class PeakMatcher:
             max_intensity_tolerance=max_intensity_tolerance,
         )
 
-        if all(v is not None for v in [profile_x, profile_y_calc, profile_y_obs, profile_y_bkg]):
-            px = np.asarray(profile_x)
+        if all(v is not None for v in
+               [profile_x, profile_y_calc, profile_y_obs, profile_y_bkg]):
+            px      = np.asarray(profile_x)
             py_calc = np.asarray(profile_y_calc)
-            py_obs = np.asarray(profile_y_obs)
-            py_bkg = np.asarray(profile_y_bkg)
+            py_obs  = np.asarray(profile_y_obs)
+            py_bkg  = np.asarray(profile_y_bkg)
             self._reclassify_wrong_intensity_by_height(
-                px,
-                py_calc,
-                py_obs,
-                py_bkg,
-                height_ratio_threshold,
+                px, py_calc, py_obs, py_bkg, height_ratio_threshold,
             )
             self._relocate_extra_to_apex(px, py_calc, py_bkg)
 
@@ -325,7 +322,7 @@ class PeakMatcher:
             tt_c = float(self.peak_calc[c_idx, 0])
             tt_o = float(self.peak_obs[o_idx, 0])
             calc_h = float(np.interp(tt_c, profile_x, profile_y_calc - profile_y_bkg))
-            obs_h = float(np.interp(tt_o, profile_x, profile_y_obs - profile_y_bkg))
+            obs_h  = float(np.interp(tt_o, profile_x, profile_y_obs  - profile_y_bkg))
             if obs_h > 0 and calc_h / obs_h < height_ratio_threshold:
                 if o_idx not in self._result["missing"]:
                     self._result["missing"].append(o_idx)
@@ -628,7 +625,7 @@ def suppress_coincident_marker_pairs(
         (missing_peaks, extra_peaks) with coincident pairs removed, same shapes
     """
     missing_peaks = np.asarray(missing_peaks).reshape(-1, 2)
-    extra_peaks = np.asarray(extra_peaks).reshape(-1, 2)
+    extra_peaks   = np.asarray(extra_peaks).reshape(-1, 2)
 
     if len(missing_peaks) == 0 or len(extra_peaks) == 0:
         return missing_peaks, extra_peaks
@@ -642,10 +639,10 @@ def suppress_coincident_marker_pairs(
                 extra_suppress.add(e_i)
 
     keep_m = [i for i in range(len(missing_peaks)) if i not in miss_suppress]
-    keep_e = [i for i in range(len(extra_peaks)) if i not in extra_suppress]
+    keep_e = [i for i in range(len(extra_peaks))   if i not in extra_suppress]
 
     out_m = missing_peaks[keep_m] if keep_m else np.empty((0, 2))
-    out_e = extra_peaks[keep_e] if keep_e else np.empty((0, 2))
+    out_e = extra_peaks[keep_e]   if keep_e else np.empty((0, 2))
     return out_m, out_e
 
 
@@ -711,8 +708,8 @@ def find_residual_regions(
     if not enabled:
         return np.empty((0, 2))
 
-    profile_x = np.asarray(profile_x, dtype=float)
-    profile_y_obs = np.asarray(profile_y_obs, dtype=float)
+    profile_x      = np.asarray(profile_x, dtype=float)
+    profile_y_obs  = np.asarray(profile_y_obs, dtype=float)
     profile_y_calc = np.asarray(profile_y_calc, dtype=float)
     if profile_y_bkg is not None:
         profile_y_bkg = np.asarray(profile_y_bkg, dtype=float)
@@ -721,18 +718,18 @@ def find_residual_regions(
 
     dx = float(profile_x[1] - profile_x[0]) if len(profile_x) > 1 else 0.01
     obs_max = float(profile_y_obs.max())
-    half_w = window_width / 2.0
+    half_w  = window_width / 2.0
 
     total_obs_integral = float(np.sum(np.maximum(profile_y_obs - profile_y_bkg, 0.0))) * dx
     detect_threshold = window_detect_fraction * total_obs_integral  # per-window floor
-    region_threshold = integral_fraction * total_obs_integral  # merged-region gate
+    region_threshold = integral_fraction * total_obs_integral        # merged-region gate
 
     positive_residual = np.maximum(profile_y_obs - profile_y_calc, 0.0)
 
     # Integrated-residual scan: flag broad features the matcher never detected.
     calc_profile_threshold = calc_profile_ratio * obs_max
     calc_net = profile_y_calc - profile_y_bkg
-    obs_net = np.maximum(profile_y_obs - profile_y_bkg, 0.0)
+    obs_net  = np.maximum(profile_y_obs - profile_y_bkg, 0.0)
 
     flagged_centres: list[float] = []
     centre = float(profile_x[0]) + half_w
@@ -749,16 +746,16 @@ def find_residual_regions(
 
     merged: list[tuple[float, float]] = []
     span_start = flagged_centres[0] - half_w
-    span_end = flagged_centres[0] + half_w
+    span_end   = flagged_centres[0] + half_w
     for c in flagged_centres[1:]:
         win_start = c - half_w
-        win_end = c + half_w
+        win_end   = c + half_w
         if win_start <= span_end + window_step / 2:
             span_end = max(span_end, win_end)
         else:
             merged.append((span_start, span_end))
             span_start = win_start
-            span_end = win_end
+            span_end   = win_end
     merged.append((span_start, span_end))
 
     known_positions: np.ndarray | None = None
@@ -768,11 +765,11 @@ def find_residual_regions(
     regions: list[list[float]] = []
     for s, e in merged:
         mask = (profile_x >= s) & (profile_x <= e)
-        seg_res = positive_residual[mask]
+        seg_res      = positive_residual[mask]
         merged_integ = float(np.sum(seg_res)) * dx
         if merged_integ < region_threshold:
             continue
-        region_obs_int = float(np.sum(obs_net[mask])) * dx
+        region_obs_int  = float(np.sum(obs_net[mask])) * dx
         region_calc_int = float(np.sum(np.maximum(calc_net[mask], 0.0))) * dx
         if region_obs_int > 0 and region_calc_int / region_obs_int >= calc_coverage_ratio:
             continue
@@ -820,12 +817,12 @@ def find_intensity_mismatch_peaks(
     if matched_pairs is None or len(matched_pairs) == 0:
         return np.empty((0, 2))
 
-    profile_x = np.asarray(profile_x, dtype=float)
-    profile_y_obs = np.asarray(profile_y_obs, dtype=float)
+    profile_x      = np.asarray(profile_x,      dtype=float)
+    profile_y_obs  = np.asarray(profile_y_obs,  dtype=float)
     profile_y_calc = np.asarray(profile_y_calc, dtype=float)
     profile_y_bkg = np.zeros_like(profile_y_obs) if profile_y_bkg is None else np.asarray(profile_y_bkg, dtype=float)
 
-    dx = float(profile_x[1] - profile_x[0]) if len(profile_x) > 1 else 0.01
+    dx   = float(profile_x[1] - profile_x[0]) if len(profile_x) > 1 else 0.01
     h_lo = 1.0 - height_tolerance
     h_hi = 1.0 + height_tolerance
     a_lo = 1.0 - area_tolerance
@@ -841,23 +838,23 @@ def find_intensity_mismatch_peaks(
 
         tt_o = float(pm.peak_obs[o_idx, 0])
 
-        mask = (profile_x >= tt_o - window) & (profile_x <= tt_o + window)
-        obs_net = np.maximum(profile_y_obs[mask] - profile_y_bkg[mask], 0.0)
+        mask     = (profile_x >= tt_o - window) & (profile_x <= tt_o + window)
+        obs_net  = np.maximum(profile_y_obs[mask]  - profile_y_bkg[mask], 0.0)
         calc_net = np.maximum(profile_y_calc[mask] - profile_y_bkg[mask], 0.0)
-        obs_area = float(np.sum(obs_net)) * dx
+        obs_area  = float(np.sum(obs_net))  * dx
         calc_area = float(np.sum(calc_net)) * dx
 
         if obs_area <= 0:
             continue
 
-        obs_h = float(np.interp(tt_o, profile_x, profile_y_obs - profile_y_bkg))
+        obs_h  = float(np.interp(tt_o, profile_x, profile_y_obs  - profile_y_bkg))
         calc_h = float(np.interp(tt_o, profile_x, profile_y_calc - profile_y_bkg))
 
         if obs_h <= 0:
             continue
 
-        area_ratio = calc_area / obs_area
-        height_ratio = calc_h / obs_h
+        area_ratio   = calc_area / obs_area
+        height_ratio = calc_h   / obs_h
 
         if not (h_lo <= height_ratio <= h_hi) or not (a_lo <= area_ratio <= a_hi):
             flagged.append([tt_o, 0.0])
