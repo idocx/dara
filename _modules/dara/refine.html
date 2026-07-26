@@ -268,7 +268,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../../dara.peak_detection.html">dara.peak_detection module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dara.plot.html">dara.plot module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dara.refine.html">dara.refine module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../dara.resource_detection.html">dara.resource_detection module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dara.result.html">dara.result module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dara.schema.html">dara.schema module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dara.settings.html">dara.settings module</a></li>
@@ -514,36 +513,29 @@
         <span class="n">suppress_coincident_marker_pairs</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="n">edf</span> <span class="o">=</span> <span class="n">detect_peaks</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">pattern_path</span><span class="p">),</span> <span class="n">wavelength</span><span class="o">=</span><span class="n">wavelength</span><span class="p">,</span> <span class="n">instrument_profile</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">instrument_profile</span><span class="p">))</span>
-    <span class="n">obs_raw</span> <span class="o">=</span> <span class="n">edf</span><span class="p">[[</span><span class="s2">&quot;2theta&quot;</span><span class="p">,</span> <span class="s2">&quot;intensity&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">edf</span>      <span class="o">=</span> <span class="n">detect_peaks</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">pattern_path</span><span class="p">),</span> <span class="n">wavelength</span><span class="o">=</span><span class="n">wavelength</span><span class="p">,</span>
+                            <span class="n">instrument_profile</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">instrument_profile</span><span class="p">))</span>
+    <span class="n">obs_raw</span>  <span class="o">=</span> <span class="n">edf</span><span class="p">[[</span><span class="s2">&quot;2theta&quot;</span><span class="p">,</span> <span class="s2">&quot;intensity&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
     <span class="n">calc_raw</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">peak_data</span><span class="p">[[</span><span class="s2">&quot;2theta&quot;</span><span class="p">,</span> <span class="s2">&quot;intensity&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
 
-    <span class="n">px</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">plot_data</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
-    <span class="n">yobs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">plot_data</span><span class="o">.</span><span class="n">y_obs</span><span class="p">)</span>
+    <span class="n">px</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">plot_data</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">yobs</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">plot_data</span><span class="o">.</span><span class="n">y_obs</span><span class="p">)</span>
     <span class="n">ycalc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">plot_data</span><span class="o">.</span><span class="n">y_calc</span><span class="p">)</span>
-    <span class="n">ybkg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">plot_data</span><span class="o">.</span><span class="n">y_bkg</span><span class="p">)</span>
+    <span class="n">ybkg</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">plot_data</span><span class="o">.</span><span class="n">y_bkg</span><span class="p">)</span>
 
-    <span class="n">pm</span> <span class="o">=</span> <span class="n">PeakMatcher</span><span class="p">(</span>
-        <span class="n">calc_raw</span><span class="p">,</span>
-        <span class="n">obs_raw</span><span class="p">,</span>
-        <span class="n">intensity_resolution</span><span class="o">=</span><span class="mf">0.005</span><span class="p">,</span>
-        <span class="n">profile_x</span><span class="o">=</span><span class="n">px</span><span class="p">,</span>
-        <span class="n">profile_y_calc</span><span class="o">=</span><span class="n">ycalc</span><span class="p">,</span>
-        <span class="n">profile_y_obs</span><span class="o">=</span><span class="n">yobs</span><span class="p">,</span>
-        <span class="n">profile_y_bkg</span><span class="o">=</span><span class="n">ybkg</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="n">pm</span> <span class="o">=</span> <span class="n">PeakMatcher</span><span class="p">(</span><span class="n">calc_raw</span><span class="p">,</span> <span class="n">obs_raw</span><span class="p">,</span> <span class="n">intensity_resolution</span><span class="o">=</span><span class="mf">0.005</span><span class="p">,</span>
+                     <span class="n">profile_x</span><span class="o">=</span><span class="n">px</span><span class="p">,</span> <span class="n">profile_y_calc</span><span class="o">=</span><span class="n">ycalc</span><span class="p">,</span>
+                     <span class="n">profile_y_obs</span><span class="o">=</span><span class="n">yobs</span><span class="p">,</span> <span class="n">profile_y_bkg</span><span class="o">=</span><span class="n">ybkg</span><span class="p">)</span>
     <span class="n">miss_f</span><span class="p">,</span> <span class="n">extra_f</span> <span class="o">=</span> <span class="n">suppress_coincident_marker_pairs</span><span class="p">(</span>
         <span class="n">pm</span><span class="o">.</span><span class="n">get_isolated_peaks</span><span class="p">(</span><span class="s2">&quot;missing&quot;</span><span class="p">,</span> <span class="n">min_intensity_ratio</span><span class="o">=</span><span class="n">missing_intensity_ratio</span><span class="p">),</span>
-        <span class="n">pm</span><span class="o">.</span><span class="n">get_isolated_peaks</span><span class="p">(</span><span class="s2">&quot;extra&quot;</span><span class="p">,</span> <span class="n">min_intensity_ratio</span><span class="o">=</span><span class="n">extra_intensity_ratio</span><span class="p">),</span>
+        <span class="n">pm</span><span class="o">.</span><span class="n">get_isolated_peaks</span><span class="p">(</span><span class="s2">&quot;extra&quot;</span><span class="p">,</span>   <span class="n">min_intensity_ratio</span><span class="o">=</span><span class="n">extra_intensity_ratio</span><span class="p">),</span>
     <span class="p">)</span>
 
     <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="p">(</span><span class="n">miss_f</span><span class="p">,</span> <span class="n">extra_f</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)]</span>
     <span class="n">known</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="k">if</span> <span class="n">parts</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="n">residual</span> <span class="o">=</span> <span class="n">find_residual_regions</span><span class="p">(</span>
-        <span class="n">px</span><span class="p">,</span>
-        <span class="n">yobs</span><span class="p">,</span>
-        <span class="n">ycalc</span><span class="p">,</span>
+        <span class="n">px</span><span class="p">,</span> <span class="n">yobs</span><span class="p">,</span> <span class="n">ycalc</span><span class="p">,</span>
         <span class="n">profile_y_bkg</span><span class="o">=</span><span class="n">ybkg</span><span class="p">,</span>
         <span class="n">matched_peak_positions</span><span class="o">=</span><span class="n">known</span><span class="p">,</span>
         <span class="n">enabled</span><span class="o">=</span><span class="n">use_residual</span><span class="p">,</span>
@@ -552,16 +544,12 @@
         <span class="n">calc_coverage_ratio</span><span class="o">=</span><span class="n">residual_calc_coverage_ratio</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="n">miss_combined</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">miss_f</span><span class="p">,</span> <span class="n">residual</span><span class="p">])</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">residual</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">miss_f</span><span class="p">)</span> <span class="k">else</span> <span class="p">(</span><span class="n">residual</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">residual</span><span class="p">)</span> <span class="k">else</span> <span class="n">miss_f</span><span class="p">)</span>
+    <span class="n">miss_combined</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">miss_f</span><span class="p">,</span> <span class="n">residual</span><span class="p">])</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">residual</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">miss_f</span><span class="p">)</span> <span class="k">else</span> <span class="p">(</span>
+        <span class="n">residual</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">residual</span><span class="p">)</span> <span class="k">else</span> <span class="n">miss_f</span>
     <span class="p">)</span>
 
     <span class="n">mismatch</span> <span class="o">=</span> <span class="n">find_intensity_mismatch_peaks</span><span class="p">(</span>
-        <span class="n">pm</span><span class="p">,</span>
-        <span class="n">px</span><span class="p">,</span>
-        <span class="n">yobs</span><span class="p">,</span>
-        <span class="n">ycalc</span><span class="p">,</span>
-        <span class="n">profile_y_bkg</span><span class="o">=</span><span class="n">ybkg</span><span class="p">,</span>
+        <span class="n">pm</span><span class="p">,</span> <span class="n">px</span><span class="p">,</span> <span class="n">yobs</span><span class="p">,</span> <span class="n">ycalc</span><span class="p">,</span> <span class="n">profile_y_bkg</span><span class="o">=</span><span class="n">ybkg</span><span class="p">,</span>
         <span class="n">height_tolerance</span><span class="o">=</span><span class="n">intensity_mismatch_height_tolerance</span><span class="p">,</span>
         <span class="n">area_tolerance</span><span class="o">=</span><span class="n">intensity_mismatch_area_tolerance</span><span class="p">,</span>
     <span class="p">)</span>

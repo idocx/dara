@@ -273,7 +273,6 @@
 <li class="toctree-l3"><a class="reference internal" href="dara.peak_detection.html">dara.peak_detection module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.plot.html">dara.plot module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.refine.html">dara.refine module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dara.resource_detection.html">dara.resource_detection module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.result.html">dara.result module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.schema.html">dara.schema module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.settings.html">dara.settings module</a></li>
@@ -493,15 +492,11 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.SearchTree.show"><code class="docutils literal notranslate"><span class="pre">SearchTree.show()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.attempt_minimal_phase_recovery"><code class="docutils literal notranslate"><span class="pre">attempt_minimal_phase_recovery()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.batch_peak_matching"><code class="docutils literal notranslate"><span class="pre">batch_peak_matching()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.batch_refinement"><code class="docutils literal notranslate"><span class="pre">batch_refinement()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.calculate_fom_and_strain"><code class="docutils literal notranslate"><span class="pre">calculate_fom_and_strain()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.check_low_weight_fraction"><code class="docutils literal notranslate"><span class="pre">check_low_weight_fraction()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.find_minimal_phase_set"><code class="docutils literal notranslate"><span class="pre">find_minimal_phase_set()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.get_natural_break_results"><code class="docutils literal notranslate"><span class="pre">get_natural_break_results()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.group_phases"><code class="docutils literal notranslate"><span class="pre">group_phases()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.is_recovery_material"><code class="docutils literal notranslate"><span class="pre">is_recovery_material()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.remove_unnecessary_phases"><code class="docutils literal notranslate"><span class="pre">remove_unnecessary_phases()</span></code></a></li>
 </ul>
             </nav>
@@ -762,41 +757,6 @@ all phases’ scores, and the score’s threshold.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="dara.search.tree.attempt_minimal_phase_recovery">
-<span class="sig-name descname"><span class="pre">attempt_minimal_phase_recovery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search_tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anchor_nid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/search/tree.html#attempt_minimal_phase_recovery"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.search.tree.attempt_minimal_phase_recovery" title="Link to this definition">#</a></dt>
-<dd><p>Look for <cite>“no_improvement”</cite> nodes just merged under <cite>anchor_nid</cite> whose
-status came from <cite>remove_unnecessary_phases</cite> finding a redundant phase
-(as opposed to, or in addition to, insufficient Rwp improvement over the
-parent), and recover the minimal, redundancy-free phase combination
-hiding inside each one, if it actually fits at least as well.</p>
-<p>Must be called against the orchestrator’s real search tree (full
-visibility of every branch explored so far), after
-<cite>search_tree.add_subtree(anchor_nid, …)</cite> has merged a worker’s
-completed <cite>expand_node</cite> call – not from inside <cite>expand_node</cite> itself,
-which only ever sees an isolated single-node subtree and cannot safely
-determine where a recovered branch actually belongs in the real tree
-(see <cite>BaseSearchTree._recover_minimal_phase_branch</cite>).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>search_tree</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#dara.search.tree.BaseSearchTree" title="dara.search.tree.BaseSearchTree"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseSearchTree</span></code></a></span>) – the orchestrator’s full search tree.</p></li>
-<li><p><strong>anchor_nid</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – the node whose newly-merged children should be checked.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>the identifiers of newly-<em>created</em> nodes with status <cite>“pending”</cite>
-(see <cite>BaseSearchTree._recover_minimal_phase_branch</cite>), i.e. ones the
-caller should enqueue for further expansion. Reused/pre-existing
-nodes are never included, even if <cite>“pending”</cite>, to avoid submitting a
-duplicate <cite>expand_node</cite> call for a node id already tracked elsewhere.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="dara.search.tree.batch_peak_matching">
 <span class="sig-name descname"><span class="pre">batch_peak_matching</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peak_calcs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">peak_obs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'PeakMatcher'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/search/tree.html#batch_peak_matching"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.search.tree.batch_peak_matching" title="Link to this definition">#</a></dt>
 <dd><dl class="field-list simple">
@@ -834,61 +794,6 @@ duplicate <cite>expand_node</cite> call for a node id already tracked elsewhere.
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="dara.search.tree.check_low_weight_fraction">
-<span class="sig-name descname"><span class="pre">check_low_weight_fraction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_phases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pinned_phases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_result</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/search/tree.html#check_low_weight_fraction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.search.tree.check_low_weight_fraction" title="Link to this definition">#</a></dt>
-<dd><p>Decide whether a branch should be flagged as a suspicious low-weight-fraction
-addition.</p>
-<p>Phases are expected to be discovered in roughly decreasing order of
-abundance (the naive peak-match search tends to find the biggest
-contributor to the pattern first), so a newly-added phase that turns out
-to have <em>more</em> calculated peak intensity than a phase added earlier in the
-same branch is treated as suspicious – it could mean the refinement is
-using this phase to absorb residual intensity that doesn’t belong to it
-(overfitting), rather than genuinely explaining new pattern features.</p>
-<p>But that’s only actually suspicious if the phase isn’t earning its keep.
-If adding it materially improved the fit (Rwp) over the parent node, the
-improvement is real signal, not an artifact, regardless of what order the
-search happened to try phases in – so the branch is kept.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>new_phases</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<a class="reference internal" href="dara.refine.html#dara.refine.RefinementPhase" title="dara.refine.RefinementPhase"><code class="xref py py-class docutils literal notranslate"><span class="pre">RefinementPhase</span></code></a>]</span>) – the full phase list at the new (child) node, in the order
-they were added.</p></li>
-<li><p><strong>pinned_phases</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<a class="reference internal" href="dara.refine.html#dara.refine.RefinementPhase" title="dara.refine.RefinementPhase"><code class="xref py py-class docutils literal notranslate"><span class="pre">RefinementPhase</span></code></a>]</span>) – phases that are excluded from the ordering check (they
-are present in every branch, so their position carries no
-information about search order).</p></li>
-<li><p><strong>new_result</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="dara.result.html#dara.result.RefinementResult" title="dara.result.RefinementResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">RefinementResult</span></code></a></span>) – the refinement result at the new (child) node.</p></li>
-<li><p><strong>parent_result</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="dara.result.html#dara.result.RefinementResult" title="dara.result.RefinementResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">RefinementResult</span></code></a> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – the refinement result at the parent node, or None if
-the parent is the (unrefined) root.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True if the branch should be flagged as a low-weight-fraction
-(suspicious) addition.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="dara.search.tree.find_minimal_phase_set">
-<span class="sig-name descname"><span class="pre">find_minimal_phase_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_phases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">necessary_paths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/search/tree.html#find_minimal_phase_set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.search.tree.find_minimal_phase_set" title="Link to this definition">#</a></dt>
-<dd><p>Return the subsequence of <cite>new_phases</cite> whose paths were flagged as
-necessary by <cite>remove_unnecessary_phases</cite>, preserving the original order.</p>
-<p><cite>remove_unnecessary_phases</cite> tests removing each phase <em>individually</em>, so
-it does not by itself guarantee that dropping every flagged-removable
-phase <em>simultaneously</em> still fits well – that must be checked separately
-(see <cite>is_recovery_material</cite>) by actually refining the returned subset.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<a class="reference internal" href="dara.refine.html#dara.refine.RefinementPhase" title="dara.refine.RefinementPhase"><code class="xref py py-class docutils literal notranslate"><span class="pre">RefinementPhase</span></code></a>]</span></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="dara.search.tree.get_natural_break_results">
 <span class="sig-name descname"><span class="pre">get_natural_break_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sorting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/search/tree.html#get_natural_break_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.search.tree.get_natural_break_results" title="Link to this definition">#</a></dt>
 <dd><p>Get the natural break results based on (1-rho) value.</p>
@@ -915,23 +820,6 @@ phase <em>simultaneously</em> still fits well – that must be checked separatel
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>a dictionary containing the group id and the figure of merit for each phase</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="dara.search.tree.is_recovery_material">
-<span class="sig-name descname"><span class="pre">is_recovery_material</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">minimal_result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">original_result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rpb_threshold</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/search/tree.html#is_recovery_material"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.search.tree.is_recovery_material" title="Link to this definition">#</a></dt>
-<dd><p>Whether a reduced (redundancy-free) phase combination fits at least as
-well, within noise, as the bloated combination it was derived from.</p>
-<p>Used to gate whether a minimal-phase-set recovery node should actually be
-added to the search tree: <cite>remove_unnecessary_phases</cite> only proves each
-dropped phase is individually dispensable, not that the fit survives
-dropping all of them together, so this checks the <em>actual</em> refined result
-of the reduced set before it’s allowed to re-enter the search.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1013,15 +901,11 @@ of the reduced set before it’s allowed to re-enter the search.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.SearchTree.show"><code class="docutils literal notranslate"><span class="pre">SearchTree.show()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.attempt_minimal_phase_recovery"><code class="docutils literal notranslate"><span class="pre">attempt_minimal_phase_recovery()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.batch_peak_matching"><code class="docutils literal notranslate"><span class="pre">batch_peak_matching()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.batch_refinement"><code class="docutils literal notranslate"><span class="pre">batch_refinement()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.calculate_fom_and_strain"><code class="docutils literal notranslate"><span class="pre">calculate_fom_and_strain()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.check_low_weight_fraction"><code class="docutils literal notranslate"><span class="pre">check_low_weight_fraction()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.find_minimal_phase_set"><code class="docutils literal notranslate"><span class="pre">find_minimal_phase_set()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.get_natural_break_results"><code class="docutils literal notranslate"><span class="pre">get_natural_break_results()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.group_phases"><code class="docutils literal notranslate"><span class="pre">group_phases()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.is_recovery_material"><code class="docutils literal notranslate"><span class="pre">is_recovery_material()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.remove_unnecessary_phases"><code class="docutils literal notranslate"><span class="pre">remove_unnecessary_phases()</span></code></a></li>
 </ul>
   </nav></div>

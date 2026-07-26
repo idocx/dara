@@ -268,7 +268,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../../dara.peak_detection.html">dara.peak_detection module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dara.plot.html">dara.plot module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dara.refine.html">dara.refine module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../dara.resource_detection.html">dara.resource_detection module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dara.result.html">dara.result module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dara.schema.html">dara.schema module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dara.settings.html">dara.settings module</a></li>
@@ -396,11 +395,8 @@
   <h1>Source code for dara.settings</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Default DARA settings. This approach was inspired by the atomate2 package.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
-
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">model_validator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic_settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseSettings</span><span class="p">,</span> <span class="n">SettingsConfigDict</span>
@@ -423,29 +419,6 @@
 
     <span class="n">PATH_TO_ICSD</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;~/ICSD_2024/ICSD_2024_experimental_inorganic/experimental_inorganic&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">())</span>
     <span class="n">PATH_TO_COD</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;~/COD_2024&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">())</span>
-
-    <span class="n">RAY_NUM_CPUS</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;Number of CPUs to give Ray&#39;s own resource accounting &quot;</span>
-            <span class="s2">&quot;(passed as `num_cpus=` to `ray.init()`). If unset, auto-detected &quot;</span>
-            <span class="s2">&quot;from an explicit SLURM allocation, then OS-level CPU affinity &quot;</span>
-            <span class="s2">&quot;(respects cgroup/container restrictions), then the total CPU &quot;</span>
-            <span class="s2">&quot;count -- see `dara.resource_detection.detect_available_cores`.&quot;</span>
-        <span class="p">),</span>
-    <span class="p">)</span>
-    <span class="n">BGMN_N_THREADS</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;Threads per BGMN refinement task (the `n_threads` refinement &quot;</span>
-            <span class="s2">&quot;param). If unset, auto-derived from the detected core count -- &quot;</span>
-            <span class="s2">&quot;see `dara.resource_detection.default_bgmn_n_threads`. BGMN&#39;s &quot;</span>
-            <span class="s2">&quot;own thread scaling saturates early (measured: 1.36x speedup at &quot;</span>
-            <span class="s2">&quot;2 threads vs. 1.71x at 10, on a 12-core machine), so the &quot;</span>
-            <span class="s2">&quot;default favors more concurrent Ray tasks (wider tree-search &quot;</span>
-            <span class="s2">&quot;exploration) over one heavily-threaded task.&quot;</span>
-        <span class="p">),</span>
-    <span class="p">)</span>
 
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">SettingsConfigDict</span><span class="p">(</span><span class="n">env_prefix</span><span class="o">=</span><span class="s2">&quot;dara_&quot;</span><span class="p">)</span>  <span class="c1"># prepend dara_ to env vars</span>
 

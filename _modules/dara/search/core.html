@@ -268,7 +268,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../dara.peak_detection.html">dara.peak_detection module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../dara.plot.html">dara.plot module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../dara.refine.html">dara.refine module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../dara.resource_detection.html">dara.resource_detection module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../dara.result.html">dara.result module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../dara.schema.html">dara.schema module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../dara.settings.html">dara.settings module</a></li>
@@ -405,10 +404,8 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">ray</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">dara.resource_detection</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_bgmn_n_threads</span><span class="p">,</span> <span class="n">detect_available_cores</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dara.search.data_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">PeakMatchingStrategy</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dara.search.tree</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseSearchTree</span><span class="p">,</span> <span class="n">SearchTree</span><span class="p">,</span> <span class="n">attempt_minimal_phase_recovery</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dara.settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">DaraSettings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dara.search.tree</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseSearchTree</span><span class="p">,</span> <span class="n">SearchTree</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
@@ -424,20 +421,7 @@
     <span class="s2">&quot;b1&quot;</span><span class="p">:</span> <span class="s2">&quot;0_0^0.005&quot;</span><span class="p">,</span>
     <span class="s2">&quot;rp&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
 <span class="p">}</span>
-
-<span class="c1"># Portable CPU/thread budget: respects an explicit SLURM allocation or OS</span>
-<span class="c1"># CPU affinity if detectable, else falls back to the total core count (see</span>
-<span class="c1"># `dara.resource_detection`). Both are overridable via `DaraSettings`</span>
-<span class="c1"># (`~/.dara.yaml` or `DARA_RAY_NUM_CPUS`/`DARA_BGMN_N_THREADS` env vars).</span>
-<span class="n">_settings</span> <span class="o">=</span> <span class="n">DaraSettings</span><span class="p">()</span>
-<span class="n">AVAILABLE_CORES</span> <span class="o">=</span> <span class="n">_settings</span><span class="o">.</span><span class="n">RAY_NUM_CPUS</span> <span class="ow">or</span> <span class="n">detect_available_cores</span><span class="p">()</span>
-<span class="n">DEFAULT_N_THREADS</span> <span class="o">=</span> <span class="n">_settings</span><span class="o">.</span><span class="n">BGMN_N_THREADS</span> <span class="ow">or</span> <span class="n">default_bgmn_n_threads</span><span class="p">(</span><span class="n">AVAILABLE_CORES</span><span class="p">)</span>
-
-<span class="n">DEFAULT_REFINEMENT_PARAMS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;n_threads&quot;</span><span class="p">:</span> <span class="n">DEFAULT_N_THREADS</span><span class="p">,</span>
-    <span class="s2">&quot;eps1&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="s2">&quot;eps2&quot;</span><span class="p">:</span> <span class="s2">&quot;0_-0.05^0.05&quot;</span><span class="p">,</span>
-<span class="p">}</span>
+<span class="n">DEFAULT_REFINEMENT_PARAMS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;n_threads&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s2">&quot;eps1&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;eps2&quot;</span><span class="p">:</span> <span class="s2">&quot;0_-0.05^0.05&quot;</span><span class="p">}</span>
 <span class="n">DEFAULT_PEAK_MATCHING_STRATEGY</span> <span class="o">=</span> <span class="n">PeakMatchingStrategy</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
 
 
@@ -516,11 +500,7 @@
         <span class="n">refinement_params</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">ray</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">():</span>
-        <span class="c1"># num_cpus is set explicitly to the detected/allocated core count</span>
-        <span class="c1"># (AVAILABLE_CORES) rather than left to Ray&#39;s own auto-detection,</span>
-        <span class="c1"># which just calls `os.cpu_count()` and would ignore an explicit</span>
-        <span class="c1"># SLURM allocation or cgroup/container CPU affinity restriction.</span>
-        <span class="n">ray</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">runtime_env</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;working_dir&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span> <span class="n">num_cpus</span><span class="o">=</span><span class="n">AVAILABLE_CORES</span><span class="p">)</span>
+        <span class="n">ray</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">runtime_env</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;working_dir&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span>
 
     <span class="n">phase_params</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">DEFAULT_PHASE_PARAMS</span><span class="p">,</span> <span class="o">**</span><span class="n">phase_params</span><span class="p">}</span>
     <span class="n">refinement_params</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">DEFAULT_REFINEMENT_PARAMS</span><span class="p">,</span> <span class="o">**</span><span class="n">refinement_params</span><span class="p">}</span>
@@ -545,16 +525,6 @@
     <span class="n">max_worker</span> <span class="o">=</span> <span class="n">ray</span><span class="o">.</span><span class="n">cluster_resources</span><span class="p">()[</span><span class="s2">&quot;CPU&quot;</span><span class="p">]</span>
     <span class="n">pending</span> <span class="o">=</span> <span class="p">[</span><span class="n">remote_expand_node</span><span class="p">(</span><span class="n">search_tree</span><span class="p">,</span> <span class="n">search_tree</span><span class="o">.</span><span class="n">root</span><span class="p">)]</span>
     <span class="n">to_be_submitted</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
-    <span class="c1"># Tracks nodes queued or in-flight so `get_expandable_children` and</span>
-    <span class="c1"># `attempt_minimal_phase_recovery` can&#39;t both submit the same node id in</span>
-    <span class="c1"># one merge event -- a duplicate submission crashes `expand_node`&#39;s</span>
-    <span class="c1"># &quot;not expandable&quot; guard on whichever task loses the race.</span>
-    <span class="n">queued_or_in_flight</span> <span class="o">=</span> <span class="p">{</span><span class="n">search_tree</span><span class="o">.</span><span class="n">root</span><span class="p">}</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_enqueue</span><span class="p">(</span><span class="n">nid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">nid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">queued_or_in_flight</span><span class="p">:</span>
-            <span class="n">queued_or_in_flight</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">nid</span><span class="p">)</span>
-            <span class="n">to_be_submitted</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nid</span><span class="p">)</span>
 
     <span class="k">while</span> <span class="n">pending</span><span class="p">:</span>
         <span class="n">done</span><span class="p">,</span> <span class="n">pending</span> <span class="o">=</span> <span class="n">ray</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">pending</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
@@ -562,22 +532,11 @@
         <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">done</span><span class="p">:</span>
             <span class="n">remote_search_tree</span> <span class="o">=</span> <span class="n">ray</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
             <span class="n">remote_search_tree</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">remote_search_tree</span><span class="p">)</span>
-            <span class="n">queued_or_in_flight</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">remote_search_tree</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
             <span class="n">search_tree</span><span class="o">.</span><span class="n">add_subtree</span><span class="p">(</span>
                 <span class="n">anchor_nid</span><span class="o">=</span><span class="n">remote_search_tree</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">search_tree</span><span class="o">=</span><span class="n">remote_search_tree</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">nid</span> <span class="ow">in</span> <span class="n">search_tree</span><span class="o">.</span><span class="n">get_expandable_children</span><span class="p">(</span><span class="n">remote_search_tree</span><span class="o">.</span><span class="n">root</span><span class="p">):</span>
-                <span class="n">_enqueue</span><span class="p">(</span><span class="n">nid</span><span class="p">)</span>
-
-            <span class="c1"># A &quot;no_improvement&quot; child may be overfit only because it&#39;s</span>
-            <span class="c1"># carrying a now-redundant phase from earlier in the branch, not</span>
-            <span class="c1"># because the newly-added phase itself is bad -- recover the</span>
-            <span class="c1"># minimal, redundancy-free combination hiding inside it (if any)</span>
-            <span class="c1"># and let the search continue from there instead of dead-ending.</span>
-            <span class="k">for</span> <span class="n">nid</span> <span class="ow">in</span> <span class="n">attempt_minimal_phase_recovery</span><span class="p">(</span>
-                <span class="n">search_tree</span><span class="p">,</span> <span class="n">remote_search_tree</span><span class="o">.</span><span class="n">root</span>
-            <span class="p">):</span>
-                <span class="n">_enqueue</span><span class="p">(</span><span class="n">nid</span><span class="p">)</span>
+                <span class="n">to_be_submitted</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nid</span><span class="p">)</span>
 
         <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">pending</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">max_worker</span> <span class="ow">and</span> <span class="n">to_be_submitted</span><span class="p">:</span>
             <span class="n">nid</span> <span class="o">=</span> <span class="n">to_be_submitted</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
