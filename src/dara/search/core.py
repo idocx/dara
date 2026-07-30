@@ -11,6 +11,7 @@ import ray
 
 from dara.search.data_model import PeakMatchingStrategy
 from dara.search.tree import BaseSearchTree, SearchTree
+from dara.settings import DaraSettings
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -26,7 +27,21 @@ DEFAULT_PHASE_PARAMS = {
     "b1": "0_0^0.005",
     "rp": 4,
 }
-DEFAULT_REFINEMENT_PARAMS = {"n_threads": 8, "eps1": 0, "eps2": "0_-0.05^0.05"}
+
+# Portable CPU/thread budget: BGMN threads default to 1 (see
+# DaraSettings.BGMN_N_THREADS) so worker *concurrency*, not per-task
+# threading, scales with available cores (see dara.hardware and the
+# num_cpus=... passed to ray.init() below and to each refinement task's
+# .options(num_cpus=...) in dara.search.tree.batch_refinement). Both are
+# overridable via DaraSettings (~/.dara.yaml or the DARA_RAY_NUM_CPUS /
+# DARA_BGMN_N_THREADS env vars).
+_settings = DaraSettings()
+
+DEFAULT_REFINEMENT_PARAMS = {
+    "n_threads": _settings.BGMN_N_THREADS,
+    "eps1": 0,
+    "eps2": "0_-0.05^0.05",
+}
 DEFAULT_PEAK_MATCHING_STRATEGY = PeakMatchingStrategy.default()
 
 
@@ -100,7 +115,12 @@ def search_phases(
         refinement_params = {}
 
     if not ray.is_initialized():
-        ray.init(runtime_env={"working_dir": None})
+        # num_cpus is set explicitly to the detected/allocated core count
+        # (DaraSettings.RAY_NUM_CPUS) rather than left to Ray's own
+        # auto-detection, which just calls os.cpu_count() and would ignore
+        # an explicit SLURM allocation or cgroup/container CPU affinity
+        # restriction (see dara.hardware.detect_available_cores).
+        ray.init(runtime_env={"working_dir": None}, num_cpus=_settings.RAY_NUM_CPUS)
 
     phase_params = {**DEFAULT_PHASE_PARAMS, **phase_params}
     refinement_params = {**DEFAULT_REFINEMENT_PARAMS, **refinement_params}

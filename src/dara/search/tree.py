@@ -20,6 +20,7 @@ from dara.peak_detection import detect_peaks
 from dara.refine import RefinementPhase
 from dara.search.data_model import PeakMatchingStrategy, SearchNodeData, SearchResult
 from dara.search.peak_matcher import PeakMatcher
+from dara.settings import DaraSettings
 from dara.utils import (
     estimate_rpb_threshold,
     find_optimal_intensity_threshold,
@@ -39,8 +40,20 @@ if TYPE_CHECKING:
 
 logger = get_logger(__name__, level="INFO")
 
+# Defensive fallback for callers that build a SearchTree directly (bypassing
+# search_phases()'s merge of DEFAULT_REFINEMENT_PARAMS, which always sets
+# n_threads) without an explicit n_threads in refinement_params. See
+# dara.hardware and dara.search.core for the portable core/thread sizing
+# this is part of.
+_DEFAULT_BGMN_N_THREADS = DaraSettings().BGMN_N_THREADS
 
-@ray.remote(num_cpus=1)
+
+# num_cpus is intentionally not fixed here -- it is set per-submission via
+# .options(num_cpus=...) in batch_refinement() to match the actual n_threads
+# a given task's BGMN subprocess will use, so Ray's scheduler throttles
+# concurrency to roughly floor(cores / n_threads) instead of assuming a
+# hardcoded num_cpus=1 regardless of how many OS threads the task spawns.
+@ray.remote
 def remote_do_refinement_no_saving(
     pattern_path: Path,
     cif_paths: list[Path],
@@ -129,8 +142,9 @@ def batch_refinement(
     phase_params: dict[str, ...] | None = None,
     refinement_params: dict[str, float] | None = None,
 ) -> list[RefinementResult]:
+    n_threads = (refinement_params or {}).get("n_threads", _DEFAULT_BGMN_N_THREADS)
     handles = [
-        remote_do_refinement_no_saving.remote(
+        remote_do_refinement_no_saving.options(num_cpus=n_threads).remote(
             pattern_path,
             cif_paths,
             wavelength=wavelength,
