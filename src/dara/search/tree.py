@@ -338,6 +338,64 @@ def remove_unnecessary_phases(
     return new_phases
 
 
+# Minimum relative Rwp improvement over the parent node required to keep an
+# out-of-order-intensity branch instead of pruning it (see
+# `should_prune_low_weight_fraction`). Lower Rwp is better, so relative
+# improvement is (parent_rwp - child_rwp) / parent_rwp; 0.10 means the child
+# must fit at least 10% better than its parent, relatively, to survive.
+LOW_WEIGHT_FRACTION_RWP_IMPROVEMENT = 0.10
+
+
+def should_prune_low_weight_fraction(
+    intensity_out_of_order: bool,
+    parent_rwp: float | None,
+    child_rwp: float,
+    material_improvement_threshold: float = LOW_WEIGHT_FRACTION_RWP_IMPROVEMENT,
+) -> bool:
+    """
+    Decide whether an out-of-order-intensity branch should be pruned.
+
+    Phases are expected to be discovered in roughly decreasing order of
+    abundance (the naive peak-match search tends to find the biggest
+    contributor to the pattern first), so a newly-added phase that turns out
+    to have *more* calculated peak intensity than a phase added earlier in
+    the same branch (`intensity_out_of_order`) is treated as suspicious by
+    default -- it can mean the refinement is using this phase to absorb
+    residual intensity that doesn't belong to it (overfitting), rather than
+    genuinely explaining new pattern features.
+
+    But that's only actually suspicious if the phase isn't earning its keep.
+    If adding it materially improved the fit (Rwp) over the parent node, the
+    improvement is real signal, not an ordering artifact, regardless of what
+    order the search happened to try phases in -- so the branch is kept.
+
+    Args:
+        intensity_out_of_order: whether the newly-added phase has more
+            calculated peak intensity than an earlier phase in the same
+            branch (the raw ordering signal; computed by the caller).
+        parent_rwp: the Rwp of the parent node, or None if the parent is the
+            (unrefined) root -- with no parent to compare against, the
+            ordering signal alone determines the outcome.
+        child_rwp: the Rwp of the new (child) node being evaluated.
+        material_improvement_threshold: the minimum relative Rwp
+            improvement required to treat an out-of-order branch as
+            materially improved rather than pruning it.
+
+    Returns
+    -------
+        True if the branch should be pruned as a low-weight-fraction
+        (suspicious, non-material) out-of-order addition; False if it
+        should be kept.
+    """
+    if not intensity_out_of_order:
+        return False
+    if parent_rwp is None or parent_rwp <= 0:
+        return True
+
+    relative_improvement = (parent_rwp - child_rwp) / parent_rwp
+    return relative_improvement < material_improvement_threshold
+
+
 def get_natural_break_results(
     results: list[SearchResult], sorting: bool = True
 ) -> list[SearchResult]:
@@ -505,9 +563,19 @@ class BaseSearchTree(Tree):
                         ]["intensity"].sum(),
                         reverse=True,
                     )
-                    # make sure the newly added phase has the lowest peak intensity
-                    is_low_weight_fraction = (
+                    # the newly added phase does not have the lowest peak intensity
+                    intensity_out_of_order = (
                         sorted_searched_phases[-1] != searched_phases[-1]
+                    )
+                    parent_rwp = (
+                        node.data.current_result.lst_data.rwp
+                        if node.data.current_result is not None
+                        else None
+                    )
+                    is_low_weight_fraction = should_prune_low_weight_fraction(
+                        intensity_out_of_order,
+                        parent_rwp,
+                        new_result.lst_data.rwp,
                     )
                 else:
                     is_low_weight_fraction = False
