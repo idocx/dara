@@ -87,43 +87,25 @@ class TestShouldPruneLowWeightFraction(unittest.TestCase):
     def test_in_order_never_pruned(self):
         """Not out-of-order: the parent/child fit is irrelevant, never prune."""
         self.assertFalse(
-            should_prune_low_weight_fraction(
-                intensity_out_of_order=False, parent_rwp=40.0, child_rwp=39.9
-            )
+            should_prune_low_weight_fraction(intensity_out_of_order=False, parent_rwp=40.0, child_rwp=39.9)
         )
         self.assertFalse(
-            should_prune_low_weight_fraction(
-                intensity_out_of_order=False, parent_rwp=40.0, child_rwp=100.0
-            )
+            should_prune_low_weight_fraction(intensity_out_of_order=False, parent_rwp=40.0, child_rwp=100.0)
         )
         self.assertFalse(
-            should_prune_low_weight_fraction(
-                intensity_out_of_order=False, parent_rwp=None, child_rwp=39.9
-            )
+            should_prune_low_weight_fraction(intensity_out_of_order=False, parent_rwp=None, child_rwp=39.9)
         )
 
     def test_out_of_order_no_parent_falls_back_to_ordering_only(self):
         """With no parent to compare against (root's first child), the
         ordering signal alone determines the outcome -- prune."""
-        self.assertTrue(
-            should_prune_low_weight_fraction(
-                intensity_out_of_order=True, parent_rwp=None, child_rwp=10.0
-            )
-        )
+        self.assertTrue(should_prune_low_weight_fraction(intensity_out_of_order=True, parent_rwp=None, child_rwp=10.0))
 
     def test_out_of_order_zero_or_negative_parent_rwp_is_pruned(self):
         """Degenerate parent_rwp <= 0 can't support a relative-improvement
         calculation (division by zero); fall back to the ordering-only rule."""
-        self.assertTrue(
-            should_prune_low_weight_fraction(
-                intensity_out_of_order=True, parent_rwp=0.0, child_rwp=5.0
-            )
-        )
-        self.assertTrue(
-            should_prune_low_weight_fraction(
-                intensity_out_of_order=True, parent_rwp=-1.0, child_rwp=5.0
-            )
-        )
+        self.assertTrue(should_prune_low_weight_fraction(intensity_out_of_order=True, parent_rwp=0.0, child_rwp=5.0))
+        self.assertTrue(should_prune_low_weight_fraction(intensity_out_of_order=True, parent_rwp=-1.0, child_rwp=5.0))
 
     def test_out_of_order_marginal_improvement_still_pruned(self):
         """Out-of-order + improvement below the material threshold: pruned."""
@@ -131,9 +113,7 @@ class TestShouldPruneLowWeightFraction(unittest.TestCase):
         # 5% relative improvement, below the 10% default threshold
         child_rwp = 38.0
         self.assertTrue(
-            should_prune_low_weight_fraction(
-                intensity_out_of_order=True, parent_rwp=parent_rwp, child_rwp=child_rwp
-            )
+            should_prune_low_weight_fraction(intensity_out_of_order=True, parent_rwp=parent_rwp, child_rwp=child_rwp)
         )
 
     def test_out_of_order_material_improvement_kept(self):
@@ -144,9 +124,7 @@ class TestShouldPruneLowWeightFraction(unittest.TestCase):
         # 50% relative improvement
         child_rwp = 20.0
         self.assertFalse(
-            should_prune_low_weight_fraction(
-                intensity_out_of_order=True, parent_rwp=parent_rwp, child_rwp=child_rwp
-            )
+            should_prune_low_weight_fraction(intensity_out_of_order=True, parent_rwp=parent_rwp, child_rwp=child_rwp)
         )
 
     def test_improvement_exactly_at_threshold_is_kept(self):
@@ -155,28 +133,20 @@ class TestShouldPruneLowWeightFraction(unittest.TestCase):
         parent_rwp = 40.0
         child_rwp = parent_rwp * (1 - LOW_WEIGHT_FRACTION_RWP_IMPROVEMENT)
         self.assertFalse(
-            should_prune_low_weight_fraction(
-                intensity_out_of_order=True, parent_rwp=parent_rwp, child_rwp=child_rwp
-            )
+            should_prune_low_weight_fraction(intensity_out_of_order=True, parent_rwp=parent_rwp, child_rwp=child_rwp)
         )
 
     def test_improvement_just_under_threshold_is_pruned(self):
         parent_rwp = 40.0
         child_rwp = parent_rwp * (1 - LOW_WEIGHT_FRACTION_RWP_IMPROVEMENT) + 1e-6
         self.assertTrue(
-            should_prune_low_weight_fraction(
-                intensity_out_of_order=True, parent_rwp=parent_rwp, child_rwp=child_rwp
-            )
+            should_prune_low_weight_fraction(intensity_out_of_order=True, parent_rwp=parent_rwp, child_rwp=child_rwp)
         )
 
     def test_worse_fit_is_pruned(self):
         """Out-of-order + the child fits WORSE than the parent (negative
         'improvement'): definitely pruned."""
-        self.assertTrue(
-            should_prune_low_weight_fraction(
-                intensity_out_of_order=True, parent_rwp=20.0, child_rwp=30.0
-            )
-        )
+        self.assertTrue(should_prune_low_weight_fraction(intensity_out_of_order=True, parent_rwp=20.0, child_rwp=30.0))
 
     def test_custom_threshold_is_respected(self):
         parent_rwp, child_rwp = 40.0, 30.0  # 25% relative improvement
@@ -211,9 +181,7 @@ def _make_test_tree() -> BaseSearchTree:
     tree.record_peak_matcher_scores = False
     tree.express_mode = False
     tree.maximum_grouping_distance = 0.1
-    tree.peak_obs = pd.DataFrame({"2theta": [10.0, 11.0], "intensity": [100.0, 50.0]})[
-        ["2theta", "intensity"]
-    ].values
+    tree.peak_obs = pd.DataFrame({"2theta": [10.0, 11.0], "intensity": [100.0, 50.0]})[["2theta", "intensity"]].values
     return tree
 
 
@@ -246,9 +214,7 @@ class TestExpandNodeLowWeightFractionIntegration(unittest.TestCase):
         )
         tree.add_node(root)
 
-        child_result = _make_refinement_result(
-            child_rwp, {"A": phase_a_intensity, "B": phase_b_intensity}
-        )
+        child_result = _make_refinement_result(child_rwp, {"A": phase_a_intensity, "B": phase_b_intensity})
 
         with (
             patch.object(tree, "score_phases", return_value=([phase_b], {}, 0)),
@@ -263,27 +229,21 @@ class TestExpandNodeLowWeightFractionIntegration(unittest.TestCase):
     def test_material_improvement_is_retained(self, mock_fom):
         """Out-of-order (B's intensity > A's) but a clearly better fit
         (50% relative Rwp improvement): must NOT be pruned as low-weight-fraction."""
-        status = self._run_expand(
-            parent_rwp=40.0, child_rwp=20.0, phase_a_intensity=60.0, phase_b_intensity=200.0
-        )
+        status = self._run_expand(parent_rwp=40.0, child_rwp=20.0, phase_a_intensity=60.0, phase_b_intensity=200.0)
         self.assertNotEqual(status, "low_weight_fraction")
         self.assertEqual(status, "pending")
 
     def test_marginal_improvement_is_still_pruned(self, mock_fom):
         """Out-of-order (B's intensity > A's) with only a marginal (5%)
         Rwp improvement: still pruned as low-weight-fraction, as before."""
-        status = self._run_expand(
-            parent_rwp=40.0, child_rwp=38.0, phase_a_intensity=60.0, phase_b_intensity=200.0
-        )
+        status = self._run_expand(parent_rwp=40.0, child_rwp=38.0, phase_a_intensity=60.0, phase_b_intensity=200.0)
         self.assertEqual(status, "low_weight_fraction")
 
     def test_in_order_addition_never_flagged_regardless_of_fit(self, mock_fom):
         """B's intensity is LOWER than A's (properly ordered): never flagged,
         even with a poor Rwp improvement -- the ordering check simply
         doesn't fire, independent of the material-improvement carve-out."""
-        status = self._run_expand(
-            parent_rwp=40.0, child_rwp=39.9, phase_a_intensity=200.0, phase_b_intensity=60.0
-        )
+        status = self._run_expand(parent_rwp=40.0, child_rwp=39.9, phase_a_intensity=200.0, phase_b_intensity=60.0)
         self.assertNotEqual(status, "low_weight_fraction")
 
 

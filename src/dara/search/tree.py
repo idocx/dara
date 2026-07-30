@@ -564,14 +564,8 @@ class BaseSearchTree(Tree):
                         reverse=True,
                     )
                     # the newly added phase does not have the lowest peak intensity
-                    intensity_out_of_order = (
-                        sorted_searched_phases[-1] != searched_phases[-1]
-                    )
-                    parent_rwp = (
-                        node.data.current_result.lst_data.rwp
-                        if node.data.current_result is not None
-                        else None
-                    )
+                    intensity_out_of_order = sorted_searched_phases[-1] != searched_phases[-1]
+                    parent_rwp = node.data.current_result.lst_data.rwp if node.data.current_result is not None else None
                     is_low_weight_fraction = should_prune_low_weight_fraction(
                         intensity_out_of_order,
                         parent_rwp,
