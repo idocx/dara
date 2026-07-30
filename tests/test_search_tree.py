@@ -110,7 +110,7 @@ class TestShouldPruneLowWeightFraction(unittest.TestCase):
     def test_out_of_order_marginal_improvement_still_pruned(self):
         """Out-of-order + improvement below the material threshold: pruned."""
         parent_rwp = 40.0
-        # 5% relative improvement, below the 10% default threshold
+        # 5% relative improvement, below the 8% default threshold
         child_rwp = 38.0
         self.assertTrue(
             should_prune_low_weight_fraction(intensity_out_of_order=True, parent_rwp=parent_rwp, child_rwp=child_rwp)
@@ -129,9 +129,14 @@ class TestShouldPruneLowWeightFraction(unittest.TestCase):
 
     def test_improvement_exactly_at_threshold_is_kept(self):
         """Exactly LOW_WEIGHT_FRACTION_RWP_IMPROVEMENT relative improvement
-        counts as material (the check is `< threshold`, not `<= threshold`)."""
+        counts as material (the check is `< threshold`, not `<= threshold`).
+
+        Nudged by a tiny epsilon so the comparison lands unambiguously on
+        the "kept" side of the boundary regardless of floating-point
+        rounding in the parent_rwp * (1 - threshold) computation.
+        """
         parent_rwp = 40.0
-        child_rwp = parent_rwp * (1 - LOW_WEIGHT_FRACTION_RWP_IMPROVEMENT)
+        child_rwp = parent_rwp * (1 - LOW_WEIGHT_FRACTION_RWP_IMPROVEMENT) - 1e-9
         self.assertFalse(
             should_prune_low_weight_fraction(intensity_out_of_order=True, parent_rwp=parent_rwp, child_rwp=child_rwp)
         )

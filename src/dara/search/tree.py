@@ -341,9 +341,9 @@ def remove_unnecessary_phases(
 # Minimum relative Rwp improvement over the parent node required to keep an
 # out-of-order-intensity branch instead of pruning it (see
 # `should_prune_low_weight_fraction`). Lower Rwp is better, so relative
-# improvement is (parent_rwp - child_rwp) / parent_rwp; 0.10 means the child
-# must fit at least 10% better than its parent, relatively, to survive.
-LOW_WEIGHT_FRACTION_RWP_IMPROVEMENT = 0.10
+# improvement is (parent_rwp - child_rwp) / parent_rwp; 0.08 means the child
+# must fit at least 8% better than its parent, relatively, to survive.
+LOW_WEIGHT_FRACTION_RWP_IMPROVEMENT = 0.08
 
 
 def should_prune_low_weight_fraction(
