@@ -6,7 +6,7 @@ import pandas as pd
 from treelib import Node, Tree
 
 from dara.refine import RefinementPhase
-from dara.result import DiaResult, LstResult, PhaseResult, RefinementResult
+from dara.result import DiaResult, LstResult, PhaseResult, RefinementMetrics, RefinementResult
 from dara.search.data_model import SearchNodeData
 from dara.search.tree import (
     LOW_WEIGHT_FRACTION_RWP_IMPROVEMENT,
@@ -48,6 +48,13 @@ def _make_refinement_result(
     and `plot_data.structs` (read by `remove_unnecessary_phases`) are built
     from it so removing any one phase changes the calculated pattern enough
     for `remove_unnecessary_phases` to consider it necessary.
+
+    `refinement_metrics` is a real `RefinementMetrics` instance, matching how
+    production code builds one (`RefinementMetrics(rwp=lst_data.rwp)` in
+    `get_result`/`refine.py`) -- its only required field is `rwp`, so this
+    passes the same `rwp` used for `lst_data`. `missing_peaks`/`extra_peaks`/
+    `intensity_mismatch_peaks` are irrelevant to the pruning-decision logic
+    under test and are left at their `None` defaults.
     """
     peak_rows = [
         {"phase": phase, "2theta": 10.0 + i, "intensity": intensity}
@@ -78,6 +85,7 @@ def _make_refinement_result(
             structs=structs,
         ),
         peak_data=pd.DataFrame(peak_rows),
+        refinement_metrics=RefinementMetrics(rwp=rwp),
     )
 
 
