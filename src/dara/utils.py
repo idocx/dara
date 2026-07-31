@@ -55,7 +55,7 @@ def bool2yn(value: bool) -> str:
     return "Y" if value else "N"
 
 
-def get_number(s: Union[float, None, tuple[float, float]]) -> Union[float, None]:
+def get_number(s: Union[float, tuple[float, float], None]) -> Union[float, None]:
     """Get the number from a float or tuple of floats."""
     if isinstance(s, tuple):
         return s[0]

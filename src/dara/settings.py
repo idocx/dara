@@ -6,6 +6,8 @@ from pathlib import Path
 from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from dara.hardware import detect_cpu_count
+
 _DEFAULT_CONFIG_FILE_PATH = "~/.dara.yaml"
 
 
@@ -22,6 +24,20 @@ class DaraSettings(BaseSettings):
 
     PATH_TO_ICSD: Path = Field(Path("~/ICSD_2024/ICSD_2024_experimental_inorganic/experimental_inorganic").expanduser())
     PATH_TO_COD: Path = Field(Path("~/COD_2024").expanduser())
+
+    BGMN_N_THREADS: int = Field(
+        1,
+        description="Number of internal threads BGMN uses per refinement. Kept at 1 by "
+        "default so worker parallelism (RAY_NUM_CPUS) doesn't oversubscribe the machine's "
+        "cores. Override with the DARA_BGMN_N_THREADS env var.",
+    )
+    RAY_NUM_CPUS: int = Field(
+        default_factory=detect_cpu_count,
+        description="Number of CPUs Ray is told it has available, passed explicitly to "
+        "ray.init() so it doesn't auto-detect (which grabs the whole node under SLURM). "
+        "Defaults to the runtime-detected usable core count. Override with the "
+        "DARA_RAY_NUM_CPUS env var.",
+    )
 
     model_config = SettingsConfigDict(env_prefix="dara_")  # prepend dara_ to env vars
 

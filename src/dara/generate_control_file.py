@@ -10,7 +10,10 @@ from typing import Literal
 
 import numpy as np
 
+from dara.settings import DaraSettings
 from dara.utils import read_phase_name_from_str
+
+_DARA_SETTINGS = DaraSettings()
 
 
 def copy_instrument_files(instrument_profile: str | Path, working_dir: Path) -> str:
@@ -71,7 +74,7 @@ def generate_control_file(
     instrument_profile: str | Path,
     working_dir: Path | None = None,
     *,
-    n_threads: int = 8,
+    n_threads: int = _DARA_SETTINGS.BGMN_N_THREADS,
     wmin: float | None = None,
     wmax: float | None = None,
     eps1: float | str = 0.0,

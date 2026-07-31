@@ -385,7 +385,7 @@ def parse_lst(lst_path: Path, phase_names: list[str]) -> LstResult:
 
     """
 
-    def parse_values(v_: str) -> float | tuple[float, float] | None | str | int:
+    def parse_values(v_: str) -> float | tuple[float, float] | str | int | None:
         try:
             v_ = v_.strip("%")
             if v_ == "ERROR" or v_ == "UNDEF":
