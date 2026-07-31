@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dara.settings &#8212; Dara Documentation</title>
+    <title>dara.hardware &#8212; Dara Documentation</title>
   
   
   
@@ -49,7 +49,7 @@
     <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/dara/settings';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/dara/hardware';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="icon" href="../../_static/logo.svg"/>
@@ -393,85 +393,49 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <h1>Source code for dara.settings</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Default DARA settings. This approach was inspired by the atomate2 package.&quot;&quot;&quot;</span>
+  <h1>Source code for dara.hardware</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Runtime CPU-core detection, used to size worker/thread counts portably.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">model_validator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic_settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseSettings</span><span class="p">,</span> <span class="n">SettingsConfigDict</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">dara.hardware</span><span class="w"> </span><span class="kn">import</span> <span class="n">detect_cpu_count</span>
-
-<span class="n">_DEFAULT_CONFIG_FILE_PATH</span> <span class="o">=</span> <span class="s2">&quot;~/.dara.yaml&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 
-<div class="viewcode-block" id="DaraSettings">
-<a class="viewcode-back" href="../../dara.settings.html#dara.settings.DaraSettings">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">DaraSettings</span><span class="p">(</span><span class="n">BaseSettings</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Settings for DARA.</span>
+<div class="viewcode-block" id="detect_cpu_count">
+<a class="viewcode-back" href="../../dara.hardware.html#dara.hardware.detect_cpu_count">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">detect_cpu_count</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Detect the number of CPU cores usable by this process.</span>
 
-<span class="sd">    To edit these, please modify the config YAML file. By default, this is located at</span>
-<span class="sd">    ~/.dara.yaml, but one can specify the path by setting the environment variable:</span>
-<span class="sd">    &quot;DARA_CONFIG_FILE&quot;.</span>
+<span class="sd">    Checked in priority order:</span>
+<span class="sd">        1. SLURM_CPUS_PER_TASK, then SLURM_CPUS_ON_NODE (SLURM-managed jobs).</span>
+<span class="sd">        2. ``os.sched_getaffinity(0)`` (Linux only; reflects taskset/affinity</span>
+<span class="sd">           restrictions that ``os.cpu_count()`` ignores).</span>
+<span class="sd">        3. ``os.cpu_count()``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        A positive integer. Falls back to 1 if nothing above yields a usable count.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">env_var</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;SLURM_CPUS_PER_TASK&quot;</span><span class="p">,</span> <span class="s2">&quot;SLURM_CPUS_ON_NODE&quot;</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">env_var</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">count</span>
 
-    <span class="n">CONFIG_FILE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">_DEFAULT_CONFIG_FILE_PATH</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;File to load alternative defaults from.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">os</span><span class="p">,</span> <span class="s2">&quot;sched_getaffinity&quot;</span><span class="p">):</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sched_getaffinity</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">count</span>
 
-    <span class="n">PATH_TO_ICSD</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;~/ICSD_2024/ICSD_2024_experimental_inorganic/experimental_inorganic&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">())</span>
-    <span class="n">PATH_TO_COD</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;~/COD_2024&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">())</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">count</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">count</span>
 
-    <span class="n">BGMN_N_THREADS</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="mi">1</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Number of internal threads BGMN uses per refinement. Kept at 1 by &quot;</span>
-        <span class="s2">&quot;default so worker parallelism (RAY_NUM_CPUS) doesn&#39;t oversubscribe the machine&#39;s &quot;</span>
-        <span class="s2">&quot;cores. Override with the DARA_BGMN_N_THREADS env var.&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">RAY_NUM_CPUS</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default_factory</span><span class="o">=</span><span class="n">detect_cpu_count</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Number of CPUs Ray is told it has available, passed explicitly to &quot;</span>
-        <span class="s2">&quot;ray.init() so it doesn&#39;t auto-detect (which grabs the whole node under SLURM). &quot;</span>
-        <span class="s2">&quot;Defaults to the runtime-detected usable core count. Override with the &quot;</span>
-        <span class="s2">&quot;DARA_RAY_NUM_CPUS env var.&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">SettingsConfigDict</span><span class="p">(</span><span class="n">env_prefix</span><span class="o">=</span><span class="s2">&quot;dara_&quot;</span><span class="p">)</span>  <span class="c1"># prepend dara_ to env vars</span>
-
-<div class="viewcode-block" id="DaraSettings.load_default_settings">
-<a class="viewcode-back" href="../../dara.settings.html#dara.settings.DaraSettings.load_default_settings">[docs]</a>
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">load_default_settings</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Load settings from file or environment variables.</span>
-
-<span class="sd">        Loads settings from a root file if available and uses that as defaults in</span>
-<span class="sd">        place of built-in defaults.</span>
-
-<span class="sd">        This allows setting of the config file path through environment variables.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">monty.serialization</span><span class="w"> </span><span class="kn">import</span> <span class="n">loadfn</span>
-
-        <span class="n">config_file_path</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CONFIG_FILE&quot;</span><span class="p">,</span> <span class="n">_DEFAULT_CONFIG_FILE_PATH</span><span class="p">)</span>
-        <span class="n">config_file_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">config_file_path</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>
-
-        <span class="n">new_values</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="n">config_file_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">config_file_path</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;DARA config file is empty: </span><span class="si">{</span><span class="n">config_file_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                    <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">new_values</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">loadfn</span><span class="p">(</span><span class="n">config_file_path</span><span class="p">))</span>
-                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DARA config file is unparsable:</span><span class="si">{</span><span class="n">config_file_path</span><span class="si">}</span><span class="s2"> &quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
-
-        <span class="k">return</span> <span class="p">{</span><span class="o">**</span><span class="n">new_values</span><span class="p">,</span> <span class="o">**</span><span class="n">values</span><span class="p">}</span></div>
-</div>
+    <span class="k">return</span> <span class="mi">1</span></div>
 
 </pre></div>
 

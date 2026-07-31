@@ -264,6 +264,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../dara.cli.html">dara.cli module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dara.eflech_worker.html">dara.eflech_worker module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dara.generate_control_file.html">dara.generate_control_file module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dara.hardware.html">dara.hardware module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dara.jobs.html">dara.jobs module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dara.peak_detection.html">dara.peak_detection module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dara.plot.html">dara.plot module</a></li>
@@ -458,7 +459,7 @@
 
 <div class="viewcode-block" id="get_number">
 <a class="viewcode-back" href="../../dara.utils.html#dara.utils.get_number">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_number</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_number</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="kc">None</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the number from a float or tuple of floats.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>

@@ -25,6 +25,7 @@ Submodules
    dara.cli
    dara.eflech_worker
    dara.generate_control_file
+   dara.hardware
    dara.jobs
    dara.peak_detection
    dara.plot

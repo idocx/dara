@@ -269,6 +269,7 @@
 <li class="toctree-l3"><a class="reference internal" href="dara.cli.html">dara.cli module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.eflech_worker.html">dara.eflech_worker module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.generate_control_file.html">dara.generate_control_file module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dara.hardware.html">dara.hardware module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.jobs.html">dara.jobs module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.peak_detection.html">dara.peak_detection module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.plot.html">dara.plot module</a></li>
@@ -487,6 +488,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.BaseSearchTree.score_phases"><code class="docutils literal notranslate"><span class="pre">BaseSearchTree.score_phases()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.MATERIAL_RWP_IMPROVEMENT"><code class="docutils literal notranslate"><span class="pre">MATERIAL_RWP_IMPROVEMENT</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.SearchTree"><code class="docutils literal notranslate"><span class="pre">SearchTree</span></code></a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.SearchTree.get_search_results"><code class="docutils literal notranslate"><span class="pre">SearchTree.get_search_results()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.SearchTree.show"><code class="docutils literal notranslate"><span class="pre">SearchTree.show()</span></code></a></li>
@@ -497,6 +499,7 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.calculate_fom_and_strain"><code class="docutils literal notranslate"><span class="pre">calculate_fom_and_strain()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.get_natural_break_results"><code class="docutils literal notranslate"><span class="pre">get_natural_break_results()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.group_phases"><code class="docutils literal notranslate"><span class="pre">group_phases()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.keep_branch_despite_intensity_order"><code class="docutils literal notranslate"><span class="pre">keep_branch_despite_intensity_order()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.remove_unnecessary_phases"><code class="docutils literal notranslate"><span class="pre">remove_unnecessary_phases()</span></code></a></li>
 </ul>
             </nav>
@@ -694,6 +697,13 @@ all phases’ scores, and the score’s threshold.</p>
 
 </dd></dl>
 
+<dl class="py data">
+<dt class="sig sig-object py" id="dara.search.tree.MATERIAL_RWP_IMPROVEMENT">
+<span class="sig-name descname"><span class="pre">MATERIAL_RWP_IMPROVEMENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.08</span></em><a class="headerlink" href="#dara.search.tree.MATERIAL_RWP_IMPROVEMENT" title="Link to this definition">#</a></dt>
+<dd><p>Minimum relative Rwp improvement (parent -&gt; child) required for a branch
+flagged by the intensity-order heuristic to survive anyway.</p>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="dara.search.tree.SearchTree">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SearchTree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cif_paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pinned_phases</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refine_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelength</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Cu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instrument_profile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Aeris-fds-Pixcel1d-Medipix3'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">express_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_angular_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum_grouping_distance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_phases</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rpb_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">record_peak_matcher_scores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">peak_matching_strategy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/search/tree.html#SearchTree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.search.tree.SearchTree" title="Link to this definition">#</a></dt>
@@ -825,6 +835,37 @@ all phases’ scores, and the score’s threshold.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="dara.search.tree.keep_branch_despite_intensity_order">
+<span class="sig-name descname"><span class="pre">keep_branch_despite_intensity_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">child_result</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">violated</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/search/tree.html#keep_branch_despite_intensity_order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.search.tree.keep_branch_despite_intensity_order" title="Link to this definition">#</a></dt>
+<dd><p>Decide whether an intensity-order violation should still prune a branch.</p>
+<p>The intensity-order heuristic (unchanged, computed by the caller) flags a
+branch when the newly added phase ends up with more peak intensity than a
+phase added earlier. That’s usually a sign the new phase isn’t earning its
+place, but it can also happen on a branch whose overall fit is clearly
+better. Rather than pruning every flagged branch outright, only prune it
+if it did not also improve Rwp by at least <code class="docutils literal notranslate"><span class="pre">MATERIAL_RWP_IMPROVEMENT</span></code>
+relative to its parent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent_result</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="dara.result.html#dara.result.RefinementResult" title="dara.result.RefinementResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">RefinementResult</span></code></a> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – the refinement result before the candidate phase was
+added, or <code class="docutils literal notranslate"><span class="pre">None</span></code> at the root of the search tree.</p></li>
+<li><p><strong>child_result</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="dara.result.html#dara.result.RefinementResult" title="dara.result.RefinementResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">RefinementResult</span></code></a></span>) – the refinement result after adding the candidate phase.</p></li>
+<li><p><strong>violated</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – whether the (unchanged, caller-computed) intensity-order
+check flagged this branch.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the branch should survive (either unflagged, or flagged but
+with a material Rwp improvement); False if it should be pruned.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="dara.search.tree.remove_unnecessary_phases">
 <span class="sig-name descname"><span class="pre">remove_unnecessary_phases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cif_paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rpb_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/search/tree.html#remove_unnecessary_phases"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.search.tree.remove_unnecessary_phases" title="Link to this definition">#</a></dt>
 <dd><p>Remove unnecessary phases from the result.</p>
@@ -896,6 +937,7 @@ all phases’ scores, and the score’s threshold.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.BaseSearchTree.score_phases"><code class="docutils literal notranslate"><span class="pre">BaseSearchTree.score_phases()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.MATERIAL_RWP_IMPROVEMENT"><code class="docutils literal notranslate"><span class="pre">MATERIAL_RWP_IMPROVEMENT</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.SearchTree"><code class="docutils literal notranslate"><span class="pre">SearchTree</span></code></a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.SearchTree.get_search_results"><code class="docutils literal notranslate"><span class="pre">SearchTree.get_search_results()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.SearchTree.show"><code class="docutils literal notranslate"><span class="pre">SearchTree.show()</span></code></a></li>
@@ -906,6 +948,7 @@ all phases’ scores, and the score’s threshold.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.calculate_fom_and_strain"><code class="docutils literal notranslate"><span class="pre">calculate_fom_and_strain()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.get_natural_break_results"><code class="docutils literal notranslate"><span class="pre">get_natural_break_results()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.group_phases"><code class="docutils literal notranslate"><span class="pre">group_phases()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.keep_branch_despite_intensity_order"><code class="docutils literal notranslate"><span class="pre">keep_branch_despite_intensity_order()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dara.search.tree.remove_unnecessary_phases"><code class="docutils literal notranslate"><span class="pre">remove_unnecessary_phases()</span></code></a></li>
 </ul>
   </nav></div>

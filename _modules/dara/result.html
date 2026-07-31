@@ -264,6 +264,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../dara.cli.html">dara.cli module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dara.eflech_worker.html">dara.eflech_worker module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dara.generate_control_file.html">dara.generate_control_file module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dara.hardware.html">dara.hardware module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dara.jobs.html">dara.jobs module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dara.peak_detection.html">dara.peak_detection module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dara.plot.html">dara.plot module</a></li>
@@ -821,7 +822,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">parse_values</span><span class="p">(</span><span class="n">v_</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse_values</span><span class="p">(</span><span class="n">v_</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">v_</span> <span class="o">=</span> <span class="n">v_</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;%&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">v_</span> <span class="o">==</span> <span class="s2">&quot;ERROR&quot;</span> <span class="ow">or</span> <span class="n">v_</span> <span class="o">==</span> <span class="s2">&quot;UNDEF&quot;</span><span class="p">:</span>

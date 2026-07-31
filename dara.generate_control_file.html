@@ -56,7 +56,7 @@
     <link rel="icon" href="_static/logo.svg"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="dara.jobs module" href="dara.jobs.html" />
+    <link rel="next" title="dara.hardware module" href="dara.hardware.html" />
     <link rel="prev" title="dara.eflech_worker module" href="dara.eflech_worker.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -269,6 +269,7 @@
 <li class="toctree-l3"><a class="reference internal" href="dara.cli.html">dara.cli module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.eflech_worker.html">dara.eflech_worker module</a></li>
 <li class="toctree-l3 current active"><a class="current reference internal" href="#">dara.generate_control_file module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dara.hardware.html">dara.hardware module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.jobs.html">dara.jobs module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.peak_detection.html">dara.peak_detection module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dara.plot.html">dara.plot module</a></li>
@@ -523,7 +524,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dara.generate_control_file.generate_control_file">
-<span class="sig-name descname"><span class="pre">generate_control_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str_paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instrument_profile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">working_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_threads</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0_-0.05^0.05'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelength</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Cu'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/generate_control_file.html#generate_control_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.generate_control_file.generate_control_file" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">generate_control_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str_paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instrument_profile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">working_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_threads</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0_-0.05^0.05'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelength</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Cu'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dara/generate_control_file.html#generate_control_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dara.generate_control_file.generate_control_file" title="Link to this definition">#</a></dt>
 <dd><p>Generate a control file for BGMN.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -582,11 +583,11 @@ the target material in X-ray tubes.</p></li>
       </div>
     </a>
     <a class="right-next"
-       href="dara.jobs.html"
+       href="dara.hardware.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">dara.jobs module</p>
+        <p class="prev-next-title">dara.hardware module</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

@@ -1,17 +1,4 @@
 Traceback (most recent call last):
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/nbclient/client.py", line 782, in _async_poll_for_reply
-    msg = await ensure_async(self.kc.shell_channel.get_msg(timeout=new_timeout))
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/jupyter_core/utils/__init__.py", line 214, in ensure_async
-    result = await obj
-             ^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/jupyter_client/channels.py", line 330, in get_msg
-    raise Empty
-_queue.Empty
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
   File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
     executenb(
   File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/nbclient/client.py", line 1323, in execute
@@ -25,26 +12,455 @@ Traceback (most recent call last):
            ^^^^^^^^^^^^^^^
   File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/nbclient/client.py", line 709, in async_execute
     await self.async_execute_cell(
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/nbclient/client.py", line 1005, in async_execute_cell
-    exec_reply = await self.task_poll_for_reply
-                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/nbclient/client.py", line 806, in _async_poll_for_reply
-    error_on_timeout_execute_reply = await self._async_handle_timeout(timeout, cell)
-                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/nbclient/client.py", line 856, in _async_handle_timeout
-    raise CellTimeoutError.error_from_timeout_and_cell(
-nbclient.exceptions.CellTimeoutError: A cell timed out while it was being executed, after 240 seconds.
-The message was: Cell execution timed out.
-Here is a preview of the cell contents:
--------------------
-# gather all the phases in the "cifs" directory
-all_cifs = list(Path("cifs").glob("*.cif"))
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/nbclient/client.py", line 1062, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+from dara.structure_db import CODDatabase
 
-search_results = search_phases(
-    pattern_path=pattern_path,
-    phases=all_cifs,
-    wavelength="Cu",
-    instrument_profile="Aeris-fds-Pixcel1d-Medipix3",
-)
--------------------
+# The COD database contains methods to filter phases in the chemical system
+cod_database = CODDatabase()
+
+# gather reference phases and save them to a directory called "cifs"
+all_icsd_ids = cod_database.get_cifs_by_chemsys(chemical_system, dest_dir="cifs")
+------------------
+
+----- stdout -----
+2026-07-31 17:10:34,839 WARNING dara.structure_db Local copy of database not found. Attempting to download structures...
+----- stdout -----
+Failed to download 9007435: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
+Failed to download 1537875: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
+Failed to download 2104024: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
+Failed to download 1525835: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
+Failed to download 1536063: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
+Failed to download 1525833: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
+Failed to download 8000212: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
+Failed to download 1526227: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
+Failed to download 2300365: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
+Failed to download 9006858: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
+Failed to download 1533322: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
+Failed to download 9007477: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
+Failed to download 4517837: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
+------------------
+
+[31m---------------------------------------------------------------------------[39m
+[31mConnectionResetError[39m                      Traceback (most recent call last)
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:788[39m, in [36mHTTPConnectionPool.urlopen[39m[34m(self, method, url, body, headers, retries, redirect, assert_same_host, timeout, pool_timeout, release_conn, chunked, body_pos, preload_content, decode_content, **response_kw)[39m
+[32m    787[39m [38;5;66;03m# Make the request on the HTTPConnection object[39;00m
+[32m--> [39m[32m788[39m response = [30;43mself[39;49m[30;43m.[39;49m[30;43m_make_request[39;49m[30;43m([39;49m
+[32m    789[39m [30;43m    [39;49m[30;43mconn[39;49m[30;43m,[39;49m
+[32m    790[39m [30;43m    [39;49m[30;43mmethod[39;49m[30;43m,[39;49m
+[32m    791[39m [30;43m    [39;49m[30;43murl[39;49m[30;43m,[39;49m
+[32m    792[39m [30;43m    [39;49m[30;43mtimeout[39;49m[30;43m=[39;49m[30;43mtimeout_obj[39;49m[30;43m,[39;49m
+[32m    793[39m [30;43m    [39;49m[30;43mbody[39;49m[30;43m=[39;49m[30;43mbody[39;49m[30;43m,[39;49m
+[32m    794[39m [30;43m    [39;49m[30;43mheaders[39;49m[30;43m=[39;49m[30;43mheaders[39;49m[30;43m,[39;49m
+[32m    795[39m [30;43m    [39;49m[30;43mchunked[39;49m[30;43m=[39;49m[30;43mchunked[39;49m[30;43m,[39;49m
+[32m    796[39m [30;43m    [39;49m[30;43mretries[39;49m[30;43m=[39;49m[30;43mretries[39;49m[30;43m,[39;49m
+[32m    797[39m [30;43m    [39;49m[30;43mresponse_conn[39;49m[30;43m=[39;49m[30;43mresponse_conn[39;49m[30;43m,[39;49m
+[32m    798[39m [30;43m    [39;49m[30;43mpreload_content[39;49m[30;43m=[39;49m[30;43mpreload_content[39;49m[30;43m,[39;49m
+[32m    799[39m [30;43m    [39;49m[30;43mdecode_content[39;49m[30;43m=[39;49m[30;43mdecode_content[39;49m[30;43m,[39;49m
+[32m    800[39m [30;43m    [39;49m[30;43m*[39;49m[30;43m*[39;49m[30;43mresponse_kw[39;49m[30;43m,[39;49m
+[32m    801[39m [30;43m[39;49m[30;43m)[39;49m
+[32m    803[39m [38;5;66;03m# Everything went great![39;00m
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:488[39m, in [36mHTTPConnectionPool._make_request[39m[34m(self, conn, method, url, body, headers, retries, timeout, chunked, response_conn, preload_content, decode_content, enforce_content_length)[39m
+[32m    487[39m         new_e = _wrap_proxy_error(new_e, conn.proxy.scheme)
+[32m--> [39m[32m488[39m     [38;5;28;01mraise[39;00m new_e
+[32m    490[39m [38;5;66;03m# conn.request() calls http.client.*.request, not the method in[39;00m
+[32m    491[39m [38;5;66;03m# urllib3.request. It also calls makefile (recv) on the socket.[39;00m
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:464[39m, in [36mHTTPConnectionPool._make_request[39m[34m(self, conn, method, url, body, headers, retries, timeout, chunked, response_conn, preload_content, decode_content, enforce_content_length)[39m
+[32m    463[39m [38;5;28;01mtry[39;00m:
+[32m--> [39m[32m464[39m     [30;43mself[39;49m[30;43m.[39;49m[30;43m_validate_conn[39;49m[30;43m([39;49m[30;43mconn[39;49m[30;43m)[39;49m
+[32m    465[39m [38;5;28;01mexcept[39;00m (SocketTimeout, BaseSSLError) [38;5;28;01mas[39;00m e:
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:1106[39m, in [36mHTTPSConnectionPool._validate_conn[39m[34m(self, conn)[39m
+[32m   1105[39m [38;5;28;01mif[39;00m conn.is_closed:
+[32m-> [39m[32m1106[39m     [30;43mconn[39;49m[30;43m.[39;49m[30;43mconnect[39;49m[30;43m([39;49m[30;43m)[39;49m
+[32m   1108[39m [38;5;66;03m# TODO revise this, see https://github.com/urllib3/urllib3/issues/2791[39;00m
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/urllib3/connection.py:796[39m, in [36mHTTPSConnection.connect[39m[34m(self)[39m
+[32m    794[39m server_hostname_rm_dot = server_hostname.rstrip([33m"[39m[33m.[39m[33m"[39m)
+[32m--> [39m[32m796[39m sock_and_verified = [30;43m_ssl_wrap_socket_and_match_hostname[39;49m[30;43m([39;49m
+[32m    797[39m [30;43m    [39;49m[30;43msock[39;49m[30;43m=[39;49m[30;43msock[39;49m[30;43m,[39;49m
+[32m    798[39m [30;43m    [39;49m[30;43mcert_reqs[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mcert_reqs[39;49m[30;43m,[39;49m
+[32m    799[39m [30;43m    [39;49m[30;43mssl_version[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mssl_version[39;49m[30;43m,[39;49m
+[32m    800[39m [30;43m    [39;49m[30;43mssl_minimum_version[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mssl_minimum_version[39;49m[30;43m,[39;49m
+[32m    801[39m [30;43m    [39;49m[30;43mssl_maximum_version[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mssl_maximum_version[39;49m[30;43m,[39;49m
+[32m    802[39m [30;43m    [39;49m[30;43mca_certs[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mca_certs[39;49m[30;43m,[39;49m
+[32m    803[39m [30;43m    [39;49m[30;43mca_cert_dir[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mca_cert_dir[39;49m[30;43m,[39;49m
+[32m    804[39m [30;43m    [39;49m[30;43mca_cert_data[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mca_cert_data[39;49m[30;43m,[39;49m
+[32m    805[39m [30;43m    [39;49m[30;43mcert_file[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mcert_file[39;49m[30;43m,[39;49m
+[32m    806[39m [30;43m    [39;49m[30;43mkey_file[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mkey_file[39;49m[30;43m,[39;49m
+[32m    807[39m [30;43m    [39;49m[30;43mkey_password[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mkey_password[39;49m[30;43m,[39;49m
+[32m    808[39m [30;43m    [39;49m[30;43mserver_hostname[39;49m[30;43m=[39;49m[30;43mserver_hostname_rm_dot[39;49m[30;43m,[39;49m
+[32m    809[39m [30;43m    [39;49m[30;43mssl_context[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mssl_context[39;49m[30;43m,[39;49m
+[32m    810[39m [30;43m    [39;49m[30;43mtls_in_tls[39;49m[30;43m=[39;49m[30;43mtls_in_tls[39;49m[30;43m,[39;49m
+[32m    811[39m [30;43m    [39;49m[30;43massert_hostname[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43massert_hostname[39;49m[30;43m,[39;49m
+[32m    812[39m [30;43m    [39;49m[30;43massert_fingerprint[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43massert_fingerprint[39;49m[30;43m,[39;49m
+[32m    813[39m [30;43m[39;49m[30;43m)[39;49m
+[32m    814[39m [38;5;28mself[39m.sock = sock_and_verified.socket
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/urllib3/connection.py:975[39m, in [36m_ssl_wrap_socket_and_match_hostname[39m[34m(sock, cert_reqs, ssl_version, ssl_minimum_version, ssl_maximum_version, cert_file, key_file, key_password, ca_certs, ca_cert_dir, ca_cert_data, assert_hostname, assert_fingerprint, server_hostname, ssl_context, tls_in_tls)[39m
+[32m    973[39m         server_hostname = normalized
+[32m--> [39m[32m975[39m ssl_sock = [30;43mssl_wrap_socket[39;49m[30;43m([39;49m
+[32m    976[39m [30;43m    [39;49m[30;43msock[39;49m[30;43m=[39;49m[30;43msock[39;49m[30;43m,[39;49m
+[32m    977[39m [30;43m    [39;49m[30;43mkeyfile[39;49m[30;43m=[39;49m[30;43mkey_file[39;49m[30;43m,[39;49m
+[32m    978[39m [30;43m    [39;49m[30;43mcertfile[39;49m[30;43m=[39;49m[30;43mcert_file[39;49m[30;43m,[39;49m
+[32m    979[39m [30;43m    [39;49m[30;43mkey_password[39;49m[30;43m=[39;49m[30;43mkey_password[39;49m[30;43m,[39;49m
+[32m    980[39m [30;43m    [39;49m[30;43mca_certs[39;49m[30;43m=[39;49m[30;43mca_certs[39;49m[30;43m,[39;49m
+[32m    981[39m [30;43m    [39;49m[30;43mca_cert_dir[39;49m[30;43m=[39;49m[30;43mca_cert_dir[39;49m[30;43m,[39;49m
+[32m    982[39m [30;43m    [39;49m[30;43mca_cert_data[39;49m[30;43m=[39;49m[30;43mca_cert_data[39;49m[30;43m,[39;49m
+[32m    983[39m [30;43m    [39;49m[30;43mserver_hostname[39;49m[30;43m=[39;49m[30;43mserver_hostname[39;49m[30;43m,[39;49m
+[32m    984[39m [30;43m    [39;49m[30;43mssl_context[39;49m[30;43m=[39;49m[30;43mcontext[39;49m[30;43m,[39;49m
+[32m    985[39m [30;43m    [39;49m[30;43mtls_in_tls[39;49m[30;43m=[39;49m[30;43mtls_in_tls[39;49m[30;43m,[39;49m
+[32m    986[39m [30;43m[39;49m[30;43m)[39;49m
+[32m    988[39m [38;5;28;01mtry[39;00m:
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/urllib3/util/ssl_.py:433[39m, in [36mssl_wrap_socket[39m[34m(sock, keyfile, certfile, cert_reqs, ca_certs, server_hostname, ssl_version, ciphers, ssl_context, ca_cert_dir, key_password, ca_cert_data, tls_in_tls)[39m
+[32m    431[39m context.set_alpn_protocols(ALPN_PROTOCOLS)
+[32m--> [39m[32m433[39m ssl_sock = [30;43m_ssl_wrap_socket_impl[39;49m[30;43m([39;49m[30;43msock[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mcontext[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mtls_in_tls[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mserver_hostname[39;49m[30;43m)[39;49m
+[32m    434[39m [38;5;28;01mreturn[39;00m ssl_sock
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/urllib3/util/ssl_.py:477[39m, in [36m_ssl_wrap_socket_impl[39m[34m(sock, ssl_context, tls_in_tls, server_hostname)[39m
+[32m    475[39m     [38;5;28;01mreturn[39;00m SSLTransport(sock, ssl_context, server_hostname)
+[32m--> [39m[32m477[39m [38;5;28;01mreturn[39;00m [30;43mssl_context[39;49m[30;43m.[39;49m[30;43mwrap_socket[39;49m[30;43m([39;49m[30;43msock[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mserver_hostname[39;49m[30;43m=[39;49m[30;43mserver_hostname[39;49m[30;43m)[39;49m
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/ssl.py:455[39m, in [36mSSLContext.wrap_socket[39m[34m(self, sock, server_side, do_handshake_on_connect, suppress_ragged_eofs, server_hostname, session)[39m
+[32m    449[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34mwrap_socket[39m([38;5;28mself[39m, sock, server_side=[38;5;28;01mFalse[39;00m,
+[32m    450[39m                 do_handshake_on_connect=[38;5;28;01mTrue[39;00m,
+[32m    451[39m                 suppress_ragged_eofs=[38;5;28;01mTrue[39;00m,
+[32m    452[39m                 server_hostname=[38;5;28;01mNone[39;00m, session=[38;5;28;01mNone[39;00m):
+[32m    453[39m     [38;5;66;03m# SSLSocket class handles server_hostname encoding before it calls[39;00m
+[32m    454[39m     [38;5;66;03m# ctx._wrap_socket()[39;00m
+[32m--> [39m[32m455[39m     [38;5;28;01mreturn[39;00m [30;43mself[39;49m[30;43m.[39;49m[30;43msslsocket_class[39;49m[30;43m.[39;49m[30;43m_create[39;49m[30;43m([39;49m
+[32m    456[39m [30;43m        [39;49m[30;43msock[39;49m[30;43m=[39;49m[30;43msock[39;49m[30;43m,[39;49m
+[32m    457[39m [30;43m        [39;49m[30;43mserver_side[39;49m[30;43m=[39;49m[30;43mserver_side[39;49m[30;43m,[39;49m
+[32m    458[39m [30;43m        [39;49m[30;43mdo_handshake_on_connect[39;49m[30;43m=[39;49m[30;43mdo_handshake_on_connect[39;49m[30;43m,[39;49m
+[32m    459[39m [30;43m        [39;49m[30;43msuppress_ragged_eofs[39;49m[30;43m=[39;49m[30;43msuppress_ragged_eofs[39;49m[30;43m,[39;49m
+[32m    460[39m [30;43m        [39;49m[30;43mserver_hostname[39;49m[30;43m=[39;49m[30;43mserver_hostname[39;49m[30;43m,[39;49m
+[32m    461[39m [30;43m        [39;49m[30;43mcontext[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m,[39;49m
+[32m    462[39m [30;43m        [39;49m[30;43msession[39;49m[30;43m=[39;49m[30;43msession[39;49m
+[32m    463[39m [30;43m    [39;49m[30;43m)[39;49m
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/ssl.py:1041[39m, in [36mSSLSocket._create[39m[34m(cls, sock, server_side, do_handshake_on_connect, suppress_ragged_eofs, server_hostname, context, session)[39m
+[32m   1040[39m                 [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m([33m"[39m[33mdo_handshake_on_connect should not be specified for non-blocking sockets[39m[33m"[39m)
+[32m-> [39m[32m1041[39m             [30;43mself[39;49m[30;43m.[39;49m[30;43mdo_handshake[39;49m[30;43m([39;49m[30;43m)[39;49m
+[32m   1042[39m [38;5;28;01mexcept[39;00m:
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/ssl.py:1319[39m, in [36mSSLSocket.do_handshake[39m[34m(self, block)[39m
+[32m   1318[39m         [38;5;28mself[39m.settimeout([38;5;28;01mNone[39;00m)
+[32m-> [39m[32m1319[39m     [30;43mself[39;49m[30;43m.[39;49m[30;43m_sslobj[39;49m[30;43m.[39;49m[30;43mdo_handshake[39;49m[30;43m([39;49m[30;43m)[39;49m
+[32m   1320[39m [38;5;28;01mfinally[39;00m:
+
+[31mConnectionResetError[39m: [Errno 104] Connection reset by peer
+
+During handling of the above exception, another exception occurred:
+
+[31mProtocolError[39m                             Traceback (most recent call last)
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/requests/adapters.py:696[39m, in [36mHTTPAdapter.send[39m[34m(self, request, stream, timeout, verify, cert, proxies)[39m
+[32m    695[39m [38;5;28;01mtry[39;00m:
+[32m--> [39m[32m696[39m     resp = [30;43mconn[39;49m[30;43m.[39;49m[30;43murlopen[39;49m[30;43m([39;49m
+[32m    697[39m [30;43m        [39;49m[30;43mmethod[39;49m[30;43m=[39;49m[30;43mrequest[39;49m[30;43m.[39;49m[30;43mmethod[39;49m[30;43m,[39;49m
+[32m    698[39m [30;43m        [39;49m[30;43murl[39;49m[30;43m=[39;49m[30;43murl[39;49m[30;43m,[39;49m
+[32m    699[39m [30;43m        [39;49m[30;43mbody[39;49m[30;43m=[39;49m[30;43mrequest[39;49m[30;43m.[39;49m[30;43mbody[39;49m[30;43m,[39;49m[30;43m  [39;49m[30;43;03m# type: ignore[arg-type]  # urllib3 stubs don't accept Iterable[bytes | str][39;49;00m
+[32m    700[39m [30;43m        [39;49m[30;43mheaders[39;49m[30;43m=[39;49m[30;43mrequest[39;49m[30;43m.[39;49m[30;43mheaders[39;49m[30;43m,[39;49m[30;43m  [39;49m[30;43;03m# type: ignore[arg-type]  # urllib3#3072[39;49;00m
+[32m    701[39m [30;43m        [39;49m[30;43mredirect[39;49m[30;43m=[39;49m[30;43;01mFalse[39;49;00m[30;43m,[39;49m
+[32m    702[39m [30;43m        [39;49m[30;43massert_same_host[39;49m[30;43m=[39;49m[30;43;01mFalse[39;49;00m[30;43m,[39;49m
+[32m    703[39m [30;43m        [39;49m[30;43mpreload_content[39;49m[30;43m=[39;49m[30;43;01mFalse[39;49;00m[30;43m,[39;49m
+[32m    704[39m [30;43m        [39;49m[30;43mdecode_content[39;49m[30;43m=[39;49m[30;43;01mFalse[39;49;00m[30;43m,[39;49m
+[32m    705[39m [30;43m        [39;49m[30;43mretries[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mmax_retries[39;49m[30;43m,[39;49m
+[32m    706[39m [30;43m        [39;49m[30;43mtimeout[39;49m[30;43m=[39;49m[30;43mresolved_timeout[39;49m[30;43m,[39;49m
+[32m    707[39m [30;43m        [39;49m[30;43mchunked[39;49m[30;43m=[39;49m[30;43mchunked[39;49m[30;43m,[39;49m
+[32m    708[39m [30;43m    [39;49m[30;43m)[39;49m
+[32m    710[39m [38;5;28;01mexcept[39;00m (ProtocolError, [38;5;167;01mOSError[39;00m) [38;5;28;01mas[39;00m err:
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:842[39m, in [36mHTTPConnectionPool.urlopen[39m[34m(self, method, url, body, headers, retries, redirect, assert_same_host, timeout, pool_timeout, release_conn, chunked, body_pos, preload_content, decode_content, **response_kw)[39m
+[32m    840[39m     new_e = ProtocolError([33m"[39m[33mConnection aborted.[39m[33m"[39m, new_e)
+[32m--> [39m[32m842[39m retries = [30;43mretries[39;49m[30;43m.[39;49m[30;43mincrement[39;49m[30;43m([39;49m
+[32m    843[39m [30;43m    [39;49m[30;43mmethod[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43murl[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43merror[39;49m[30;43m=[39;49m[30;43mnew_e[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m_pool[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m_stacktrace[39;49m[30;43m=[39;49m[30;43msys[39;49m[30;43m.[39;49m[30;43mexc_info[39;49m[30;43m([39;49m[30;43m)[39;49m[30;43m[[39;49m[30;43m2[39;49m[30;43m][39;49m
+[32m    844[39m [30;43m[39;49m[30;43m)[39;49m
+[32m    845[39m retries.sleep()
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/urllib3/util/retry.py:498[39m, in [36mRetry.increment[39m[34m(self, method, url, response, error, _pool, _stacktrace)[39m
+[32m    497[39m [38;5;28;01mif[39;00m read [38;5;129;01mis[39;00m [38;5;28;01mFalse[39;00m [38;5;129;01mor[39;00m method [38;5;129;01mis[39;00m [38;5;28;01mNone[39;00m [38;5;129;01mor[39;00m [38;5;129;01mnot[39;00m [38;5;28mself[39m._is_method_retryable(method):
+[32m--> [39m[32m498[39m     [38;5;28;01mraise[39;00m [30;43mreraise[39;49m[30;43m([39;49m[30;43mtype[39;49m[30;43m([39;49m[30;43merror[39;49m[30;43m)[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43merror[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m_stacktrace[39;49m[30;43m)[39;49m
+[32m    499[39m [38;5;28;01melif[39;00m read [38;5;129;01mis[39;00m [38;5;129;01mnot[39;00m [38;5;28;01mNone[39;00m:
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/urllib3/util/util.py:38[39m, in [36mreraise[39m[34m(tp, value, tb)[39m
+[32m     37[39m [38;5;28;01mif[39;00m value.__traceback__ [38;5;129;01mis[39;00m [38;5;129;01mnot[39;00m tb:
+[32m---> [39m[32m38[39m     [38;5;28;01mraise[39;00m value.with_traceback(tb)
+[32m     39[39m [38;5;28;01mraise[39;00m value
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:788[39m, in [36mHTTPConnectionPool.urlopen[39m[34m(self, method, url, body, headers, retries, redirect, assert_same_host, timeout, pool_timeout, release_conn, chunked, body_pos, preload_content, decode_content, **response_kw)[39m
+[32m    787[39m [38;5;66;03m# Make the request on the HTTPConnection object[39;00m
+[32m--> [39m[32m788[39m response = [30;43mself[39;49m[30;43m.[39;49m[30;43m_make_request[39;49m[30;43m([39;49m
+[32m    789[39m [30;43m    [39;49m[30;43mconn[39;49m[30;43m,[39;49m
+[32m    790[39m [30;43m    [39;49m[30;43mmethod[39;49m[30;43m,[39;49m
+[32m    791[39m [30;43m    [39;49m[30;43murl[39;49m[30;43m,[39;49m
+[32m    792[39m [30;43m    [39;49m[30;43mtimeout[39;49m[30;43m=[39;49m[30;43mtimeout_obj[39;49m[30;43m,[39;49m
+[32m    793[39m [30;43m    [39;49m[30;43mbody[39;49m[30;43m=[39;49m[30;43mbody[39;49m[30;43m,[39;49m
+[32m    794[39m [30;43m    [39;49m[30;43mheaders[39;49m[30;43m=[39;49m[30;43mheaders[39;49m[30;43m,[39;49m
+[32m    795[39m [30;43m    [39;49m[30;43mchunked[39;49m[30;43m=[39;49m[30;43mchunked[39;49m[30;43m,[39;49m
+[32m    796[39m [30;43m    [39;49m[30;43mretries[39;49m[30;43m=[39;49m[30;43mretries[39;49m[30;43m,[39;49m
+[32m    797[39m [30;43m    [39;49m[30;43mresponse_conn[39;49m[30;43m=[39;49m[30;43mresponse_conn[39;49m[30;43m,[39;49m
+[32m    798[39m [30;43m    [39;49m[30;43mpreload_content[39;49m[30;43m=[39;49m[30;43mpreload_content[39;49m[30;43m,[39;49m
+[32m    799[39m [30;43m    [39;49m[30;43mdecode_content[39;49m[30;43m=[39;49m[30;43mdecode_content[39;49m[30;43m,[39;49m
+[32m    800[39m [30;43m    [39;49m[30;43m*[39;49m[30;43m*[39;49m[30;43mresponse_kw[39;49m[30;43m,[39;49m
+[32m    801[39m [30;43m[39;49m[30;43m)[39;49m
+[32m    803[39m [38;5;66;03m# Everything went great![39;00m
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:488[39m, in [36mHTTPConnectionPool._make_request[39m[34m(self, conn, method, url, body, headers, retries, timeout, chunked, response_conn, preload_content, decode_content, enforce_content_length)[39m
+[32m    487[39m         new_e = _wrap_proxy_error(new_e, conn.proxy.scheme)
+[32m--> [39m[32m488[39m     [38;5;28;01mraise[39;00m new_e
+[32m    490[39m [38;5;66;03m# conn.request() calls http.client.*.request, not the method in[39;00m
+[32m    491[39m [38;5;66;03m# urllib3.request. It also calls makefile (recv) on the socket.[39;00m
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:464[39m, in [36mHTTPConnectionPool._make_request[39m[34m(self, conn, method, url, body, headers, retries, timeout, chunked, response_conn, preload_content, decode_content, enforce_content_length)[39m
+[32m    463[39m [38;5;28;01mtry[39;00m:
+[32m--> [39m[32m464[39m     [30;43mself[39;49m[30;43m.[39;49m[30;43m_validate_conn[39;49m[30;43m([39;49m[30;43mconn[39;49m[30;43m)[39;49m
+[32m    465[39m [38;5;28;01mexcept[39;00m (SocketTimeout, BaseSSLError) [38;5;28;01mas[39;00m e:
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/urllib3/connectionpool.py:1106[39m, in [36mHTTPSConnectionPool._validate_conn[39m[34m(self, conn)[39m
+[32m   1105[39m [38;5;28;01mif[39;00m conn.is_closed:
+[32m-> [39m[32m1106[39m     [30;43mconn[39;49m[30;43m.[39;49m[30;43mconnect[39;49m[30;43m([39;49m[30;43m)[39;49m
+[32m   1108[39m [38;5;66;03m# TODO revise this, see https://github.com/urllib3/urllib3/issues/2791[39;00m
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/urllib3/connection.py:796[39m, in [36mHTTPSConnection.connect[39m[34m(self)[39m
+[32m    794[39m server_hostname_rm_dot = server_hostname.rstrip([33m"[39m[33m.[39m[33m"[39m)
+[32m--> [39m[32m796[39m sock_and_verified = [30;43m_ssl_wrap_socket_and_match_hostname[39;49m[30;43m([39;49m
+[32m    797[39m [30;43m    [39;49m[30;43msock[39;49m[30;43m=[39;49m[30;43msock[39;49m[30;43m,[39;49m
+[32m    798[39m [30;43m    [39;49m[30;43mcert_reqs[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mcert_reqs[39;49m[30;43m,[39;49m
+[32m    799[39m [30;43m    [39;49m[30;43mssl_version[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mssl_version[39;49m[30;43m,[39;49m
+[32m    800[39m [30;43m    [39;49m[30;43mssl_minimum_version[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mssl_minimum_version[39;49m[30;43m,[39;49m
+[32m    801[39m [30;43m    [39;49m[30;43mssl_maximum_version[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mssl_maximum_version[39;49m[30;43m,[39;49m
+[32m    802[39m [30;43m    [39;49m[30;43mca_certs[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mca_certs[39;49m[30;43m,[39;49m
+[32m    803[39m [30;43m    [39;49m[30;43mca_cert_dir[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mca_cert_dir[39;49m[30;43m,[39;49m
+[32m    804[39m [30;43m    [39;49m[30;43mca_cert_data[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mca_cert_data[39;49m[30;43m,[39;49m
+[32m    805[39m [30;43m    [39;49m[30;43mcert_file[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mcert_file[39;49m[30;43m,[39;49m
+[32m    806[39m [30;43m    [39;49m[30;43mkey_file[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mkey_file[39;49m[30;43m,[39;49m
+[32m    807[39m [30;43m    [39;49m[30;43mkey_password[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mkey_password[39;49m[30;43m,[39;49m
+[32m    808[39m [30;43m    [39;49m[30;43mserver_hostname[39;49m[30;43m=[39;49m[30;43mserver_hostname_rm_dot[39;49m[30;43m,[39;49m
+[32m    809[39m [30;43m    [39;49m[30;43mssl_context[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mssl_context[39;49m[30;43m,[39;49m
+[32m    810[39m [30;43m    [39;49m[30;43mtls_in_tls[39;49m[30;43m=[39;49m[30;43mtls_in_tls[39;49m[30;43m,[39;49m
+[32m    811[39m [30;43m    [39;49m[30;43massert_hostname[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43massert_hostname[39;49m[30;43m,[39;49m
+[32m    812[39m [30;43m    [39;49m[30;43massert_fingerprint[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43massert_fingerprint[39;49m[30;43m,[39;49m
+[32m    813[39m [30;43m[39;49m[30;43m)[39;49m
+[32m    814[39m [38;5;28mself[39m.sock = sock_and_verified.socket
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/urllib3/connection.py:975[39m, in [36m_ssl_wrap_socket_and_match_hostname[39m[34m(sock, cert_reqs, ssl_version, ssl_minimum_version, ssl_maximum_version, cert_file, key_file, key_password, ca_certs, ca_cert_dir, ca_cert_data, assert_hostname, assert_fingerprint, server_hostname, ssl_context, tls_in_tls)[39m
+[32m    973[39m         server_hostname = normalized
+[32m--> [39m[32m975[39m ssl_sock = [30;43mssl_wrap_socket[39;49m[30;43m([39;49m
+[32m    976[39m [30;43m    [39;49m[30;43msock[39;49m[30;43m=[39;49m[30;43msock[39;49m[30;43m,[39;49m
+[32m    977[39m [30;43m    [39;49m[30;43mkeyfile[39;49m[30;43m=[39;49m[30;43mkey_file[39;49m[30;43m,[39;49m
+[32m    978[39m [30;43m    [39;49m[30;43mcertfile[39;49m[30;43m=[39;49m[30;43mcert_file[39;49m[30;43m,[39;49m
+[32m    979[39m [30;43m    [39;49m[30;43mkey_password[39;49m[30;43m=[39;49m[30;43mkey_password[39;49m[30;43m,[39;49m
+[32m    980[39m [30;43m    [39;49m[30;43mca_certs[39;49m[30;43m=[39;49m[30;43mca_certs[39;49m[30;43m,[39;49m
+[32m    981[39m [30;43m    [39;49m[30;43mca_cert_dir[39;49m[30;43m=[39;49m[30;43mca_cert_dir[39;49m[30;43m,[39;49m
+[32m    982[39m [30;43m    [39;49m[30;43mca_cert_data[39;49m[30;43m=[39;49m[30;43mca_cert_data[39;49m[30;43m,[39;49m
+[32m    983[39m [30;43m    [39;49m[30;43mserver_hostname[39;49m[30;43m=[39;49m[30;43mserver_hostname[39;49m[30;43m,[39;49m
+[32m    984[39m [30;43m    [39;49m[30;43mssl_context[39;49m[30;43m=[39;49m[30;43mcontext[39;49m[30;43m,[39;49m
+[32m    985[39m [30;43m    [39;49m[30;43mtls_in_tls[39;49m[30;43m=[39;49m[30;43mtls_in_tls[39;49m[30;43m,[39;49m
+[32m    986[39m [30;43m[39;49m[30;43m)[39;49m
+[32m    988[39m [38;5;28;01mtry[39;00m:
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/urllib3/util/ssl_.py:433[39m, in [36mssl_wrap_socket[39m[34m(sock, keyfile, certfile, cert_reqs, ca_certs, server_hostname, ssl_version, ciphers, ssl_context, ca_cert_dir, key_password, ca_cert_data, tls_in_tls)[39m
+[32m    431[39m context.set_alpn_protocols(ALPN_PROTOCOLS)
+[32m--> [39m[32m433[39m ssl_sock = [30;43m_ssl_wrap_socket_impl[39;49m[30;43m([39;49m[30;43msock[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mcontext[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mtls_in_tls[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mserver_hostname[39;49m[30;43m)[39;49m
+[32m    434[39m [38;5;28;01mreturn[39;00m ssl_sock
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/urllib3/util/ssl_.py:477[39m, in [36m_ssl_wrap_socket_impl[39m[34m(sock, ssl_context, tls_in_tls, server_hostname)[39m
+[32m    475[39m     [38;5;28;01mreturn[39;00m SSLTransport(sock, ssl_context, server_hostname)
+[32m--> [39m[32m477[39m [38;5;28;01mreturn[39;00m [30;43mssl_context[39;49m[30;43m.[39;49m[30;43mwrap_socket[39;49m[30;43m([39;49m[30;43msock[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mserver_hostname[39;49m[30;43m=[39;49m[30;43mserver_hostname[39;49m[30;43m)[39;49m
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/ssl.py:455[39m, in [36mSSLContext.wrap_socket[39m[34m(self, sock, server_side, do_handshake_on_connect, suppress_ragged_eofs, server_hostname, session)[39m
+[32m    449[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34mwrap_socket[39m([38;5;28mself[39m, sock, server_side=[38;5;28;01mFalse[39;00m,
+[32m    450[39m                 do_handshake_on_connect=[38;5;28;01mTrue[39;00m,
+[32m    451[39m                 suppress_ragged_eofs=[38;5;28;01mTrue[39;00m,
+[32m    452[39m                 server_hostname=[38;5;28;01mNone[39;00m, session=[38;5;28;01mNone[39;00m):
+[32m    453[39m     [38;5;66;03m# SSLSocket class handles server_hostname encoding before it calls[39;00m
+[32m    454[39m     [38;5;66;03m# ctx._wrap_socket()[39;00m
+[32m--> [39m[32m455[39m     [38;5;28;01mreturn[39;00m [30;43mself[39;49m[30;43m.[39;49m[30;43msslsocket_class[39;49m[30;43m.[39;49m[30;43m_create[39;49m[30;43m([39;49m
+[32m    456[39m [30;43m        [39;49m[30;43msock[39;49m[30;43m=[39;49m[30;43msock[39;49m[30;43m,[39;49m
+[32m    457[39m [30;43m        [39;49m[30;43mserver_side[39;49m[30;43m=[39;49m[30;43mserver_side[39;49m[30;43m,[39;49m
+[32m    458[39m [30;43m        [39;49m[30;43mdo_handshake_on_connect[39;49m[30;43m=[39;49m[30;43mdo_handshake_on_connect[39;49m[30;43m,[39;49m
+[32m    459[39m [30;43m        [39;49m[30;43msuppress_ragged_eofs[39;49m[30;43m=[39;49m[30;43msuppress_ragged_eofs[39;49m[30;43m,[39;49m
+[32m    460[39m [30;43m        [39;49m[30;43mserver_hostname[39;49m[30;43m=[39;49m[30;43mserver_hostname[39;49m[30;43m,[39;49m
+[32m    461[39m [30;43m        [39;49m[30;43mcontext[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m,[39;49m
+[32m    462[39m [30;43m        [39;49m[30;43msession[39;49m[30;43m=[39;49m[30;43msession[39;49m
+[32m    463[39m [30;43m    [39;49m[30;43m)[39;49m
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/ssl.py:1041[39m, in [36mSSLSocket._create[39m[34m(cls, sock, server_side, do_handshake_on_connect, suppress_ragged_eofs, server_hostname, context, session)[39m
+[32m   1040[39m                 [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m([33m"[39m[33mdo_handshake_on_connect should not be specified for non-blocking sockets[39m[33m"[39m)
+[32m-> [39m[32m1041[39m             [30;43mself[39;49m[30;43m.[39;49m[30;43mdo_handshake[39;49m[30;43m([39;49m[30;43m)[39;49m
+[32m   1042[39m [38;5;28;01mexcept[39;00m:
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/ssl.py:1319[39m, in [36mSSLSocket.do_handshake[39m[34m(self, block)[39m
+[32m   1318[39m         [38;5;28mself[39m.settimeout([38;5;28;01mNone[39;00m)
+[32m-> [39m[32m1319[39m     [30;43mself[39;49m[30;43m.[39;49m[30;43m_sslobj[39;49m[30;43m.[39;49m[30;43mdo_handshake[39;49m[30;43m([39;49m[30;43m)[39;49m
+[32m   1320[39m [38;5;28;01mfinally[39;00m:
+
+[31mProtocolError[39m: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
+
+During handling of the above exception, another exception occurred:
+
+[31mConnectionError[39m                           Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[4][39m[32m, line 7[39m
+[32m      3[39m [38;5;66;03m# The COD database contains methods to filter phases in the chemical system[39;00m
+[32m      4[39m cod_database = CODDatabase()
+[32m      5[39m 
+[32m      6[39m [38;5;66;03m# gather reference phases and save them to a directory called "cifs"[39;00m
+[32m----> [39m[32m7[39m all_icsd_ids = cod_database.get_cifs_by_chemsys(chemical_system, dest_dir=[33m"cifs"[39m)
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/dara/structure_db.py:107[39m, in [36mStructureDatabase.get_cifs_by_chemsys[39m[34m(self, chemsys, e_hull_filter, copy_files, dest_dir, exclude_gases)[39m
+[32m    104[39m         [38;5;28;01mif[39;00m sub_chemsys [38;5;129;01min[39;00m [38;5;28mself[39m.preparsed_info:
+[32m    105[39m             all_data.extend([38;5;28mself[39m.preparsed_info[sub_chemsys])
+[32m--> [39m[32m107[39m file_map = [30;43mself[39;49m[30;43m.[39;49m[30;43m_generate_file_map[39;49m[30;43m([39;49m[30;43mall_data[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43me_hull_filter[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mexclude_gases[39;49m[30;43m)[39;49m
+[32m    109[39m [38;5;28;01mif[39;00m copy_files:
+[32m    110[39m     copy_and_rename_files(file_map, dest_dir)
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/dara/structure_db.py:148[39m, in [36mStructureDatabase._generate_file_map[39m[34m(self, all_data, e_hull_filter, exclude_gases, download_folder)[39m
+[32m    144[39m [38;5;28;01mif[39;00m [38;5;129;01mnot[39;00m [38;5;28mself[39m.local_copy_found:
+[32m    145[39m     logger.warning(
+[32m    146[39m         [33m"[39m[33mLocal copy of database not found. Attempting to download structures...[39m[33m"[39m
+[32m    147[39m     )
+[32m--> [39m[32m148[39m     _ = [30;43mself[39;49m[30;43m.[39;49m[30;43mdownload_structures[39;49m[30;43m([39;49m
+[32m    149[39m [30;43m        [39;49m[30;43m[[39;49m[30;43mdata[39;49m[30;43m[[39;49m[30;43m1[39;49m[30;43m][39;49m[30;43m [39;49m[30;43;01mfor[39;49;00m[30;43m [39;49m[30;43mdata[39;49m[30;43m [39;49m[30;43;01min[39;49;00m[30;43m [39;49m[30;43mall_data[39;49m[30;43m][39;49m[30;43m,[39;49m
+[32m    150[39m [30;43m        [39;49m[30;43msave[39;49m[30;43m=[39;49m[30;43;01mTrue[39;49;00m[30;43m,[39;49m
+[32m    151[39m [30;43m        [39;49m[30;43mdefault_folder[39;49m[30;43m=[39;49m[30;43mdownload_folder[39;49m[30;43m,[39;49m
+[32m    152[39m [30;43m    [39;49m[30;43m)[39;49m
+[32m    154[39m file_map = {}
+[32m    155[39m [38;5;28;01mfor[39;00m formula, code, sg, e_hull [38;5;129;01min[39;00m all_data:
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/dara/structure_db.py:259[39m, in [36mCODDatabase.download_structures[39m[34m(self, ids, save, default_folder)[39m
+[32m    247[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34mdownload_structures[39m(
+[32m    248[39m     [38;5;28mself[39m,
+[32m    249[39m     ids: [38;5;28mlist[39m[[38;5;28mstr[39m] | [38;5;28;01mNone[39;00m = [38;5;28;01mNone[39;00m,
+[32m    250[39m     save=[38;5;28;01mFalse[39;00m,
+[32m    251[39m     default_folder=[33m"[39m[33mdownloaded_cod_cifs[39m[33m"[39m,
+[32m    252[39m ) -> [38;5;28mlist[39m[Cif]:
+[32m    253[39m [38;5;250m    [39m[33;03m"""Download structures from the COD database. Note that this downloads directly[39;00m
+[32m    254[39m [33;03m    from the COD website, so it may be slow. Please do not abuse this feature.[39;00m
+[32m    255[39m 
+[32m    256[39m [33;03m    Args:[39;00m
+[32m    257[39m [33;03m        ids: List of COD IDs to download.[39;00m
+[32m    258[39m [33;03m    """[39;00m
+[32m--> [39m[32m259[39m     cifs = [30;43mthread_map[39;49m[30;43m([39;49m
+[32m    260[39m [30;43m        [39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43m_download_cod[39;49m[30;43m,[39;49m
+[32m    261[39m [30;43m        [39;49m[30;43mids[39;49m[30;43m,[39;49m
+[32m    262[39m [30;43m        [39;49m[30;43mchunksize[39;49m[30;43m=[39;49m[30;43m1[39;49m[30;43m,[39;49m
+[32m    263[39m [30;43m        [39;49m[30;43mmax_workers[39;49m[30;43m=[39;49m[30;43m16[39;49m[30;43m,[39;49m
+[32m    264[39m [30;43m        [39;49m[30;43mdesc[39;49m[30;43m=[39;49m[30;43m"[39;49m[30;43mDownloading CIFs from COD...[39;49m[30;43m"[39;49m[30;43m,[39;49m
+[32m    265[39m [30;43m    [39;49m[30;43m)[39;49m
+[32m    266[39m     [38;5;28;01mif[39;00m save:
+[32m    267[39m         logger.info([33mf[39m[33m"[39m[33mSaving downloaded CIFs to [39m[38;5;132;01m{[39;00mdefault_folder[38;5;132;01m}[39;00m[33m"[39m)
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/tqdm/contrib/concurrent.py:191[39m, in [36mthread_map[39m[34m(fn, *iterables, **tqdm_kwargs)[39m
+[32m    168[39m [38;5;250m[39m[33;03m"""[39;00m
+[32m    169[39m [33;03mEquivalent of `list(map(fn, *iterables))`[39;00m
+[32m    170[39m [33;03mdriven by `concurrent.futures.ThreadPoolExecutor`.[39;00m
+[32m   (...)[39m[32m    188[39m [33;03m    Member of `tqdm_class.get_lock()` to use [default: ''].[39;00m
+[32m    189[39m [33;03m"""[39;00m
+[32m    190[39m [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01mconcurrent[39;00m[34;01m.[39;00m[34;01mfutures[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m ThreadPoolExecutor
+[32m--> [39m[32m191[39m [38;5;28;01mreturn[39;00m [30;43m_executor_map[39;49m[30;43m([39;49m[30;43mThreadPoolExecutor[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mfn[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m*[39;49m[30;43miterables[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m*[39;49m[30;43m*[39;49m[30;43mtqdm_kwargs[39;49m[30;43m)[39;49m
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/tqdm/contrib/concurrent.py:163[39m, in [36m_executor_map[39m[34m(PoolExecutor, fn, max_workers, timeout, chunksize, lock_name, tqdm_class, smoothing, _lock, _initializer, _initargs, *iterables, **tqdm_kwargs)[39m
+[32m    161[39m     [38;5;28;01mreturn[39;00m fut
+[32m    162[39m ex.submit = patchsubmit
+[32m--> [39m[32m163[39m [38;5;28;01mreturn[39;00m [30;43mlist[39;49m[30;43m([39;49m[30;43mex[39;49m[30;43m.[39;49m[30;43mmap[39;49m[30;43m([39;49m
+[32m    164[39m [30;43m    [39;49m[30;43mfn[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m*[39;49m[30;43miterables[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mtimeout[39;49m[30;43m=[39;49m[30;43mtimeout[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mchunksize[39;49m[30;43m=[39;49m[30;43mchunksize[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m*[39;49m[30;43m*[39;49m[30;43mmap_kwargs[39;49m[30;43m)[39;49m[30;43m)[39;49m
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/concurrent/futures/_base.py:619[39m, in [36mExecutor.map.<locals>.result_iterator[39m[34m()[39m
+[32m    616[39m [38;5;28;01mwhile[39;00m fs:
+[32m    617[39m     [38;5;66;03m# Careful not to keep a reference to the popped future[39;00m
+[32m    618[39m     [38;5;28;01mif[39;00m timeout [38;5;129;01mis[39;00m [38;5;28;01mNone[39;00m:
+[32m--> [39m[32m619[39m         [38;5;28;01myield[39;00m [30;43m_result_or_cancel[39;49m[30;43m([39;49m[30;43mfs[39;49m[30;43m.[39;49m[30;43mpop[39;49m[30;43m([39;49m[30;43m)[39;49m[30;43m)[39;49m
+[32m    620[39m     [38;5;28;01melse[39;00m:
+[32m    621[39m         [38;5;28;01myield[39;00m _result_or_cancel(fs.pop(), end_time - time.monotonic())
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/concurrent/futures/_base.py:317[39m, in [36m_result_or_cancel[39m[34m(***failed resolving arguments***)[39m
+[32m    315[39m [38;5;28;01mtry[39;00m:
+[32m    316[39m     [38;5;28;01mtry[39;00m:
+[32m--> [39m[32m317[39m         [38;5;28;01mreturn[39;00m [30;43mfut[39;49m[30;43m.[39;49m[30;43mresult[39;49m[30;43m([39;49m[30;43mtimeout[39;49m[30;43m)[39;49m
+[32m    318[39m     [38;5;28;01mfinally[39;00m:
+[32m    319[39m         fut.cancel()
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/concurrent/futures/_base.py:456[39m, in [36mFuture.result[39m[34m(self, timeout)[39m
+[32m    454[39m     [38;5;28;01mraise[39;00m CancelledError()
+[32m    455[39m [38;5;28;01melif[39;00m [38;5;28mself[39m._state == FINISHED:
+[32m--> [39m[32m456[39m     [38;5;28;01mreturn[39;00m [30;43mself[39;49m[30;43m.[39;49m[30;43m__get_result[39;49m[30;43m([39;49m[30;43m)[39;49m
+[32m    457[39m [38;5;28;01melse[39;00m:
+[32m    458[39m     [38;5;28;01mraise[39;00m [38;5;167;01mTimeoutError[39;00m()
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/concurrent/futures/_base.py:401[39m, in [36mFuture.__get_result[39m[34m(self)[39m
+[32m    399[39m [38;5;28;01mif[39;00m [38;5;28mself[39m._exception:
+[32m    400[39m     [38;5;28;01mtry[39;00m:
+[32m--> [39m[32m401[39m         [38;5;28;01mraise[39;00m [38;5;28mself[39m._exception
+[32m    402[39m     [38;5;28;01mfinally[39;00m:
+[32m    403[39m         [38;5;66;03m# Break a reference cycle with the exception in self._exception[39;00m
+[32m    404[39m         [38;5;28mself[39m = [38;5;28;01mNone[39;00m
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/concurrent/futures/thread.py:59[39m, in [36m_WorkItem.run[39m[34m(self)[39m
+[32m     56[39m     [38;5;28;01mreturn[39;00m
+[32m     58[39m [38;5;28;01mtry[39;00m:
+[32m---> [39m[32m59[39m     result = [30;43mself[39;49m[30;43m.[39;49m[30;43mfn[39;49m[30;43m([39;49m[30;43m*[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43margs[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m*[39;49m[30;43m*[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mkwargs[39;49m[30;43m)[39;49m
+[32m     60[39m [38;5;28;01mexcept[39;00m [38;5;167;01mBaseException[39;00m [38;5;28;01mas[39;00m exc:
+[32m     61[39m     [38;5;28mself[39m.future.set_exception(exc)
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/dara/structure_db.py:302[39m, in [36mCODDatabase._download_cod[39m[34m(cod_id)[39m
+[32m    300[39m [38;5;28;01mtry[39;00m:
+[32m    301[39m     url = COD_URL.format(cod_id=cod_id)
+[32m--> [39m[32m302[39m     response = [30;43mrequests[39;49m[30;43m.[39;49m[30;43mget[39;49m[30;43m([39;49m[30;43murl[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mtimeout[39;49m[30;43m=[39;49m[30;43m30[39;49m[30;43m)[39;49m
+[32m    303[39m     response.raise_for_status()  [38;5;66;03m# Raise an error for bad status codes[39;00m
+[32m    304[39m     [38;5;28;01mwith[39;00m NamedTemporaryFile(mode=[33m"[39m[33mw+b[39m[33m"[39m) [38;5;28;01mas[39;00m temp_file:
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/requests/api.py:87[39m, in [36mget[39m[34m(url, params, **kwargs)[39m
+[32m     74[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34mget[39m(
+[32m     75[39m     url: _t.UriType, params: _t.ParamsType = [38;5;28;01mNone[39;00m, **kwargs: Unpack[_t.GetKwargs]
+[32m     76[39m ) -> Response:
+[32m     77[39m [38;5;250m    [39m[33mr[39m[33;03m"""Sends a GET request.[39;00m
+[32m     78[39m 
+[32m     79[39m [33;03m    :param url: URL for the new :class:`Request` object.[39;00m
+[32m   (...)[39m[32m     84[39m [33;03m    :rtype: requests.Response[39;00m
+[32m     85[39m [33;03m    """[39;00m
+[32m---> [39m[32m87[39m     [38;5;28;01mreturn[39;00m [30;43mrequest[39;49m[30;43m([39;49m[30;43m"[39;49m[30;43mget[39;49m[30;43m"[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43murl[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mparams[39;49m[30;43m=[39;49m[30;43mparams[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m*[39;49m[30;43m*[39;49m[30;43mkwargs[39;49m[30;43m)[39;49m
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/requests/api.py:71[39m, in [36mrequest[39m[34m(method, url, **kwargs)[39m
+[32m     67[39m [38;5;66;03m# By using the 'with' statement we are sure the session is closed, thus we[39;00m
+[32m     68[39m [38;5;66;03m# avoid leaving sockets open which can trigger a ResourceWarning in some[39;00m
+[32m     69[39m [38;5;66;03m# cases, and look like a memory leak in others.[39;00m
+[32m     70[39m [38;5;28;01mwith[39;00m sessions.Session() [38;5;28;01mas[39;00m session:
+[32m---> [39m[32m71[39m     [38;5;28;01mreturn[39;00m [30;43msession[39;49m[30;43m.[39;49m[30;43mrequest[39;49m[30;43m([39;49m[30;43mmethod[39;49m[30;43m=[39;49m[30;43mmethod[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43murl[39;49m[30;43m=[39;49m[30;43murl[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m*[39;49m[30;43m*[39;49m[30;43mkwargs[39;49m[30;43m)[39;49m
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/requests/sessions.py:651[39m, in [36mSession.request[39m[34m(self, method, url, params, data, headers, cookies, files, auth, timeout, allow_redirects, proxies, hooks, stream, verify, cert, json)[39m
+[32m    646[39m send_kwargs = {
+[32m    647[39m     [33m"[39m[33mtimeout[39m[33m"[39m: timeout,
+[32m    648[39m     [33m"[39m[33mallow_redirects[39m[33m"[39m: allow_redirects,
+[32m    649[39m }
+[32m    650[39m send_kwargs.update(settings)
+[32m--> [39m[32m651[39m resp = [30;43mself[39;49m[30;43m.[39;49m[30;43msend[39;49m[30;43m([39;49m[30;43mprep[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m*[39;49m[30;43m*[39;49m[30;43msend_kwargs[39;49m[30;43m)[39;49m
+[32m    653[39m [38;5;28;01mreturn[39;00m resp
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/requests/sessions.py:784[39m, in [36mSession.send[39m[34m(self, request, **kwargs)[39m
+[32m    781[39m start = preferred_clock()
+[32m    783[39m [38;5;66;03m# Send the request[39;00m
+[32m--> [39m[32m784[39m r = [30;43madapter[39;49m[30;43m.[39;49m[30;43msend[39;49m[30;43m([39;49m[30;43mrequest[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m*[39;49m[30;43m*[39;49m[30;43mkwargs[39;49m[30;43m)[39;49m
+[32m    786[39m [38;5;66;03m# Total elapsed time of the request (approximately)[39;00m
+[32m    787[39m elapsed = preferred_clock() - start
+
+[36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/requests/adapters.py:711[39m, in [36mHTTPAdapter.send[39m[34m(self, request, stream, timeout, verify, cert, proxies)[39m
+[32m    696[39m     resp = conn.urlopen(
+[32m    697[39m         method=request.method,
+[32m    698[39m         url=url,
+[32m   (...)[39m[32m    707[39m         chunked=chunked,
+[32m    708[39m     )
+[32m    710[39m [38;5;28;01mexcept[39;00m (ProtocolError, [38;5;167;01mOSError[39;00m) [38;5;28;01mas[39;00m err:
+[32m--> [39m[32m711[39m     [38;5;28;01mraise[39;00m [38;5;167;01mConnectionError[39;00m(err, request=request)
+[32m    713[39m [38;5;28;01mexcept[39;00m MaxRetryError [38;5;28;01mas[39;00m e:
+[32m    714[39m     [38;5;28;01mif[39;00m [38;5;28misinstance[39m(e.reason, ConnectTimeoutError):
+[32m    715[39m         [38;5;66;03m# TODO: Remove this in 3.0.0: see #2811[39;00m
+
+[31mConnectionError[39m: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
 

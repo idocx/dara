@@ -264,6 +264,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../dara.cli.html">dara.cli module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dara.eflech_worker.html">dara.eflech_worker module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dara.generate_control_file.html">dara.generate_control_file module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dara.hardware.html">dara.hardware module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dara.jobs.html">dara.jobs module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dara.peak_detection.html">dara.peak_detection module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dara.plot.html">dara.plot module</a></li>
@@ -405,7 +406,10 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">dara.settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">DaraSettings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dara.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_phase_name_from_str</span>
+
+<span class="n">_DARA_SETTINGS</span> <span class="o">=</span> <span class="n">DaraSettings</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="copy_instrument_files">
@@ -477,7 +481,7 @@
     <span class="n">instrument_profile</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span>
     <span class="n">working_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
-    <span class="n">n_threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="n">n_threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">_DARA_SETTINGS</span><span class="o">.</span><span class="n">BGMN_N_THREADS</span><span class="p">,</span>
     <span class="n">wmin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">wmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">eps1</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>

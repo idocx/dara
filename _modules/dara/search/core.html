@@ -264,6 +264,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../dara.cli.html">dara.cli module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../dara.eflech_worker.html">dara.eflech_worker module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../dara.generate_control_file.html">dara.generate_control_file module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dara.hardware.html">dara.hardware module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../dara.jobs.html">dara.jobs module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../dara.peak_detection.html">dara.peak_detection module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../dara.plot.html">dara.plot module</a></li>
@@ -406,12 +407,17 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">dara.search.data_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">PeakMatchingStrategy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dara.search.tree</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseSearchTree</span><span class="p">,</span> <span class="n">SearchTree</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dara.settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">DaraSettings</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">dara.refine</span><span class="w"> </span><span class="kn">import</span> <span class="n">RefinementPhase</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">dara.search.data_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">SearchResult</span>
+
+<span class="n">_DARA_SETTINGS</span> <span class="o">=</span> <span class="n">DaraSettings</span><span class="p">()</span>
+<span class="n">BGMN_N_THREADS</span> <span class="o">=</span> <span class="n">_DARA_SETTINGS</span><span class="o">.</span><span class="n">BGMN_N_THREADS</span>
+<span class="n">RAY_NUM_CPUS</span> <span class="o">=</span> <span class="n">_DARA_SETTINGS</span><span class="o">.</span><span class="n">RAY_NUM_CPUS</span>
 
 <span class="n">DEFAULT_PHASE_PARAMS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;gewicht&quot;</span><span class="p">:</span> <span class="s2">&quot;0_0&quot;</span><span class="p">,</span>
@@ -421,11 +427,11 @@
     <span class="s2">&quot;b1&quot;</span><span class="p">:</span> <span class="s2">&quot;0_0^0.005&quot;</span><span class="p">,</span>
     <span class="s2">&quot;rp&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
 <span class="p">}</span>
-<span class="n">DEFAULT_REFINEMENT_PARAMS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;n_threads&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s2">&quot;eps1&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;eps2&quot;</span><span class="p">:</span> <span class="s2">&quot;0_-0.05^0.05&quot;</span><span class="p">}</span>
+<span class="n">DEFAULT_REFINEMENT_PARAMS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;n_threads&quot;</span><span class="p">:</span> <span class="n">BGMN_N_THREADS</span><span class="p">,</span> <span class="s2">&quot;eps1&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;eps2&quot;</span><span class="p">:</span> <span class="s2">&quot;0_-0.05^0.05&quot;</span><span class="p">}</span>
 <span class="n">DEFAULT_PEAK_MATCHING_STRATEGY</span> <span class="o">=</span> <span class="n">PeakMatchingStrategy</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
 
 
-<span class="nd">@ray</span><span class="o">.</span><span class="n">remote</span>
+<span class="nd">@ray</span><span class="o">.</span><span class="n">remote</span><span class="p">(</span><span class="n">num_cpus</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">_remote_expand_node</span><span class="p">(</span><span class="n">search_tree</span><span class="p">:</span> <span class="n">BaseSearchTree</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseSearchTree</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Expand a node in the search tree.&quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
@@ -500,7 +506,7 @@
         <span class="n">refinement_params</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">ray</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">():</span>
-        <span class="n">ray</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">runtime_env</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;working_dir&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span>
+        <span class="n">ray</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">runtime_env</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;working_dir&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span> <span class="n">num_cpus</span><span class="o">=</span><span class="n">RAY_NUM_CPUS</span><span class="p">)</span>
 
     <span class="n">phase_params</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">DEFAULT_PHASE_PARAMS</span><span class="p">,</span> <span class="o">**</span><span class="n">phase_params</span><span class="p">}</span>
     <span class="n">refinement_params</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">DEFAULT_REFINEMENT_PARAMS</span><span class="p">,</span> <span class="o">**</span><span class="n">refinement_params</span><span class="p">}</span>
