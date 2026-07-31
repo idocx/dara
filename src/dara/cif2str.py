@@ -316,20 +316,65 @@ _NUMERIC_GEWICHT_RE = re.compile(
     r"^-?\d+(?:\.\d+)?_-?\d+(?:\.\d+)?(?:\^-?\d+(?:\.\d+)?)?$"
 )
 
+_ZERO_WIDTH_SPEC_RE = re.compile(
+    r"^\s*(-?\d+(?:\.\d+)?)_(-?\d+(?:\.\d+)?)\^(-?\d+(?:\.\d+)?)\s*$"
+)
+
+
+def _fixed_peak_value(spec: str) -> str | None:
+    """Return V if ``spec`` is a zero-width window ``value_lo^hi`` with
+    lo == hi == value, meaning the parameter should be held FIXED at V.
+
+    Mirrors the ``lo == hi`` branch of ``make_lattice_parameters_str``: a
+    refinement window that cannot move is emitted as a bare (non-``PARAM=``)
+    assignment, fixing the parameter at that value rather than the CIF/0 default.
+
+    The full ``value_lo^hi`` form is required: shorthand specs like the default
+    ``"0_0"`` gewicht (a refinable weight fraction with an open upper bound) are
+    intentionally left refinable.
+    """
+    if not isinstance(spec, str):
+        return None
+    m = _ZERO_WIDTH_SPEC_RE.match(spec)
+    if not m:
+        return None
+    value, lo, hi = m.group(1), m.group(2), m.group(3)
+    if float(value) == float(lo) == float(hi):
+        return value
+    return None
+
+
+def _peak_field(name: str, spec: str) -> str:
+    """One peak-parameter field: ``PARAM=name=spec`` (refinable), ``name=0``
+    (the ``"fixed"`` sentinel, held at 0), or ``name=V`` (held fixed at V, for
+    a zero-width numeric window)."""
+    if spec == "fixed":
+        return f"{name}=0 "
+    fixed_value = _fixed_peak_value(spec)
+    if fixed_value is not None:
+        return f"{name}={fixed_value} "
+    return f"PARAM={name}={spec} "
+
+
 def make_peak_parameter_str(k1: str, k2: str, b1: str, gewicht: str, rp: int) -> str:
     """Make the peak parameter string."""
-    # Numeric specs are refinable; symbolic specs are emitted as fixed names.
-    gewicht_part = (
-        f"PARAM=GEWICHT={gewicht} //"
-        if _NUMERIC_GEWICHT_RE.match(gewicht)
-        else f"GEWICHT={gewicht} //"
-    )
+    # Numeric specs are refinable; symbolic specs are emitted as fixed names;
+    # a zero-width numeric window (value_value^value) is held fixed at value.
+    if _NUMERIC_GEWICHT_RE.match(gewicht):
+        fixed_gewicht = _fixed_peak_value(gewicht)
+        gewicht_part = (
+            f"GEWICHT={fixed_gewicht} //"
+            if fixed_gewicht is not None
+            else f"PARAM=GEWICHT={gewicht} //"
+        )
+    else:
+        gewicht_part = f"GEWICHT={gewicht} //"
 
     return (
         f"RP={rp} "
-        + (f"PARAM=k1={k1} " if k1 != "fixed" else "k1=0 ")
-        + (f"PARAM=k2={k2} " if k2 != "fixed" else "k2=0 ")
-        + (f"PARAM=B1={b1} " if b1 != "fixed" else "B1=0 ")
+        + _peak_field("k1", k1)
+        + _peak_field("k2", k2)
+        + _peak_field("B1", b1)
         + gewicht_part
     )
 

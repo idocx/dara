@@ -14,8 +14,17 @@ def visualize(
     diff_offset: bool = False,
     missing_peaks: list[list[float]] | np.ndarray | None = None,
     extra_peaks: list[list[float]] | np.ndarray | None = None,
+    intensity_mismatch_peaks: list[list[float]] | np.ndarray | None = None,
+    phase_colors: dict[str, str] | None = None,
 ):
-    """Visualize the result from the refinement. It uses plotly as the backend engine."""
+    """Visualize the result from the refinement. It uses plotly as the backend engine.
+
+    Args:
+        intensity_mismatch_peaks: optional (N, 2) array of [2theta, 0.0] markers
+            for matched peaks whose calculated height/area deviates from
+            observed; drawn the same way as ``missing_peaks``/``extra_peaks``
+            when provided.
+    """
     colormap = [
         "#1f77b4",
         "#ff7f0e",
@@ -101,6 +110,8 @@ def visualize(
         if i >= len(colormap) - 1:
             i = i % (len(colormap) - 1)
 
+        color = (phase_colors or {}).get(phase_name, colormap[i])
+
         name = (
             f"{phase_name} ({weight_fractions[phase_name] * 100:.2f} %)"
             if len(weight_fractions) > 1
@@ -111,7 +122,7 @@ def visualize(
                 x=plot_data.x,
                 y=plot_data.y_bkg,
                 mode="lines",
-                line=dict(color=colormap[i], width=0),
+                line=dict(color=color, width=0),
                 fill=None,
                 showlegend=False,
                 hoverinfo="none",
@@ -123,7 +134,7 @@ def visualize(
                 x=plot_data.x,
                 y=np.array(phase) + np.array(plot_data.y_bkg),
                 mode="lines",
-                line=dict(color=colormap[i], width=1.5),
+                line=dict(color=color, width=1.5),
                 fill="tonexty",
                 name=name,
                 visible="legendonly",
@@ -140,7 +151,7 @@ def visualize(
                 marker={
                     "symbol": 142,
                     "size": 5,
-                    "color": colormap[i],
+                    "color": color,
                 },
                 name=name,
                 legendgroup=phase_name,
@@ -160,6 +171,7 @@ def visualize(
                 mode="markers",
                 marker=dict(color="#f9726a", symbol=53, size=10, opacity=0.8),
                 name="Missing peaks",
+                showlegend=True,
                 visible="legendonly",
                 text=[f"{x:.2f}, {y:.2f}" for x, y in missing_peaks],
             )
@@ -174,8 +186,25 @@ def visualize(
                 mode="markers",
                 marker=dict(color="#335da0", symbol=53, size=10, opacity=0.8),
                 name="Extra peaks",
+                showlegend=True,
                 visible="legendonly",
                 text=[f"{x:.2f}, {y:.2f}" for x, y in extra_peaks],
+                hovertemplate="%{text}",
+            )
+        )
+
+    if intensity_mismatch_peaks is not None:
+        intensity_mismatch_peaks = np.array(intensity_mismatch_peaks).reshape(-1, 2)
+        fig.add_trace(
+            go.Scatter(
+                x=intensity_mismatch_peaks[:, 0],
+                y=np.zeros_like(intensity_mismatch_peaks[:, 0]),
+                mode="markers",
+                marker=dict(color="#FFD700", symbol=53, size=10, opacity=0.8),
+                name="Intensity mismatch",
+                showlegend=True,
+                visible="legendonly",
+                text=[f"{x:.2f}, {y:.2f}" for x, y in intensity_mismatch_peaks],
                 hovertemplate="%{text}",
             )
         )
