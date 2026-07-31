@@ -11,12 +11,17 @@ import ray
 
 from dara.search.data_model import PeakMatchingStrategy
 from dara.search.tree import BaseSearchTree, SearchTree
+from dara.settings import DaraSettings
 
 if TYPE_CHECKING:
     from pathlib import Path
 
     from dara.refine import RefinementPhase
     from dara.search.data_model import SearchResult
+
+_DARA_SETTINGS = DaraSettings()
+BGMN_N_THREADS = _DARA_SETTINGS.BGMN_N_THREADS
+RAY_NUM_CPUS = _DARA_SETTINGS.RAY_NUM_CPUS
 
 DEFAULT_PHASE_PARAMS = {
     "gewicht": "0_0",
@@ -26,11 +31,11 @@ DEFAULT_PHASE_PARAMS = {
     "b1": "0_0^0.005",
     "rp": 4,
 }
-DEFAULT_REFINEMENT_PARAMS = {"n_threads": 8, "eps1": 0, "eps2": "0_-0.05^0.05"}
+DEFAULT_REFINEMENT_PARAMS = {"n_threads": BGMN_N_THREADS, "eps1": 0, "eps2": "0_-0.05^0.05"}
 DEFAULT_PEAK_MATCHING_STRATEGY = PeakMatchingStrategy.default()
 
 
-@ray.remote
+@ray.remote(num_cpus=0)
 def _remote_expand_node(search_tree: BaseSearchTree) -> BaseSearchTree:
     """Expand a node in the search tree."""
     try:
@@ -100,7 +105,7 @@ def search_phases(
         refinement_params = {}
 
     if not ray.is_initialized():
-        ray.init(runtime_env={"working_dir": None})
+        ray.init(runtime_env={"working_dir": None}, num_cpus=RAY_NUM_CPUS)
 
     phase_params = {**DEFAULT_PHASE_PARAMS, **phase_params}
     refinement_params = {**DEFAULT_REFINEMENT_PARAMS, **refinement_params}

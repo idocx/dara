@@ -20,6 +20,7 @@ from dara.peak_detection import detect_peaks
 from dara.refine import RefinementPhase
 from dara.search.data_model import PeakMatchingStrategy, SearchNodeData, SearchResult
 from dara.search.peak_matcher import PeakMatcher
+from dara.settings import DaraSettings
 from dara.utils import (
     estimate_rpb_threshold,
     find_optimal_intensity_threshold,
@@ -39,8 +40,15 @@ if TYPE_CHECKING:
 
 logger = get_logger(__name__, level="INFO")
 
+_DARA_SETTINGS = DaraSettings()
+BGMN_N_THREADS = _DARA_SETTINGS.BGMN_N_THREADS
 
-@ray.remote(num_cpus=1)
+#: Minimum relative Rwp improvement (parent -> child) required for a branch
+#: flagged by the intensity-order heuristic to survive anyway.
+MATERIAL_RWP_IMPROVEMENT = 0.08
+
+
+@ray.remote
 def remote_do_refinement_no_saving(
     pattern_path: Path,
     cif_paths: list[Path],
@@ -130,7 +138,7 @@ def batch_refinement(
     refinement_params: dict[str, float] | None = None,
 ) -> list[RefinementResult]:
     handles = [
-        remote_do_refinement_no_saving.remote(
+        remote_do_refinement_no_saving.options(num_cpus=BGMN_N_THREADS).remote(
             pattern_path,
             cif_paths,
             wavelength=wavelength,
@@ -211,6 +219,49 @@ def calculate_fom_and_strain(
     return (1 / (result.lst_data.rho + a * delta_u + 1e-4) + b * geweicht) / (
         1 + c
     ), lattice_strain
+
+
+def keep_branch_despite_intensity_order(
+    parent_result: RefinementResult | None,
+    child_result: RefinementResult,
+    *,
+    violated: bool,
+) -> bool:
+    """Decide whether an intensity-order violation should still prune a branch.
+
+    The intensity-order heuristic (unchanged, computed by the caller) flags a
+    branch when the newly added phase ends up with more peak intensity than a
+    phase added earlier. That's usually a sign the new phase isn't earning its
+    place, but it can also happen on a branch whose overall fit is clearly
+    better. Rather than pruning every flagged branch outright, only prune it
+    if it did not also improve Rwp by at least ``MATERIAL_RWP_IMPROVEMENT``
+    relative to its parent.
+
+    Args:
+        parent_result: the refinement result before the candidate phase was
+            added, or ``None`` at the root of the search tree.
+        child_result: the refinement result after adding the candidate phase.
+        violated: whether the (unchanged, caller-computed) intensity-order
+            check flagged this branch.
+
+    Returns
+    -------
+        True if the branch should survive (either unflagged, or flagged but
+        with a material Rwp improvement); False if it should be pruned.
+    """
+    if not violated:
+        return True
+
+    if parent_result is None:
+        return False
+
+    parent_rwp = parent_result.refinement_metrics.rwp
+    if not parent_rwp:
+        return False
+
+    child_rwp = child_result.refinement_metrics.rwp
+    rel_improvement = (parent_rwp - child_rwp) / parent_rwp
+    return rel_improvement >= MATERIAL_RWP_IMPROVEMENT
 
 
 def group_phases(
@@ -535,7 +586,11 @@ class BaseSearchTree(Tree):
                     != len(new_phases)
                 ):
                     status = "no_improvement"
-                elif is_low_weight_fraction:
+                elif not keep_branch_despite_intensity_order(
+                    parent_result=node.data.current_result,
+                    child_result=new_result,
+                    violated=is_low_weight_fraction,
+                ):
                     status = "low_weight_fraction"
                 elif not is_best_result_in_group:
                     status = "similar_structure"
